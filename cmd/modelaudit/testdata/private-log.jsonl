@@ -1,0 +1,3 @@
+{"event":"request.received","prompt":"","authorization":"PRIVATE_KEY"}
+{"event":"upstream.logical_error","upstream_id":"PRIVATE_ID","trace_id":"PRIVATE_TRACE","status":502,"body":{"encoding":"json","value":{"error":{"message":"Unable to determine provider for model PRIVATE_MODEL","type":"invalid_request_error"}}}}
+{"event":"upstream.response_body","body":{"encoding":"text","value":""}}
