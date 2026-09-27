@@ -1,0 +1,2881 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="ROBOTS" content="NOINDEX, FOLLOW" />
+<meta name="theme-color" content="#151514" />
+<meta name="admin-base-path" content="__AISENSE_BASE_PATH__" />
+<title>aisense / aisense</title>
+<style type="text/css">
+/* Existing dark Cobalt / FluxBB theme. */
+.pun abbr, .pun blockquote, .pun cite, .pun dd, .pun div, .pun dl, .pun dt, .pun fieldset, .pun form, .pun h1, .pun h2, .pun h3, .pun h4, .pun h5, .pun img, .pun li, .pun ol, .pun p, .pun pre, .pun table, .pun td, .pun th, .pun ul { margin: 0px; padding: 0px; border: 0px; }
+.pun ol, .pun ul { list-style: none; }
+.pun .clearer, .pun .nosize { height: 0px; width: 0px; line-height: 0; font-size: 0px; overflow: hidden; }
+.pun .clearb, .pun .clearer { clear: both; }
+.pun, .pun .codebox, .pun .inbox, .pun .inform, .pun .tclcon { min-height: 1px; }
+#brdfooter h2, #brdstats .conl dt, #brdstats .conr dt, #brdstats h2, #modcontrols dt, #searchlinks dt, .pun .required strong span, div.postright h3, span.closedtext { position: absolute; display: block; overflow: hidden; width: 0px; left: -9999em; text-indent: -9999em; }
+.pun { font: 68.75% Verdana, Helvetica, Arial, sans-serif; padding: 12px 0px; }
+.pun input, .pun legend, .pun optgroup, .pun samp, .pun select, .pun table, .pun td, .pun textarea, .pun th { font-size: 10px; font-family: verdana, helvetica, arial, sans-serif; }
+.pun code, .pun pre { font-family: consolas, monaco, "bitstream vera sans mono", "courier new", courier, monospace; }
+.pun pre code { font-size: 1em; tab-size: 4; }
+.pun strong { font-weight: 700; }
+.pun em { font-style: italic; }
+.pun .button { font-family: verdana, helvetica, arial, sans-serif; background-color: rgb(33, 33, 32); border: 1px solid rgb(62, 62, 61); font-size: 10px; padding: 4px 8px; cursor: default; color: rgb(204, 204, 204) !important; }
+.pun dl, .pun ol, .pun p, .pun ul { font-size: 11px; padding: 3px 0px; }
+.pun h2 { font-size: 1em; font-weight: 400; padding: 4px 6px; }
+.pun h3 { font-size: 1.091em; padding: 3px 0px; }
+.pun table h3, .pun table p { padding: 0px; }
+.pun del, .pun span.bbs { text-decoration: line-through; }
+body, html { margin: 0px; padding: 0px; }
+.pun { max-width: 1070px; min-width: 320px; margin: 0px auto; padding: 12px 20px; }
+#brdheader { margin: 0px 0px 12px; }
+#brdtitle p { padding-top: 0px; }
+#postreview, .pun .block, .pun .block2col, .pun .blockform, .pun .blocktable { margin-bottom: 12px; }
+.pun .box { border-style: solid; border-width: 1px; }
+#brdheader .box { border-top-width: 4px; border-radius: 4px; }
+.pun .block .inbox, .pun .blockmenu .inbox { padding: 6px 12px; }
+#brdtitle h1 { font-size: 22px; font-weight: 400; padding: 0px 0px 10px; font-family: Verdana, Helvetica, Arial, sans-serif; }
+#brdheader #brdtitle { padding: 12px 12px 0; }
+#brdtitle h1 a { color: rgb(234, 234, 234); }
+#brdtitle h1 a span { color: rgb(149, 184, 6); }
+#brdmenu li { display: inline; margin-right: 12px; }
+#brdmenu a:link, #brdmenu a:visited { text-decoration: none; }
+#brdmenu a:active, #brdmenu a:hover { text-decoration: underline; }
+#brdwelcome .conl { float: left; }
+#brdwelcome .conr { float: right; text-align: right; }
+.pun table { width: 100%; border-collapse: collapse; border-spacing: 0px; empty-cells: show; }
+.pun .blocktable table { table-layout: fixed; }
+.pun td, .pun th { padding: 4px 6px; text-align: left; font-weight: 400; }
+.pun tbody td, .pun tbody th { border-style: solid none none solid; border-width: 1px; }
+.pun .blockform form, .pun .fakeform { padding: 18px 18px 14px; }
+.pun .inform { padding-bottom: 12px; }
+.pun fieldset { padding: 0px 12px; border-style: solid; border-width: 1px; }
+.pun legend { padding: 0px 6px; }
+.pun .infldset { padding: 10px 0px 12px; }
+.pun label { display: block; padding: 4px 0px; }
+.pun label.conl { float: left; overflow: visible; margin-right: 10px; }
+.pun .blockform .buttons { padding-left: 12px; }
+.pun .blockform .buttons input { margin-right: 8px; }
+#brdfooter dl a, #brdwelcome, div.blockmenu li, div.rbox input { line-height: 1.4em; }
+.pun .inbox thead { color: rgb(119, 119, 119); font-size: 10px; border-style: none; }
+body { background-color: rgb(21, 21, 20); color: rgb(212, 212, 211); }
+.pun { color: rgb(212, 212, 211); }
+.pun .box { background-color: rgb(39, 39, 38); }
+.pun h2 { border-top-left-radius: 4px; border-top-right-radius: 4px; background-color: rgb(53, 53, 52); border-top: 1px solid rgb(53, 53, 52); border-right: 1px solid rgb(53, 53, 52); border-left: 1px solid rgb(53, 53, 52); padding: 8px; text-transform: none; font-size: 11px; line-height: 1.4; font-weight: 700; position: relative; color: rgb(187, 187, 187); }
+#brdmenu { background-color: rgb(53, 53, 52); color: rgb(212, 212, 211); }
+.pun th { background-color: rgb(39, 39, 38); }
+.pun legend { color: rgb(96, 160, 220); }
+.pun input, .pun select, .pun textarea { background-color: rgb(33, 33, 32); color: rgb(204, 204, 204); border: 1px solid rgb(62, 62, 61); }
+.pun a.button:hover, .pun input:hover, .pun select:hover { background-color: rgb(27, 27, 26); border-color: rgb(68, 68, 68); color: rgb(170, 170, 170); }
+.pun a.button:disabled, .pun a.button:disabled:hover, .pun input:disabled, .pun input:disabled:hover, .pun select:disabled, .pun select:disabled:hover { opacity: 0.5; background-color: rgb(27, 27, 26); color: rgb(204, 204, 204); border: 1px solid rgb(62, 62, 61); }
+.pun a.button:focus, .pun input:focus, .pun select:focus { outline: 0px; border-color: rgb(102, 102, 102); }
+.pun hr { background-color: rgb(96, 96, 96); color: rgb(96, 96, 96); }
+.pun .box { border-color: rgb(53, 53, 52); }
+.pun .blocktable .box { border-top-width: medium; border-top-style: none; border-top-color: currentcolor; }
+#brdfooter #modcontrols, .pun td { border-color: rgb(51, 51, 51); }
+.pun th { border-color: rgb(41, 41, 41); }
+.pun fieldset { border-color: rgb(96, 96, 96); }
+.pun a:link, .pun a:visited { color: rgb(96, 160, 220); text-decoration: none; }
+.pun a:active, .pun a:focus, .pun a:hover { color: rgb(128, 214, 255); }
+#brdmenu a:link, #brdmenu a:visited, .pun h2 a:link, .pun h2 a:visited { color: rgb(212, 212, 211); }
+#brdmenu a:active, #brdmenu a:hover, .pun h2 a:active, .pun h2 a:hover { color: rgb(212, 212, 211); }
+nav { display: block; }
+.hidden { display: none !important; }
+
+
+/* aisense admin adapter: maps the app onto the gamesense Cobalt forum primitives above. */
+html,body{margin:0;padding:0;background-color:rgb(21,21,20);color:rgb(212,212,211)}
+/* body keeps the browser 16px so .pun's 68.75% resolves to gamesense's 11px (not 7.5px) */
+body{font-family:Verdana,Helvetica,Arial,sans-serif;line-height:normal}
+[hidden],.hidden{display:none!important}
+.view{display:none}.view.active{display:block}
+.view[hidden]{display:none}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0}
+.pun{min-width:0}
+.clearer{clear:both;height:0;font-size:0;line-height:0;overflow:hidden}
+.mono,code{font-family:consolas,monaco,"bitstream vera sans mono","courier new",courier,monospace;color:rgb(204,204,204)}
+.pun span.dim,.pun div.dim{color:rgb(136,136,136)}.pun h2 .dim{color:inherit}
+
+/* header */
+#brdheader .box{border-top:4px solid #353534}
+#brdmenu .nav-button{background:transparent;border:0;color:rgb(212,212,211);font:11px Verdana,Helvetica,Arial,sans-serif;margin:0;padding:0;text-decoration:none;cursor:pointer}
+#brdmenu .nav-button:hover{text-decoration:underline;color:rgb(212,212,211)}
+#brdwelcome .logout-link[aria-disabled=true]{opacity:.5;cursor:wait}
+
+/* type scale */
+.pun label{font-weight:700}
+.pun label:has(input[type=radio]),.pun legend,.pun input,.pun select,.pun optgroup,.pun option,.pun textarea,.pun button,.pun h2,.pun h3,.pun strong,.pun b,.pun thead th{font-weight:400}
+.pun input,.pun select,.pun textarea,.pun button,.pun legend,.pun table,.pun td,.pun th{font-size:11px}
+.pun fieldset input,.pun fieldset select,.pun fieldset textarea,.pun fieldset label,.pun fieldset legend,.pun fieldset p,.pun fieldset .dim{font-size:11px!important;line-height:1.45}
+
+/* form buttons: the original gamesense submit button (.pun .button in Cobalt) */
+.pun button{font-family:Verdana,Helvetica,Arial,sans-serif;background-color:rgb(33,33,32);color:rgb(204,204,204)!important;border:1px solid rgb(62,62,61);border-radius:0;padding:4px 8px;margin:0;min-height:0;cursor:pointer;vertical-align:middle}
+.pun button:not(:disabled):hover{background-color:rgb(27,27,26);border-color:rgb(68,68,68);color:rgb(170,170,170)!important}
+.pun button:disabled{opacity:.5;cursor:default}
+.pun button.danger{color:rgb(231,138,128)!important}
+.pun button + button{margin-left:6px}
+/* actions in table rows and h2 bars are gamesense text links, as on the forum */
+.pun td button,.pun h2 button,.pun .upstream-key-row button{background:none;border:0;padding:0;color:rgb(96,160,220)!important;vertical-align:baseline;text-align:left}
+.pun td button:not(:disabled):hover,.pun h2 button:not(:disabled):hover,.pun .upstream-key-row button:not(:disabled):hover{background:none;color:rgb(128,214,255)!important;text-decoration:underline}
+.pun td button.danger,.pun .upstream-key-row button.danger{color:rgb(231,138,128)!important}
+.pun td button.danger:not(:disabled):hover,.pun .upstream-key-row button.danger:not(:disabled):hover{color:rgb(255,170,160)!important}
+.pun h2 button.primary{font-weight:700}
+.pun td button + button,.pun h2 button + button{margin-left:12px}
+
+/* fields */
+.pun input,.pun textarea,.pun select{color:rgb(204,204,204)!important;-webkit-text-fill-color:rgb(204,204,204);box-sizing:border-box;max-width:100%}
+.pun input.mono,.pun textarea.mono,.pun select.mono{font-family:consolas,monaco,"bitstream vera sans mono","courier new",courier,monospace}
+.pun input::placeholder,.pun textarea::placeholder{color:rgb(119,119,119)!important;-webkit-text-fill-color:rgb(119,119,119)}
+.pun input[type=text],.pun input[type=password],.pun input[type=number],.pun select{height:20px;padding:1px 5px;min-height:0;line-height:16px;width:220px}
+.pun input[type=number]{width:100px}
+.pun textarea{padding:5px;resize:vertical;background-color:rgb(33,33,32);border:1px solid rgb(62,62,61);line-height:1.35}
+.pun fieldset textarea{padding:6px;line-height:1.5;width:100%}
+.pun input:-webkit-autofill,.pun textarea:-webkit-autofill,.pun select:-webkit-autofill{-webkit-text-fill-color:rgb(204,204,204)!important;caret-color:rgb(204,204,204);box-shadow:0 0 0 1000px rgb(33,33,32) inset}
+.pun :focus-visible{outline:2px solid #60a0dc;outline-offset:2px}
+.pun input:not([type=checkbox]):not([type=radio]):focus-visible,.pun textarea:focus-visible,.pun select:focus-visible{outline:none;box-shadow:none}
+.check{display:block!important;padding:3px 0 3px 25px!important;position:relative;vertical-align:middle;color:rgb(212,212,211);cursor:pointer}.check input{margin:0 9px 0 -25px!important;padding:0!important;width:16px!important;position:relative;vertical-align:middle;height:13px!important;min-height:0!important}
+.row{clear:both;overflow:hidden;padding:0;margin:0 0 8px 0}.field{float:left;margin:0 12px 8px 0;min-width:171px}.field.wide{float:none;margin-right:0;width:75%}
+.pun .row{display:flex;flex-wrap:wrap;gap:4px 16px;margin:0 0 4px;clear:both}
+.pun .row .field{float:none;margin:0;min-width:171px}
+.pun .row .field.wide{flex:1 1 100%;min-width:0}
+#up-import-text,#p-add{width:100%}
+
+/* forms */
+.pun .infldset{padding:8px 0 10px}
+.pun .infldset label{padding:2px 0}
+.pun .infldset label:not(.check){display:block;margin:0 0 2px}
+.pun .infldset label.check{display:inline-block;margin:0 0 2px}
+.pun .infldset>p{margin:4px 0}
+.pun .inform{padding-bottom:12px}.pun .inform:last-child{padding-bottom:0}
+.pun fieldset{padding:0 12px;border:1px solid rgb(96,96,96)}
+.pun .blockform .inbox,.pun .blockform form{padding:20px 20px 15px}
+.pun .blockform .buttons{padding-left:0;margin-top:12px}
+.pun .mass-setting{border-top:1px solid rgb(53,53,52);padding-top:10px;margin-top:8px}
+.pun .mass-setting>label.check{display:block;margin:0 0 4px}
+.pun .note{background:rgb(48,48,47);border:1px solid rgb(96,96,96);padding:8px 10px;margin-bottom:10px;color:rgb(187,187,187)}
+.pun .form-error{color:rgb(240,107,95);padding:0}.pun .form-error:empty{display:none}
+.security-modal code{display:block;overflow-wrap:anywhere;user-select:all;margin:6px 0;padding:6px;background:#212120}
+.pun .security-modal form{padding:0}
+
+/* blocks and tables */
+.pun .block .box,.pun .blockform .box,.pun .blocktable .box{border-top:none;border-bottom-left-radius:4px;border-bottom-right-radius:4px}
+.pun h2{border-top-left-radius:4px;border-top-right-radius:4px;background-color:rgb(53,53,52);border:1px solid rgb(53,53,52)}
+.pun h2 .conr{float:right;font-weight:normal;margin-top:-3px}
+.pun h2 .conr button{margin-left:12px;vertical-align:middle}
+.pun h2 .conr .dim{font-size:11px;margin-left:12px;vertical-align:middle}
+.pun h2 input.h2-filter{width:150px;height:18px;margin:-2px 0;padding:0 5px;font-size:11px;line-height:16px;vertical-align:middle}
+.pun thead th{background-color:rgb(53,53,52);border-bottom:1px solid rgb(51,51,51);border-top:none;color:rgb(119,119,119);font-weight:700}
+.pun td,.pun th{padding:5px 10px}
+.pun td:first-child,.pun th:first-child{border-left:none}
+.pun .blocktable tbody tr{background-color:rgb(37,37,36)}
+.pun .blocktable tbody tr:hover{background-color:rgb(32,32,31)}
+.empty-row{text-align:center!important;vertical-align:middle!important;padding:24px 0!important;color:rgb(119,119,119)!important;font-size:11px}
+.pun .scrollbox{max-height:320px;overflow-y:auto;scrollbar-color:rgb(78,78,77) rgb(33,33,32)}
+.pun .scrollbox thead th{position:sticky;top:0;z-index:1}
+
+/* status text (no badges or boxes): gamesense colours words instead */
+.badge{font-weight:700}
+.badge.on{color:rgb(180,230,30)}.badge.off{color:rgb(240,107,95)}.badge.warn{color:rgb(228,174,74)}.badge.info{color:rgb(96,160,220)}.badge.dim{color:rgb(136,136,136)}
+.proxy-tag{color:rgb(110,180,255);font:11px consolas,monaco,monospace}
+.flag-icon{width:16px;height:11px;vertical-align:-1px;margin-right:6px;border-radius:1px;object-fit:cover;display:inline-block}
+
+/* models and API keys are plain monospace text; clickable ones underline on hover */
+.pun .key-pill,.pun .model-chip{background:none;border:0;padding:0;margin:0;min-height:0;font:11px/16px consolas,monaco,"courier new",monospace;color:rgb(204,204,204)!important;vertical-align:baseline}
+.pun .key-pill.clickable,.pun .model-chip{cursor:pointer}
+.pun .key-pill.clickable:not(:disabled):hover,.pun .model-chip:not(:disabled):hover{background:none;color:rgb(234,234,234)!important;text-decoration:underline}
+.pun .models-container{display:flex;flex-wrap:wrap;gap:4px 16px;padding:4px 0;max-height:220px;overflow-y:auto}
+.pun .models-container .model-chip{margin:0}
+.pun button.linkbtn{font-weight:700;color:rgb(204,204,204)!important;overflow-wrap:anywhere}
+.pun button.linkbtn:not(:disabled):hover{color:rgb(234,234,234)!important}
+
+/* Overview: gamesense #brdstats "Board information" layout */
+.pun .statsbox dl{padding:0}
+.pun .statsbox dt{position:absolute;display:block;overflow:hidden;width:0;left:-9999em;text-indent:-9999em}
+.pun .statsbox dd{padding:3px 0;line-height:1.4em}
+.pun .statsbox .conl{float:left}.pun .statsbox .conr{float:right;text-align:right}
+.pun .statsbox strong{font-weight:700;color:rgb(234,234,234)}
+.bars{display:flex;align-items:flex-end;gap:4px;height:110px;margin-top:6px}
+
+/* Models "Available | All": gamesense .blockmenu tabs (link colour, current one plain) */
+.pun .h2-tabs{margin-left:14px;white-space:nowrap}
+.pun .h2-tabs .sep{color:rgb(119,119,119);margin:0 7px}
+.pun .h2-tabs button{font-weight:700}
+.pun .h2-tabs button + button{margin-left:0}
+.pun .h2-tabs button.active,.pun .h2-tabs button.active:not(:disabled):hover{color:rgb(212,212,211)!important;cursor:default;text-decoration:none}
+
+/* Cached Upstreams: gamesense forum table */
+.pun .cached-table th.c-model{width:26%}.pun .cached-table th.c-keys{width:30%}
+.pun .cached-table th.c-time,.pun .cached-table td.c-time{width:92px;text-align:right;white-space:nowrap}
+.pun .cached-table td{vertical-align:middle}
+.pun .cached-table td.c-up{overflow-wrap:anywhere}
+.pun .cached-table td.c-keys,.pun .cached-table td.c-time{background-color:rgb(48,48,47)}
+.pun .cached-table td.c-time{color:rgb(136,136,136)}
+.pun .cached-table td.c-keys .key-pill{margin:0 12px 0 0}
+
+/* API keys and upstreams tables */
+.pun .up-check{width:28px}
+.pun .up-status{width:105px}
+.pun .up-actions{width:190px;white-space:nowrap}#v-keys .up-actions{width:80px}
+.pun .up-actions button + button{margin-left:10px}
+.pun .up-toggle[aria-expanded=true]{font-weight:700}
+.pun .key-cell>*+*{margin-left:10px}
+.pun .up-detail>td{background-color:rgb(33,33,32)}
+.pun .up-scopes{width:auto}
+.pun .blocktable .up-scopes tr,.pun .blocktable .up-scopes tr:hover{background:none}
+.pun .up-scopes td{border:0;padding:2px 18px 2px 0;background:none;vertical-align:top}
+.pun .up-scope{white-space:nowrap;font-weight:700;color:rgb(187,187,187)}
+
+/* Hitchance: one line per restricted scope (API base, each API key) */
+.pun .hc-line{margin-top:3px;line-height:1.4}
+.pun .hc-scope{font-weight:700}
+.pun .hc-on{color:rgb(212,212,211)}.pun .hc-warn{color:rgb(228,174,74)}.pun .hc-off{color:rgb(240,107,95)}.pun .hc-dim{color:rgb(136,136,136)}
+
+/* combos: a made-up model name and the models it walks through */
+.pun .combo-name{width:220px}
+.pun .combo-arrow{color:rgb(136,136,136)}
+.pun #combo-models,.pun #combo-pick,.pun #combo-name{width:100%}
+
+/* hit chance: share of recent requests that succeeded */
+.pun .hit{font-weight:700}.pun .hit-good{color:rgb(180,230,30)}.pun .hit-mid{color:rgb(228,174,74)}.pun .hit-bad{color:rgb(240,107,95)}.pun .hit-none{color:rgb(136,136,136);font-weight:400}
+.pun .key-hits,.pun .key-hits .sep{color:rgb(119,119,119)}
+.pun .up-scopes td.up-hit{text-align:right}
+
+/* Hitchance rule editor */
+.pun .hc-rules{margin:10px 0 4px}
+.pun .hc-rules td{vertical-align:top;overflow-wrap:anywhere}
+.pun .hc-rules tbody tr{background-color:rgb(37,37,36)}
+.pun .hc-rules tbody tr:hover{background-color:rgb(32,32,31)}
+.pun .hc-rules .hc-num{width:26px;text-align:right;color:rgb(136,136,136)}
+.pun .hc-rules .hc-rule{width:22%}
+.pun .hc-rules .hc-then{width:26%}
+.pun .hc-rules .hc-ops{width:120px;text-align:right;white-space:nowrap}
+.pun .hc-rules .hc-ops button + button{margin-left:9px}
+.pun .hc-then.hc-delete{color:rgb(240,107,95)}.pun .hc-then.hc-quarantine{color:rgb(228,174,74)}.pun .hc-then.hc-ignore{color:rgb(136,136,136)}
+.pun .hc-upstream-list{max-height:150px;overflow-y:auto;padding:4px 8px;background:rgb(33,33,32);border:1px solid rgb(62,62,61)}
+.pun .hc-upstream-list label{font-weight:400}
+.pun .md-refresh label.check{display:inline-block!important}.pun .md-refresh input[type=number]{width:70px;margin:0 4px}
+.pun #hc-rule-pattern,.pun #hc-rule-models{width:100%}
+
+/* popups: anchored to the top of the site column, newest on top, always above the page */
+.modal-backdrop{display:none}
+.pun .modal-backdrop{position:fixed;inset:0;z-index:1000;display:none;align-items:flex-start;justify-content:center;padding:15px 20px 40px;box-sizing:border-box;background:rgba(0,0,0,.75);overflow-y:auto;overscroll-behavior:contain}
+.pun .modal-backdrop.open{display:flex}
+.pun .modal{width:min(600px,100%);flex:none;margin:0}.pun .modal.wide{width:min(800px,100%)}.pun .modal:focus{outline:none}
+.pun .modal .box{box-shadow:0 3px 8px rgba(0,0,0,.25)}.pun .modal .buttons{text-align:left;padding-left:0}
+body.modal-open{overflow:hidden}
+.pun #confirm-message{white-space:pre-line;line-height:1.5;padding:0}
+/* Plain-text GameSense-style notices at the viewport's top left. */
+.pun .toast-stack{position:fixed;top:12px;left:12px;z-index:100000;display:flex;flex-direction:column;align-items:flex-start;gap:4px;pointer-events:none}
+.pun .toast{pointer-events:auto;cursor:pointer;box-sizing:border-box;max-width:min(460px,calc(100vw - 24px));padding:0;background:transparent;border:0;box-shadow:none;color:rgb(212,212,211);font:11px/1.45 Verdana,Helvetica,Arial,sans-serif;overflow-wrap:anywhere;text-shadow:0 1px 2px rgba(0,0,0,.9)}
+.pun .toast.err{color:rgb(240,107,95)}
+
+@media(max-width:800px){
+ .pun{padding:8px 10px}
+ .pun .modal-backdrop{padding:11px 10px 30px}
+ .field,.field.wide{float:none;width:auto;margin-right:0}
+ .pun .row{gap:8px 12px}
+}
+@media(max-width:600px){
+ .pun .cached-table thead{display:none}
+ .pun .cached-table,.pun .cached-table tbody,.pun .cached-table tr,.pun .cached-table td{display:block;width:auto!important}
+ .pun .cached-table tr{padding:6px 10px;border-top:1px solid rgb(51,51,51)}
+ .pun .cached-table tr:first-child{border-top:0}
+ .pun .cached-table td{border:0!important;padding:2px 0!important;background:none!important;text-align:left!important}
+ .pun .cached-table td.empty-row{text-align:center!important;padding:24px 0!important}
+ .pun .stack-table>thead{display:none}
+ .pun .stack-table,.pun .stack-table>tbody,.pun .stack-table>tbody>tr,.pun .stack-table>tbody>tr>td{display:block;width:auto!important}
+ .pun .stack-table>tbody>tr{position:relative;padding:8px 10px 8px 46px;border-top:1px solid rgb(51,51,51)}
+ .pun .stack-table>tbody>tr:first-child{border-top:0}
+ .pun .stack-table>tbody>tr>td{border:0!important;padding:3px 0!important;white-space:normal!important}
+ .pun .stack-table>tbody>tr>td.up-check{position:absolute;left:10px;top:6px}
+ .pun .stack-table>tbody>tr.up-detail{padding-left:10px}
+ .pun .stack-table>tbody>tr.up-detail>td:first-child{display:none}
+ .pun .stack-table>tbody>tr>td.empty-row{text-align:center!important;padding:24px 0!important}
+ .pun .stack-table .up-actions button{margin:0 16px 0 0}
+ #v-usage .inbox{overflow-x:auto}
+ #v-usage table{min-width:560px}
+}
+@media(max-width:520px){
+ .pun{padding:6px}
+ .pun .modal-backdrop{padding:9px 6px 30px}
+ .conr,.pun .statsbox .conr{float:none;text-align:left;display:block;margin-top:4px}
+ .pun .statsbox .conl{float:none}
+}
+@media(max-width:600px),(pointer:coarse){
+ .pun input[type=text],.pun input[type=password],.pun input[type=number],.pun select{height:44px;font-size:16px!important}
+ .pun button{min-height:44px!important;display:inline-flex;align-items:center;justify-content:center}
+ .pun h2 input.h2-filter{height:44px;margin:4px 0}
+ .pun button.model-chip,.pun button.key-pill,.pun button.linkbtn{min-height:32px!important}
+ .pun label.check{min-height:44px;box-sizing:border-box;display:flex!important;align-items:center}
+ .pun input[type=checkbox],.pun input[type=radio]{width:20px!important;height:20px!important;min-height:20px!important}
+ .pun .row .field{min-width:0;max-width:100%}
+}
+/* gamesense divider, pinned to the top edge above the page, popups and toasts. The colours
+   flow continuously; reduced motion only slows it down. */
+.top-divider{position:sticky;top:0;z-index:2147483000;height:2px;padding:0;margin:0;overflow:hidden;background:#1e5799;border-bottom:1px solid #000}
+.top-divider::before{content:"";position:absolute;top:0;left:0;height:100%;width:200%;background:linear-gradient(90deg,#1e5799 0%,#f300ff 16.666%,#e0ff00 33.333%,#1e5799 50%,#f300ff 66.666%,#e0ff00 83.333%,#1e5799 100%);animation:divider-flow 8s linear infinite;will-change:transform}
+@keyframes divider-flow{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.top-divider::before{animation-duration:12s}}
+</style>
+</head>
+<body>
+<div class="top-divider"></div>
+<div id="punaisense" class="pun">
+<div class="top-box"></div>
+<div class="punwrap">
+  <div id="brdheader" class="block">
+    <div class="box">
+      <div id="brdtitle" class="inbox">
+        <h1><a href=".">ai<span>sense</span></a></h1>
+        <div id="brddesc"></div>
+      </div>
+      <div id="brdmenu" class="inbox">
+        <ul id="nav">
+          <li id="navdashboard" class="isactive"><a href="#dashboard" class="nav-button active" data-v="dashboard">Index</a></li>
+          <li id="navkeys"><a href="#keys" class="nav-button" data-v="keys">API Keys</a></li>
+          <li id="navupstreams"><a href="#upstreams" class="nav-button" data-v="upstreams">Upstreams</a></li>
+          <li id="navcombos"><a href="#combos" class="nav-button" data-v="combos">Combos</a></li>
+          <li id="navusage"><a href="#usage" class="nav-button" data-v="usage">Usage</a></li>
+          <li id="navsettings"><a href="#settings" class="nav-button" data-v="settings">Settings</a></li>
+        </ul>
+      </div>
+      <div id="brdwelcome" class="inbox">
+        <p class="conl">You are logged in as <span id="panel-user">admin</span>. <a href="#logout" class="logout-link" onclick="event.preventDefault(); logout(this)">Log out</a></p>
+        <p class="conr"><span id="hdr-summary" class="dim">0 added · 0 keys · 0 proxies · 0 records</span></p>
+        <div class="clearer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="brdmain">
+    <div class="view active" id="v-dashboard">
+      <div class="block" id="dash-overview">
+        <h2><span>Overview</span></h2>
+        <div class="box"><div class="inbox"><div class="statsbox" id="stats-grid"></div></div></div>
+      </div>
+      <div class="blocktable" id="dash-cached-upstreams-block">
+        <h2>
+          <span class="conr">
+            <input type="text" id="cached-ups-search" class="h2-filter" placeholder="Filter cached..." aria-label="Filter cached upstreams" oninput="filterCachedUpstreams(this.value)" />
+            <span class="dim" id="cached-ups-count">0 cached</span>
+          </span>
+          <span>Cached Upstreams</span>
+          <div class="clearer"></div>
+        </h2>
+        <div class="box scrollbox">
+          <div class="inbox">
+            <table class="cached-table">
+              <thead>
+                <tr>
+                  <th class="c-model" scope="col">Model</th>
+                  <th class="c-up" scope="col">Upstream</th>
+                  <th class="c-keys" scope="col">API keys</th>
+                  <th class="c-time" scope="col">Cached</th>
+                </tr>
+              </thead>
+              <tbody id="cached-upstreams-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="block" id="dash-models-block">
+        <h2>
+          <span class="conr">
+            <input type="text" id="models-search" class="h2-filter" placeholder="Filter models..." aria-label="Filter models" oninput="filterDashboardModels(this.value)" />
+            <span class="dim" id="models-count">0 models</span>
+          </span>
+          <span>Models</span>
+          <span class="h2-tabs" id="models-mode" role="group" aria-label="Model list">
+            <button type="button" class="active" aria-pressed="true" data-mode="available" onclick="setDashboardModelMode('available')">Available</button><span class="sep" aria-hidden="true">|</span><button type="button" aria-pressed="false" data-mode="all" onclick="setDashboardModelMode('all')">All</button>
+          </span>
+          <div class="clearer"></div>
+        </h2>
+        <div class="box">
+          <div class="inbox">
+            <div id="available-models" class="models-container"></div>
+          </div>
+        </div>
+      </div>
+      <div class="block"><h2><span>Requests, last 14 days</span></h2><div class="box"><div class="inbox"><div class="bars" id="req-bars"></div></div></div></div>
+    </div>
+
+    <div class="view" id="v-keys">
+      <div class="blocktable">
+        <h2>
+          <span class="conr">
+            <span class="dim" id="keys-selected" hidden>0 selected</span>
+            <button type="button" class="primary" onclick="keyModal()">Create key</button>
+          </span>
+          <span>API Keys</span>
+          <div class="clearer"></div>
+        </h2>
+        <div class="box"><div class="inbox">
+          <table class="stack-table">
+            <thead>
+              <tr>
+                <th class="up-check" scope="col"><input type="checkbox" id="keys-select-all" aria-label="Select all" onchange="toggleAllKeys(this.checked)" /></th>
+                <th>Key</th>
+                <th class="up-status" scope="col">Status</th>
+                <th class="up-actions" scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="keys-body"></tbody>
+          </table>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="view" id="v-upstreams">
+      <div class="blocktable">
+        <h2>
+          <span class="conr">
+            <span class="dim" id="ups-discovery" role="status" aria-live="polite" hidden></span>
+            <span class="dim" id="ups-selected" hidden>0 selected</span>
+            <button type="button" id="up-test-all-btn" onclick="testAllUps()">Test all</button>
+            <button type="button" onclick="upMassEditModal()">Bulk edit</button>
+            <button type="button" class="primary" onclick="upModal()">Add</button>
+          </span>
+          <span>Upstreams</span>
+          <div class="clearer"></div>
+        </h2>
+        <div class="box"><div class="inbox">
+          <table class="stack-table">
+            <thead>
+              <tr>
+                <th class="up-check" scope="col"><input type="checkbox" id="ups-select-all" aria-label="Select all" onchange="toggleAllUps(this.checked)" /></th>
+                <th>Base URL</th>
+                <th class="up-status" scope="col">Status</th>
+                <th class="up-actions" scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="ups-body"></tbody>
+          </table>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="view" id="v-combos">
+      <div class="blocktable">
+        <h2>
+          <span class="conr"><button type="button" class="primary" onclick="comboModal()">Add</button></span>
+          <span>Combos</span>
+          <div class="clearer"></div>
+        </h2>
+        <div class="box"><div class="inbox">
+          <table class="stack-table">
+            <thead>
+              <tr>
+                <th class="combo-name" scope="col">Name</th>
+                <th>Models, in order</th>
+                <th class="up-actions" scope="col"><span class="sr-only">Actions</span></th>
+              </tr>
+            </thead>
+            <tbody id="combos-body"></tbody>
+          </table>
+        </div></div>
+      </div>
+    </div>
+
+    <div class="view" id="v-usage">
+      <div class="blocktable"><h2><span>Usage</span></h2><div class="box"><div class="inbox"><table><thead><tr><th>Day</th><th>Key</th><th>Model</th><th>Requests</th><th>Errors</th><th>Tokens in</th><th>Tokens out</th></tr></thead><tbody id="usage-body"></tbody></table></div></div></div>
+    </div>
+
+    <div class="view" id="v-settings">
+      <div class="blockform"><h2><span>Settings</span></h2><div class="box"><div class="inbox">
+        <div class="inform"><fieldset><legend>Listeners</legend><div class="infldset" id="listeners-form">
+          <div class="row">
+            <div class="field"><label class="check"><input type="checkbox" id="s-oai-on" /> Enable OpenAI listener</label></div>
+            <div class="field"><label>Port<br /><input type="number" id="s-oai-port" value="8080" /></label></div>
+            <div class="field"><label>Path<br /><input type="text" id="s-oai-path" class="mono" value="/v1" /></label></div>
+          </div>
+          <div class="row">
+            <div class="field"><label class="check"><input type="checkbox" id="s-anth-on" /> Enable Anthropic listener</label></div>
+            <div class="field"><label>Port<br /><input type="number" id="s-anth-port" value="8081" /></label></div>
+            <div class="field"><label>Path<br /><input type="text" id="s-anth-path" class="mono" value="/v1" /></label></div>
+          </div>
+          <div class="row">
+            <div class="field"><label>Port<br /><input type="number" id="s-web-port" value="8082" /></label></div>
+            <div class="field"><label>Path<br /><input type="text" id="s-web-path" class="mono" value="/" /></label></div>
+          </div>
+        </div></fieldset></div>
+
+        <div class="inform"><fieldset><legend>Panel access</legend><div class="infldset" style="padding:10px 0 12px">
+          <button type="button" onclick="openAdminCredsModal()">Edit credentials</button>
+          <button type="button" onclick="open2FAModal()">Manage 2FA</button>
+        </div></fieldset></div>
+
+        <div class="inform"><fieldset><legend>Hitchance</legend><div class="infldset">
+          <label class="check"><input type="checkbox" id="hc-enabled" /> Enable Hitchance</label>
+          <div class="row">
+            <div class="field"><label>Response start timeout, s<br /><input type="number" id="hc-start-timeout" min="1" max="120" /></label></div>
+            <div class="field"><label>Failures before a key is deleted<br /><input type="number" id="hc-confirmations" min="1" max="20" /></label></div>
+          </div>
+          <table class="hc-rules">
+            <thead><tr><th class="hc-num" scope="col">#</th><th class="hc-rule" scope="col">Rule</th><th scope="col">When the error has</th><th class="hc-then" scope="col">Then</th><th class="hc-ops" scope="col"><span class="sr-only">Actions</span></th></tr></thead>
+            <tbody id="hc-rules"></tbody>
+          </table>
+          <p class="hc-rule-links"><button type="button" onclick="editHitchanceRule(-1)">Add rule</button> <button type="button" onclick="resetHitchanceDefaults()">Load default rules</button></p>
+        </div></fieldset></div>
+
+        <div class="inform"><fieldset><legend>Upstream model lists</legend><div class="infldset">
+          <div class="md-refresh"><label class="check"><input type="checkbox" id="md-enabled" /> Refresh model lists every</label> <input type="number" id="md-minutes" value="60" min="1" aria-label="Minutes between refreshes" /> minutes</div>
+          <label class="check" title="Skip TLS certificate verification for upstream connections"><input type="checkbox" id="md-ignorecert" /> Ignore certificate errors</label>
+          <p><button type="button" id="md-refresh-btn" onclick="refreshModelsNow()">Refresh models now</button> <span id="discovery-progress" class="dim" role="status" hidden></span></p>
+        </div></fieldset></div>
+
+        <div class="inform"><fieldset><legend>Models</legend><div class="infldset">
+          <label class="check"><input type="checkbox" id="models-reasoning-variants" /> Prefer reasoning variants (-low, -medium, ...) when available</label>
+          <label class="check"><input type="checkbox" id="models-other-variants" /> Prefer -free, -exp and -turbo variants when available</label>
+          <label class="check"><input type="checkbox" id="models-fast-mode" /> Prefer -fast variants when available</label>
+          <p class="dim">Preferred variants are listed under their base model. A request for an exact variant is always kept.</p>
+        </div></fieldset></div>
+
+        <div class="inform"><fieldset><legend>Rotation proxies</legend><div class="infldset" style="padding:10px 0 12px">
+          <div class="row" style="align-items:center">
+            <div class="field"><label class="check"><input type="checkbox" id="p-enabled" /> Enable proxy rotation</label></div>
+            <div class="field" style="margin-left:12px">
+              <button type="button" onclick="openProxyManagerModal()">Manage proxies</button>
+              <span class="dim" id="p-status" style="margin-left:8px"></span>
+            </div>
+          </div>
+        </div></fieldset></div>
+
+        <div class="inform"><fieldset><legend>Statistics and logging</legend><div class="infldset">
+          <label class="check"><input type="checkbox" id="usage-enabled" /> Collect usage statistics</label>
+          <label class="check"><input type="checkbox" id="logging-enabled" /> Log full prompts and responses</label>
+          <p class="dim">The log is written to YYYY-MM-DD.log next to the config. Credentials are redacted; logs are never deleted automatically.</p>
+        </div></fieldset></div>
+
+        <p class="buttons" style="margin-top:14px"><button class="primary" id="save-settings">Save all settings</button></p>
+      </div></div></div>
+    </div>
+  </div>
+</div>
+<div class="end-box"></div>
+</div>
+
+<div class="modal-backdrop" id="overlay-combo" aria-labelledby="combo-modal-title">
+<div class="modal blockform">
+<h2><span id="combo-modal-title">Combo</span></h2>
+<div class="box">
+<div class="inbox">
+<input type="hidden" id="combo-original" />
+<div class="inform">
+<fieldset>
+<legend>Combo</legend>
+<div class="infldset">
+<label>Name<br /><input type="text" id="combo-name" class="mono" maxlength="80" placeholder="favourite" /></label>
+<p class="dim">Clients ask for this name instead of a model. It cannot contain spaces or commas.</p>
+<label>Models, tried in this order<br /><input type="text" id="combo-models" class="mono" placeholder="kimi-k3, glm-5.3, glm-5.3-flash" /></label>
+<label>Add a model<br /><select id="combo-pick" onchange="addComboModel()"></select></label>
+</div>
+</fieldset>
+</div>
+<p id="combo-error" class="form-error" role="alert"></p>
+<p class="buttons">
+<button type="button" onclick="closeModal('overlay-combo')">Cancel</button> <button type="button" class="primary" id="combo-save" onclick="saveCombo()">Save</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-key">
+<div class="modal blockform">
+<h2>
+<span>API key</span>
+</h2>
+<div class="box">
+<div class="inbox">
+<input type="hidden" id="k-id" />
+<div class="inform">
+<fieldset>
+<legend>Key details</legend>
+<div class="infldset">
+<label>Name<br />
+<input type="text" id="k-name" />
+</label>
+<label>Allowed models<br />
+<input type="text" id="k-models" class="mono" placeholder="*" />
+</label>
+<div class="row">
+<div class="field">
+<label>Requests / minute<br />
+<input type="number" id="k-rpm" value="0" min="0" />
+</label>
+</div>
+<div class="field">
+<label>Requests / day<br />
+<input type="number" id="k-rpd" value="0" min="0" />
+</label>
+</div>
+<div class="field">
+<label>Tokens / day<br />
+<input type="number" id="k-tpd" value="0" min="0" />
+</label>
+</div>
+</div>
+<label class="check">
+<input type="checkbox" id="k-enabled" checked="checked" /> Enabled</label>
+</div>
+</fieldset>
+</div>
+<p class="buttons">
+<button onclick="closeModal('overlay-key')">Cancel</button> <button class="primary" onclick="saveKey()">Save</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-up">
+<div class="modal wide blockform">
+<h2>
+<span id="up-modal-title">Upstream</span>
+</h2>
+<div class="box">
+<div class="inbox">
+<input type="hidden" id="u-id" />
+<div id="up-add-mode" class="row" style="margin-bottom:12px">
+<label>Mode <select id="up-add-select" onchange="setUpAddMode(this.value)"><option value="single">Single upstream</option><option value="batch">Batch import</option></select></label>
+</div>
+<div id="up-batch-fields" hidden>
+<label>Paste URLs with optional API keys<br /><textarea id="up-import-text" rows="8" class="mono" placeholder="https://127.0.0.1:443/v1 sk-1234&#10;https://no-auth.example/v1&#10;base_url: https://api.example/v1&#10;api_key: secret"></textarea></label>
+<p class="dim">One upstream per line: the URL, then its API key if it needs one. JSON, labels and Markdown lists work too; bad lines are skipped.</p>
+<div id="up-import-skipped"></div>
+</div>
+<div class="inform" id="up-single-fields">
+<fieldset>
+<legend>Upstream details</legend>
+<div class="infldset">
+<div class="row">
+<div class="field wide">
+<label>Base URL<br />
+<input type="text" id="u-base" class="mono" placeholder="https://api.openai.com/v1" />
+</label>
+</div>
+</div>
+<div class="row">
+<div class="field wide">
+<label>API keys (leave empty if the upstream needs none)</label>
+<div id="u-keys">
+</div>
+<p><button type="button" onclick="addUpstreamKey()">Add key</button></p>
+</div>
+</div>
+<label>Models<br />
+<input type="text" id="u-models" class="mono" placeholder="*" />
+</label>
+<label>Model aliases<br />
+<textarea id="u-model-aliases" class="mono" rows="7" placeholder="claude-opus-4.6 = claude-opus-4.6-thinking, opus4.6">
+</textarea>
+</label>
+<label>Blacklist models<br />
+<input type="text" id="u-blocked-models" class="mono" placeholder="gpt-4-32k" />
+</label>
+<div class="row" style="margin-top:6px">
+<div class="field">
+<label class="check">
+<input type="checkbox" id="u-proxy" /> Route through rotation proxies</label>
+</div>
+<div class="field">
+<label class="check">
+<input type="checkbox" id="u-enabled" checked="checked" /> Enabled</label>
+<label class="check"><input type="checkbox" id="u-hidden-invalid" /> Hide its models from the model list (requests still work)</label>
+</div>
+</div>
+</div>
+</fieldset>
+</div>
+<p class="buttons">
+<button onclick="closeModal('overlay-up')">Cancel</button> <button id="up-test-btn">Test</button> <button class="primary" id="up-save-btn" onclick="saveUp()">Save</button> <button class="primary" id="up-import-btn" onclick="importUpstream()" hidden>Import</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-up-mass">
+<div class="modal wide blockform">
+<h2>
+<span>Bulk upstream editor</span>
+</h2>
+<div class="box">
+<div class="inbox">
+<div class="note">
+<strong>Target</strong>
+<br />
+<label class="check">
+<input type="radio" name="me-scope" id="me-scope-selected" value="selected" /> Selected (<span id="me-selected-count">0</span>)</label>
+<label class="check">
+<input type="radio" name="me-scope" id="me-scope-all" value="all" /> All upstreams (<span id="me-all-count">0</span>)</label>
+</div>
+<div class="mass-setting">
+<label class="check">
+<input type="checkbox" class="me-apply" id="me-apply-models" /> Apply Models</label>
+<div class="row">
+<div class="field">
+<select id="me-models-mode">
+<option value="replace">replace</option>
+<option value="add">add</option>
+<option value="remove">remove</option>
+</select>
+</div>
+<div class="field wide">
+<input type="text" id="me-models" class="mono" />
+</div>
+</div>
+</div>
+<div class="mass-setting">
+<label class="check">
+<input type="checkbox" class="me-apply" id="me-apply-blocked" /> Apply Blacklist Models</label>
+<div class="row">
+<div class="field">
+<select id="me-blocked-mode">
+<option value="replace">replace</option>
+<option value="add">add</option>
+<option value="remove">remove</option>
+</select>
+</div>
+<div class="field wide">
+<input type="text" id="me-blocked" class="mono" />
+</div>
+</div>
+</div>
+<div class="mass-setting row">
+<div class="field">
+<label class="check">
+<input type="checkbox" class="me-apply" id="me-apply-enabled" /> Apply enabled</label>
+<select id="me-enabled">
+<option value="true">enabled</option>
+<option value="false">disabled</option>
+</select>
+</div>
+<div class="field">
+<label class="check">
+<input type="checkbox" class="me-apply" id="me-apply-proxy" /> Apply proxy routing</label>
+<select id="me-proxy">
+<option value="true">use rotation proxy</option>
+<option value="false">direct</option>
+</select>
+</div>
+</div>
+<div class="mass-setting">
+<label class="check">
+<input type="checkbox" class="me-apply" id="me-apply-base" /> Apply base URL</label>
+<input type="text" id="me-base" class="mono" />
+<label class="check">
+<input type="checkbox" class="me-apply" id="me-apply-keys" /> Replace API key pool</label>
+<textarea id="me-keys" class="mono" rows="4" placeholder="one key per line">
+</textarea>
+</div>
+<p class="buttons">
+<button onclick="closeModal('overlay-up-mass')">Cancel</button> <button class="primary" id="up-mass-save" onclick="saveUpMassEdit()">Apply changes</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-up-test" role="dialog" aria-modal="true" aria-labelledby="test-title">
+<div class="modal wide blockform"><h2 id="test-title">Test all enabled upstreams</h2><div class="box"><div class="inbox">
+<fieldset id="test-options"><legend>Optional tasks and checks</legend>
+<p>Without checks only a quick capability test runs. Results that cannot be verified never trigger a task.</p>
+<h3>Tasks</h3>
+<label class="check"><input type="checkbox" id="test-delete" onchange="updateTestTasks()" /> Delete invalid</label>
+<label class="check"><input type="checkbox" id="test-disable" onchange="updateTestTasks()" /> Disable invalid</label>
+<label class="check"><input type="checkbox" id="test-hide" onchange="updateTestTasks()" /> Hide models in invalid upstreams</label>
+<h3>Checks</h3>
+<label class="check"><input type="checkbox" id="test-models" /> List of models</label>
+<p class="dim">Asks every API key for its model list; an empty list counts as invalid.</p>
+<label class="check"><input type="checkbox" id="test-responses" /> Responses of models</label>
+<p class="note">Sends "hi" to every chat model with every API key and uses tokens. Models that keep failing are blocked for that key, and a key or upstream whose models all fail is removed, even without a task. Timeouts, rate limits and permission errors never remove anything.</p>
+</fieldset>
+<p id="test-modal-summary" role="status" aria-live="polite">Ready. Disabled upstreams are skipped.</p>
+<div class="tbl-wrap"><table><thead><tr><th>Upstream</th><th>Valid</th><th>Latency</th><th>Detail</th></tr></thead><tbody id="test-modal-body"></tbody></table></div>
+<p class="buttons"><button onclick="closeModal('overlay-up-test')">Close</button> <button id="test-cancel" onclick="cancelUpTests()" disabled>Cancel run</button> <button id="test-run" class="primary" onclick="runAllUps()">Run</button></p>
+</div></div></div>
+</div>
+
+<div class="modal-backdrop" id="overlay-admin-creds">
+<div class="modal blockform">
+<h2>
+<span>Panel credentials</span>
+</h2>
+<div class="box">
+<div class="inbox">
+<div class="inform">
+<fieldset>
+<legend>Session login</legend>
+<div class="infldset">
+<label>Username<br />
+<input type="text" id="admin-user" autocomplete="username" />
+</label>
+<label>New password<br />
+<input type="password" id="admin-password" autocomplete="new-password" placeholder="leave blank to keep current password" />
+</label>
+<p class="dim" style="margin-top:6px">Saving ends all sessions; log in again with the new credentials.</p>
+</div>
+</fieldset>
+</div>
+<p class="buttons">
+<button onclick="closeModal('overlay-admin-creds')">Cancel</button> <button class="primary" onclick="saveAdminCreds()">Save credentials</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-2fa" aria-labelledby="two-factor-title">
+<div class="modal blockform security-modal">
+<h2 id="two-factor-title">Two-factor authentication</h2><div class="box"><div class="inbox">
+<p id="two-factor-status" role="status" aria-live="polite">Loading...</p>
+<form id="two-factor-form">
+<fieldset id="two-factor-fields" disabled><legend>Authenticator Security</legend><div class="infldset">
+<label id="two-factor-password-label">Current password<br /><input id="two-factor-password" type="password" autocomplete="current-password" required /></label>
+<div id="two-factor-setup" hidden>
+<p>Add this manual key to your authenticator (TOTP, six digits, 30 seconds). Keep it private.</p>
+<code id="two-factor-secret"></code><button type="button" onclick="copyTwoFactor('two-factor-secret')">Copy key</button>
+<p>Alternatively, manually import this otpauth URL into your authenticator:</p>
+<code id="two-factor-url"></code><button type="button" onclick="copyTwoFactor('two-factor-url')">Copy otpauth URL</button>
+<p>Setup expires after 10 minutes. Synchronize your device and server clocks. After confirming, all sessions end. Wait for the NEXT authenticator code before logging in; this setup code cannot be reused.</p>
+</div>
+<label id="two-factor-code-label" hidden>Authenticator code<br /><input id="two-factor-code" type="text" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" /></label>
+<p id="two-factor-disable-note" hidden>Disabling 2FA ends all sessions and removes the authenticator requirement.</p>
+<p class="buttons"><button id="two-factor-submit" type="submit" class="primary">Start setup</button></p>
+</div></fieldset>
+</form>
+<p class="buttons"><button type="button" onclick="closeModal('overlay-2fa')">Close</button></p>
+</div></div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-hc-rule" aria-labelledby="hc-rule-title">
+<div class="modal wide blockform">
+<h2><span id="hc-rule-title">Hitchance rule</span></h2>
+<div class="box">
+<div class="inbox">
+<div class="inform">
+<fieldset>
+<legend>Rule</legend>
+<div class="infldset">
+<div class="row">
+<div class="field"><label>Rule ID<br /><input type="text" id="hc-rule-id" maxlength="80" /></label></div>
+<div class="field"><label>Category<br /><input type="text" id="hc-rule-category" list="hc-categories" maxlength="80" /></label></div>
+</div>
+<datalist id="hc-categories"><option value="auth"></option><option value="limit"></option><option value="model"></option><option value="outage"></option></datalist>
+</div>
+</fieldset>
+</div>
+<div class="inform">
+<fieldset>
+<legend>When the error has</legend>
+<div class="infldset">
+<label title="Does one filled field among status codes, error text and pattern suffice, or must every filled one match? Models and upstreams always apply.">Match<br /><select id="hc-rule-match"><option value="any">Any filled field</option><option value="all">Every filled field</option></select></label>
+<label>HTTP status codes<br /><input type="text" id="hc-rule-status" placeholder="429, 503" /></label>
+<label>Error text contains any of (one per line, case-insensitive)<br /><textarea id="hc-rule-messages" rows="4"></textarea></label>
+<label>Error text matches the pattern (RE2 regular expression)<br /><input type="text" id="hc-rule-pattern" class="mono" placeholder="(?i)weekly.*limit" /></label>
+<label>Only for these exact models (comma separated; empty means any model)<br /><input type="text" id="hc-rule-models" class="mono" /></label>
+<label>Only for these upstreams (none checked means any upstream)</label>
+<div id="hc-rule-upstreams" class="hc-upstream-list"></div>
+</div>
+</fieldset>
+</div>
+<div class="inform">
+<fieldset>
+<legend>Then</legend>
+<div class="infldset">
+<div class="row">
+<div class="field"><label>Action<br /><select id="hc-rule-action" onchange="describeHitchanceRule()"><option value="demote">Cool down</option><option value="quarantine">Quarantine until reset</option><option value="delete">Delete the API key</option><option value="ignore">Ignore, do not retry</option></select></label></div>
+<div class="field"><label>Applies to<br /><select id="hc-rule-scope" onchange="describeHitchanceRule()"><option value="key">API key</option><option value="model">API key + model</option><option value="endpoint">API base (endpoint)</option></select></label></div>
+<div class="field"><label>Cooldown, s<br /><input type="number" id="hc-rule-cooldown" min="0" max="2592000" oninput="describeHitchanceRule()" /></label></div>
+</div>
+<p id="hc-rule-summary" class="dim"></p>
+</div>
+</fieldset>
+</div>
+<p id="hc-rule-error" class="form-error" role="alert"></p>
+<p class="buttons">
+<button type="button" onclick="closeModal('overlay-hc-rule')">Cancel</button> <button type="button" class="primary" id="hc-rule-save" onclick="saveHitchanceRule()">Save rule</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-proxy-manager">
+<div class="modal wide blockform">
+<h2>
+<span>Rotation proxies</span>
+</h2>
+<div class="box">
+<div class="inbox">
+<div class="inform">
+<fieldset>
+<legend>Rotation proxies</legend>
+<div class="infldset">
+<label>Add proxies (one per line)<br />
+<textarea id="p-add" class="mono" rows="3" placeholder="socks5://user:pass@host:port&#10;http://host:port"></textarea>
+</label>
+<p><button type="button" id="p-check-btn" onclick="checkAndAddProxies()">Check and add working</button> <button type="button" id="p-add-btn" onclick="addProxies()">Add without checking</button> <span id="p-add-status" class="dim" role="status"></span></p>
+<div class="row" style="align-items:center;margin-bottom:8px;gap:8px">
+<div class="field" style="flex:1;min-width:140px">
+<input type="text" id="p-search" placeholder="Search proxies..." oninput="renderProxies()" style="width:100%" />
+</div>
+<div class="field" style="min-width:auto">
+<span class="dim" id="p-selected-cnt" style="margin-right:4px" hidden>0 selected</span>
+<button type="button" class="danger" onclick="removeSelectedProxies()">Remove</button> <button type="button" onclick="toggleSelectedProxies()">Toggle</button>
+</div>
+</div>
+<div style="margin-top:8px;overflow-x:auto">
+<table>
+<thead>
+<tr>
+<th style="width:28px">
+<input type="checkbox" id="p-select-all" onchange="toggleAllProxies(this.checked)" />
+</th>
+<th>Proxy</th>
+<th>Exit</th>
+<th style="width:90px">Latency</th>
+<th style="width:45px">
+</th>
+</tr>
+</thead>
+<tbody id="p-body">
+</tbody>
+</table>
+</div>
+</div>
+</fieldset>
+</div>
+<p class="buttons">
+<button onclick="closeModal('overlay-proxy-manager')">Close</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-proxy-creds">
+<div class="modal blockform">
+<h2>
+<span>Proxy credentials</span>
+</h2>
+<div class="box">
+<div class="inbox">
+<input type="hidden" id="p-creds-orig-url" />
+<div class="inform">
+<fieldset>
+<legend>Update credentials</legend>
+<div class="infldset">
+<div class="row">
+<div class="field wide">
+<label>Proxy target<br />
+<input type="text" id="p-creds-target" class="mono" readonly style="opacity:0.85" />
+</label>
+</div>
+</div>
+<div class="row">
+<div class="field">
+<label>Username<br />
+<input type="text" id="p-creds-user" class="mono" placeholder="leave empty if none" />
+</label>
+</div>
+<div class="field">
+<label>Password<br />
+<input type="password" id="p-creds-pass" class="mono" placeholder="leave empty if none" />
+</label>
+</div>
+</div>
+</div>
+</fieldset>
+</div>
+<p class="buttons">
+<button onclick="closeModal('overlay-proxy-creds')">Cancel</button> <button class="primary" onclick="saveProxyCreds()">Save credentials</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="modal-backdrop" id="overlay-confirm" aria-labelledby="confirm-title" aria-describedby="confirm-message">
+<div class="modal blockform">
+<h2><span id="confirm-title">Confirm</span></h2>
+<div class="box">
+<div class="inbox">
+<div class="inform">
+<p id="confirm-message"></p>
+</div>
+<p class="buttons">
+<button type="button" id="confirm-cancel" onclick="settleConfirm(false)">Cancel</button> <button type="button" id="confirm-ok" onclick="settleConfirm(true)">OK</button>
+</p>
+</div>
+</div>
+</div>
+</div>
+
+<div class="toast-stack" id="toast-stack" aria-live="polite"></div>
+<script>
+
+const $ = id => document.getElementById(id);
+let STATE = null;
+const ADMIN_BASE_PATH = document.querySelector('meta[name="admin-base-path"]').content === '/' ? '' : document.querySelector('meta[name="admin-base-path"]').content;
+let currentView = 'dashboard';
+const selectedUpstreams = new Set();
+const selectedKeys = new Set();
+const selectedProxies = new Set();
+let editingUpstreamModelAliases = null;
+let editingUpstreamOriginal = null;
+let UPSTREAM_HEALTH = {};
+let UPSTREAM_HEALTH_ERROR = false;
+let UPSTREAM_HEALTH_LOADING = false;
+let UPSTREAM_HEALTH_RECEIVED = false;
+let UPSTREAM_HEALTH_SIGNATURE = '';
+
+/* mount overlays inside .pun so Cobalt control styles (dark inputs, fonts) apply */
+(function(){
+  const host = document.getElementById('punaisense');
+  if(!host) return;
+  document.querySelectorAll('.modal-backdrop, #toast-stack').forEach(el => host.appendChild(el));
+  document.querySelectorAll('.modal-backdrop').forEach(o=>{
+    o.setAttribute('role', 'dialog');
+    o.setAttribute('aria-modal', 'true');
+    const box = o.querySelector('.modal');
+    if(box) box.tabIndex = -1;
+  });
+})();
+
+/* ---------- popups ---------- */
+// Every popup is an in-page modal anchored to the top of the site column. The most
+// recently opened one is stacked above the others; toasts sit above all modals.
+const MODAL_BASE_Z = 1000;
+let modalZ = MODAL_BASE_Z;
+const modalStack = [];
+const modalReturnFocus = {};
+function isModalOpen(id){ const o = $(id); return !!o && o.classList.contains('open'); }
+function syncModalLayers(){
+  const top = modalStack[modalStack.length-1];
+  modalStack.forEach(id=>{ $(id).inert = id !== top; });
+  const wrap = document.querySelector('.punwrap');
+  if(wrap) wrap.inert = modalStack.length > 0;
+  const lock = modalStack.length > 0;
+  if(lock !== document.body.classList.contains('modal-open')){
+    // Keep the page from shifting sideways when its scrollbar disappears under the lock.
+    document.body.style.paddingRight = lock ? Math.max(0, innerWidth - document.documentElement.clientWidth)+'px' : '';
+    document.body.classList.toggle('modal-open', lock);
+  }
+  if(!lock) modalZ = MODAL_BASE_Z;
+}
+function openModal(id){
+  const o = $(id);
+  if(!o) return;
+  const i = modalStack.indexOf(id);
+  if(i >= 0) modalStack.splice(i, 1);
+  else modalReturnFocus[id] = document.activeElement;
+  modalStack.push(id);
+  o.style.zIndex = String(++modalZ);
+  o.classList.add('open');
+  o.scrollTop = 0;
+  syncModalLayers();
+  const box = o.querySelector('.modal');
+  if(box && !o.contains(document.activeElement)) box.focus({preventScroll:true});
+}
+function hideModal(id){
+  const o = $(id);
+  if(!o) return;
+  o.classList.remove('open');
+  o.style.zIndex = '';
+  o.inert = false;
+  const i = modalStack.indexOf(id);
+  if(i >= 0) modalStack.splice(i, 1);
+  syncModalLayers();
+  const back = modalReturnFocus[id];
+  delete modalReturnFocus[id];
+  if(back && back.isConnected && typeof back.focus === 'function') back.focus({preventScroll:true});
+}
+document.addEventListener('keydown', e=>{
+  if(e.key !== 'Escape' || !modalStack.length) return;
+  e.preventDefault();
+  closeModal(modalStack[modalStack.length-1]);
+});
+
+let confirmResolve = null;
+function settleConfirm(ok){
+  const resolve = confirmResolve;
+  confirmResolve = null;
+  hideModal('overlay-confirm');
+  if(resolve) resolve(ok);
+}
+// In-page replacement for window.confirm(); resolves true only when OK is pressed.
+function uiConfirm(message, opts={}){
+  if(confirmResolve) settleConfirm(false);
+  $('confirm-title').textContent = opts.title || 'Confirm';
+  $('confirm-message').textContent = message;
+  $('confirm-ok').textContent = opts.ok || 'OK';
+  $('confirm-ok').classList.toggle('danger', !!opts.danger);
+  $('confirm-cancel').textContent = opts.cancel || 'Cancel';
+  const done = new Promise(resolve=>{ confirmResolve = resolve; });
+  openModal('overlay-confirm');
+  $('confirm-ok').focus({preventScroll:true});
+  return done;
+}
+
+function toast(msg, err=false){
+  const stack = $('toast-stack');
+  const el = document.createElement('div');
+  el.className = 'toast'+(err?' err':'');
+  el.textContent = msg;
+  el.title = 'Click to dismiss';
+  el.onclick = () => el.remove();
+  stack.appendChild(el);
+  while(stack.children.length > 5) stack.firstElementChild.remove();
+  setTimeout(() => el.remove(), err ? 6000 : 3200);
+}
+async function api(path, opts={}){
+  const init = {...opts, credentials:'same-origin'};
+  init.headers = new Headers(init.headers);
+  init.headers.set('Content-Type', 'application/json');
+  init.headers.set('X-Aisense-Request', '1');
+  const url = ADMIN_BASE_PATH+'/admin/api/'+path;
+  try{
+    const res = await fetch(url, init);
+    if(res.status === 401){ location.replace(ADMIN_BASE_PATH+'/'); throw new Error('Session expired. Please log in again.'); }
+    const raw = await res.text();
+    let body;
+    try{ body = raw ? JSON.parse(raw) : {}; }catch(e){ body = {error:`HTTP ${res.status}`, raw}; }
+    if(!res.ok && !body.error) body.error = `HTTP ${res.status}`;
+    return body;
+  }catch(error){
+    throw error;
+  }
+}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+// display name for a raw upstream model: strip provider prefix, collapse
+// -thinking into the base name, turn single-digit version segments into dots
+function dispModel(m){
+  let s = String(m||'').trim();
+  const i = s.lastIndexOf('/');
+  if(i>=0 && i<s.length-1) s = s.slice(i+1);
+  s = s.replace(/-thinking$/,'');
+  s = s.replace(/(^|[^0-9])([0-9])-([0-9])([^0-9]|$)/g,(a,b,c,d,e)=>b+c+'.'+d+e);
+  return s;
+}
+function dispModels(arr){
+  const seen={}, out=[];
+  for(const m of (arr||[])){
+    const d = dispModel(m);
+    if(!d || d==='*' || seen[d]) continue;
+    seen[d]=1; out.push(d);
+  }
+  return out;
+}
+
+/* ---------- nav ---------- */
+function syncUsageVisibility(){
+  const hidden = STATE?.usage?.enabled === false;
+  $('navusage').hidden = hidden;
+  $('v-usage').hidden = hidden;
+  if(hidden && currentView==='usage') go('dashboard', false);
+}
+function go(v, load=true){
+  if(v==='usage' && STATE?.usage?.enabled === false) v='dashboard';
+  if(!$('v-'+v)) v='dashboard';
+  currentView = v;
+  document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));
+  $('v-'+v).classList.add('active');
+  document.querySelectorAll('.nav-button').forEach(a=>{
+    const active = a.dataset.v === v;
+    a.classList.toggle('active', active);
+    if(a.parentElement) a.parentElement.classList.toggle('isactive', active);
+  });
+  history.replaceState(null,'','#'+v);
+  window.scrollTo(0,0);
+  const jobs = {dashboard:loadStats, keys:renderKeys, upstreams:renderUps, combos:renderCombos, usage:loadUsage, settings:fillSettings};
+  const j = jobs[v];
+  if(load && j){ try{ j().catch(()=>{}); }catch(e){} }
+  if(v==='upstreams') refreshUpstreamHealth().catch(()=>{});
+}
+document.querySelectorAll('.nav-button').forEach(a=>a.onclick=(e)=>{ e.preventDefault(); go(a.dataset.v); });
+
+/* ---------- state ---------- */
+async function refreshState(){
+  try{
+    STATE = await api('state');
+    DASHBOARD_CACHED_MODEL_NAMES = [];
+    DASHBOARD_CACHED_UPS_CACHE = [];
+    applyCachedUpstreamsFilter('', LAST_TTL_HOURS);
+    if(STATE.server && STATE.server.admin) $('panel-user').textContent = STATE.server.admin.username||'admin';
+    renderAll();
+  }catch(e){}
+}
+function sortModels(models){
+  return models.sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
+}
+function collectConfiguredModels(){
+  // Both dashboard modes use the same Go presentation helper as /models.
+  return { models: sortModels([...(STATE?.presentation_models || [])]), hasWildcard: false };
+}
+function collectCachedModels(){
+  return { models: sortModels([...DASHBOARD_CACHED_MODEL_NAMES]), hasWildcard: false };
+}
+function getDashboardModels(){
+  if(DASHBOARD_MODEL_MODE === 'all'){
+    return collectConfiguredModels();
+  }
+  return collectCachedModels();
+}
+
+let DASHBOARD_MODELS_CACHE = [];
+let DASHBOARD_MODEL_MODE = 'available';
+
+function renderDashboardModels(){
+  const el = $('available-models');
+  if(!el) return;
+  document.querySelectorAll('#models-mode button').forEach(btn=>{
+    const active = btn.dataset.mode === DASHBOARD_MODEL_MODE;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', String(active));
+  });
+  const { models, hasWildcard } = getDashboardModels();
+  DASHBOARD_MODELS_CACHE = models;
+  const filterInput = $('models-search');
+  const query = filterInput ? filterInput.value.trim().toLowerCase() : '';
+  applyDashboardModelsFilter(query, hasWildcard);
+}
+
+function setDashboardModelMode(mode){
+  DASHBOARD_MODEL_MODE = mode === 'all' ? 'all' : 'available';
+  renderDashboardModels();
+}
+
+function filterDashboardModels(query){
+  const { hasWildcard } = getDashboardModels();
+  applyDashboardModelsFilter((query || '').trim().toLowerCase(), hasWildcard);
+}
+
+function applyDashboardModelsFilter(query, hasWildcard){
+  const el = $('available-models');
+  const countEl = $('models-count');
+  if(!el) return;
+
+  const total = DASHBOARD_MODELS_CACHE.length;
+  let filtered = DASHBOARD_MODELS_CACHE;
+  if(query){
+    filtered = DASHBOARD_MODELS_CACHE.filter(m => m.toLowerCase().includes(query));
+  }
+
+  if(countEl){
+    if(query && filtered.length !== total){
+      countEl.textContent = `${filtered.length} / ${total} models`;
+    } else {
+      countEl.textContent = `${total} ${total === 1 ? 'model' : 'models'}`;
+    }
+  }
+
+  if(filtered.length === 0){
+    if(total === 0){
+      el.innerHTML = DASHBOARD_MODEL_MODE === 'all'
+        ? '<div class="empty-row" style="width:100%">No configured models yet</div>'
+        : '<div class="empty-row" style="width:100%">No cached models yet</div>';
+    } else {
+      el.innerHTML = '<div class="empty-row" style="width:100%">No models match filter</div>';
+    }
+    return;
+  }
+
+  el.innerHTML = filtered.map(m => `<button type="button" class="model-chip" data-copy="${esc(m)}" onclick="copyModelName(this.dataset.copy)" title="Click to copy">${esc(m)}</button>`).join('');
+}
+
+function copyModelName(name){
+  copyText(name, 'Model copied: ' + name);
+}
+
+function fallbackCopy(text, msg){
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand('copy');
+    toast(msg || 'Copied to the clipboard');
+  } catch(e) {
+    toast('Could not copy to the clipboard', true);
+  }
+  document.body.removeChild(ta);
+}
+
+// fmtRelTime returns a human-readable relative time string (e.g. "5 min ago").
+function fmtRelTime(isoStr){
+  if(!isoStr) return '';
+  const d = new Date(isoStr);
+  if(isNaN(d)) return '';
+  const diff = Math.round((Date.now() - d.getTime()) / 1000);
+  if(diff < 60) return diff + 's ago';
+  if(diff < 3600) return Math.floor(diff/60) + ' min ago';
+  if(diff < 86400) return Math.floor(diff/3600) + ' h ago';
+  return Math.floor(diff/86400) + ' d ago';
+}
+
+let DASHBOARD_CACHED_UPS_CACHE = [];
+let DASHBOARD_CACHED_MODEL_NAMES = [];
+let LAST_TTL_HOURS = 24;
+let cachedRoutesRequest = 0;
+
+async function renderCachedUpstreams(){
+  const el = $('cached-upstreams-body');
+  if(!el) return;
+  const state = STATE, requestVersion = ++cachedRoutesRequest;
+  // Fetch live data from the cached-routes API endpoint.
+  let routes = [];
+  let ttlHours = 24;
+  let liveUpstreams = null;
+  DASHBOARD_CACHED_MODEL_NAMES = [];
+  try {
+    const data = await api('cached-routes');
+    if(STATE!==state || requestVersion!==cachedRoutesRequest) return;
+    routes = data.routes || [];
+    liveUpstreams = data.upstreams || null;
+    DASHBOARD_CACHED_MODEL_NAMES = data.presentation_models || [];
+    ttlHours = data.ttl_hours || 24;
+  } catch(e) {
+    // Silently fall through to show empty state.
+  }
+  if(STATE!==state || requestVersion!==cachedRoutesRequest) return;
+  LAST_TTL_HOURS = ttlHours;
+  // Use the upstream snapshot returned with these routes. The page's initial
+  // STATE can be stale after keys or upstreams are changed by live traffic.
+  const byID = {};
+  for(const u of (liveUpstreams || (STATE && STATE.upstreams) || [])) byID[u.id] = u;
+
+  DASHBOARD_CACHED_UPS_CACHE = routes
+    .map(r => {
+      const u = byID[r.upstream_id];
+      if(!u || !u.enabled || u.hidden_invalid) return null;
+      return { model: r.model, upstream: u, cachedAt: r.cached_at };
+    })
+    .filter(Boolean)
+    .sort((a, b) => a.model.localeCompare(b.model, undefined, { numeric: true, sensitivity: 'base' }));
+
+  const filterInput = $('cached-ups-search');
+  const query = filterInput ? filterInput.value.trim().toLowerCase() : '';
+  applyCachedUpstreamsFilter(query, ttlHours);
+  if(DASHBOARD_MODEL_MODE === 'available') renderDashboardModels();
+}
+
+function filterCachedUpstreams(query){
+  applyCachedUpstreamsFilter((query || '').trim().toLowerCase(), LAST_TTL_HOURS);
+}
+
+function applyCachedUpstreamsFilter(query, ttlHours){
+  const el = $('cached-upstreams-body');
+  const countEl = $('cached-ups-count');
+  if(!el) return;
+
+  const total = DASHBOARD_CACHED_UPS_CACHE.length;
+  let filtered = DASHBOARD_CACHED_UPS_CACHE;
+  if(query){
+    filtered = DASHBOARD_CACHED_UPS_CACHE.filter(item => {
+      const mMatch = item.model.toLowerCase().includes(query);
+      const uBaseMatch = (item.upstream.base_url || '').toLowerCase().includes(query);
+      const uKeyMatch = (item.upstream.api_keys || []).some(k => k.toLowerCase().includes(query));
+      return mMatch || uBaseMatch || uKeyMatch;
+    });
+  }
+
+  if(countEl){
+    if(query && filtered.length !== total){
+      countEl.textContent = `${filtered.length} / ${total} cached`;
+    } else {
+      countEl.textContent = `${total} ${total === 1 ? 'cached' : 'cached'} · TTL ${ttlHours || 24}h`;
+    }
+  }
+
+  if(filtered.length === 0){
+    if(total === 0){
+      el.innerHTML = '<tr><td colspan="4" class="empty-row">No cached upstreams yet — upstreams are cached after a model is requested</td></tr>';
+    } else {
+      el.innerHTML = '<tr><td colspan="4" class="empty-row">No cached upstreams match filter</td></tr>';
+    }
+    return;
+  }
+
+  el.innerHTML = filtered.map(item => {
+    const m = item.model;
+    const u = item.upstream;
+    const keys = u.api_keys || [];
+    const keysDisplay = keys.length
+      ? keys.map(k => `<button type="button" class="key-pill clickable" data-copy="${esc(k)}" onclick="copyText(this.dataset.copy, 'API key copied')" title="Click to copy API key">${esc(maskKeyShort(k))}</button>`).join('')
+      : '<span class="dim">no key</span>';
+    const cachedTitle = item.cachedAt ? ` title="Cached at ${esc(fmtTime(item.cachedAt))}"` : '';
+
+    return `<tr>
+      <td class="c-model"><button type="button" class="linkbtn" data-copy="${esc(m)}" onclick="copyModelName(this.dataset.copy)" title="Click to copy">${esc(m)}</button></td>
+      <td class="c-up">${esc(u.base_url)}</td>
+      <td class="c-keys">${keysDisplay}</td>
+      <td class="c-time"${cachedTitle}>${esc(fmtRelTime(item.cachedAt)) || '—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderAll(){
+  syncUsageVisibility();
+  renderKeys(); renderUps(); renderCombos(); fillSettings(); renderDashboardModels();
+  const n = (count, one, many) => `${count} ${count === 1 ? one : many}`;
+  $('hdr-summary').textContent = [n((STATE.upstreams||[]).length, 'upstream', 'upstreams'), n((STATE.api_keys||[]).length, 'API key', 'API keys'), n(((STATE.proxies||{}).list||[]).length, 'proxy', 'proxies')].join(' · ');
+  const jobs = {dashboard:loadStats, usage:loadUsage};
+  (jobs[currentView]||(()=>Promise.resolve()))().catch(()=>{});
+}
+
+/* ================= DASHBOARD ================= */
+
+async function loadStats(){
+  renderDashboardModels();
+  // Fetch cached routes (non-blocking; updates table asynchronously).
+  renderCachedUpstreams().catch(()=>{});
+  if(STATE && STATE.usage && STATE.usage.enabled === false){
+    $('stats-grid').innerHTML = '<p>Statistics collection is disabled. Enable it in Settings → Statistics.</p>';
+    $('req-bars').innerHTML = '<div class="empty-row" style="width:100%">Statistics collection is disabled.</div>';
+    return;
+  }
+  const s = await api('stats');
+  const num = v => (+v || 0).toLocaleString();
+  const requests = +s.requests || 0, errors = +s.errors || 0;
+  const tokensIn = +s.tokens_in || 0, tokensOut = +s.tokens_out || 0;
+  const errorRate = requests ? (errors / requests * 100).toFixed(errors / requests < 0.1 ? 1 : 0) + '%' : '0%';
+  const line = (label, value) => `<dd><span>${esc(label)}: <strong>${esc(value)}</strong></span></dd>`;
+  $('stats-grid').innerHTML = `
+    <dl class="conl">
+      <dt><strong>Requests</strong></dt>
+      ${line('Total requests', num(requests))}
+      ${line('Failed requests', num(errors))}
+      ${line('Error rate', errorRate)}
+    </dl>
+    <dl class="conr">
+      <dt><strong>Tokens</strong></dt>
+      ${line('Input tokens', num(tokensIn))}
+      ${line('Output tokens', num(tokensOut))}
+      ${line('Total tokens', num(tokensIn + tokensOut))}
+    </dl>
+    <div class="clearer"></div>`;
+
+  const recs = await api('usage');
+  const hasUsage = (recs.records||[]).some(r => r.requests > 0) || (s.requests > 0);
+  if(!hasUsage){
+    $('req-bars').innerHTML = '<div class="empty-row" style="width:100%">No usage recorded yet</div>';
+    return;
+  }
+  const days = {};
+  const today = new Date();
+  for(let i=13;i>=0;i--){
+    days[new Date(today.getTime()-i*864e5).toISOString().slice(0,10)]=0;
+  }
+  (recs.records||[]).forEach(r=>{ if(days[r.day]!==undefined) days[r.day]+=r.requests; });
+  const vals = Object.entries(days);
+  const max = Math.max(1,...vals.map(v=>v[1]));
+  $('req-bars').innerHTML = vals.map(([d,n])=>{
+    const h = Math.max(3, Math.round(n/max*100));
+    const color = n===0 ? 'rgb(79,79,77)' : 'rgb(149,184,6)';
+    return `<div title="${d}: ${n} req" style="flex:1;min-width:4px;height:${h}%;background:${color};border-radius:2px 2px 0 0"></div>`;
+  }).join('');
+}
+
+/* ================= KEYS ================= */
+function renderKeys(){
+  if(!STATE) return;
+  const keys = STATE.api_keys||[];
+  const liveIDs = new Set(keys.map(k=>k.id));
+  [...selectedKeys].forEach(id=>{ if(!liveIDs.has(id)) selectedKeys.delete(id); });
+
+  $('keys-body').innerHTML = keys.map(k=>{
+    const idArg = JSON.stringify(k.id).replaceAll("'","&#39;");
+    const allowed = k.allowed_models||[];
+    const modelsText = (!allowed.length || (allowed.length === 1 && allowed[0] === '*'))
+      ? `<span class="dim" title="All models (*)">all models</span>`
+      : `<span class="dim" title="${esc(allowed.join(', '))}">${allowed.length} ${allowed.length===1?'model':'models'}</span>`;
+    const limits = [];
+    if(k.rpm) limits.push(`${k.rpm} req/min`);
+    if(k.rpd) limits.push(`${k.rpd} req/day`);
+    if(k.tpd) limits.push(`${k.tpd} tokens/day`);
+    const limitsText = limits.length ? `<span class="dim">${esc(limits.join(' · '))}</span>` : '';
+    const lastUsed = k.last_used ? `<span class="dim" title="Last used">${esc(fmtTime(k.last_used))}</span>` : '';
+
+    return `<tr>
+      <td class="up-check"><input type="checkbox" ${selectedKeys.has(k.id)?'checked':''} onchange='toggleKeySelection(${idArg},this.checked)' aria-label="Select ${esc(k.name)}"></td>
+      <td class="key-cell"><strong>${esc(k.name)}</strong> <button type="button" class="key-pill clickable" title="Click to copy the API key" onclick='copyKey(${idArg})'>${esc(maskKeyShort(k.key))}</button> ${modelsText} ${limitsText} ${lastUsed}</td>
+      <td class="up-status"><span class="badge ${k.enabled?'on':'off'}">${k.enabled?'Enabled':'Disabled'}</span></td>
+      <td class="up-actions"><button type="button" onclick='keyModal(${JSON.stringify(k).replaceAll("'","&#39;")})'>edit</button><button type="button" class="danger" onclick='delKey(${idArg})'>del</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="4" class="empty-row">No API keys yet</td></tr>';
+  updateKeySelectionUI(keys);
+}
+function toggleKeySelection(id, checked){
+  checked ? selectedKeys.add(id) : selectedKeys.delete(id);
+  updateKeySelectionUI((STATE&&STATE.api_keys)||[]);
+}
+function toggleAllKeys(checked){
+  const keys = (STATE&&STATE.api_keys)||[];
+  if(checked) keys.forEach(k=>selectedKeys.add(k.id));
+  else selectedKeys.clear();
+  renderKeys();
+}
+function updateKeySelectionUI(keys){
+  const count = selectedKeys.size;
+  $('keys-selected').textContent = count+' selected';
+  $('keys-selected').hidden = !count;
+  const all = $('keys-select-all');
+  if(all){
+    all.checked = keys.length>0 && count===keys.length;
+    all.indeterminate = count>0 && count<keys.length;
+  }
+}
+function maskKeyShort(k){
+  if(!k) return '';
+  if(k.startsWith('sk-')){
+    return k.slice(0, 11);
+  }
+  return k.length > 11 ? k.slice(0, 11) : k;
+}
+function copyText(t, msg){
+  if(!t) return;
+  const label = msg || 'copied to clipboard';
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(t).then(()=>toast(label)).catch(()=>fallbackCopy(t, label));
+  } else {
+    fallbackCopy(t, label);
+  }
+}
+function copyKey(id){
+  const k = (STATE.api_keys||[]).find(x=>x.id===id);
+  if(!k) return;
+  copyText(k.key, 'API key copied');
+}
+function keyModal(k){
+  $('overlay-key').querySelector('h2 span').textContent = k?'Edit key':'New key';
+  $('k-id').value = k?k.id:'';
+  $('k-name').value = k?k.name:'';
+  $('k-models').value = k?(k.allowed_models||[]).join(', '):'';
+  $('k-rpm').value = k?k.rpm:0;
+  $('k-rpd').value = k?k.rpd:0;
+  $('k-tpd').value = k?k.tpd:0;
+  $('k-enabled').checked = k?k.enabled:true;
+  openModal('overlay-key');
+}
+async function saveKey(){
+  const body = {
+    id: $('k-id').value||undefined,
+    name: $('k-name').value.trim(),
+    allowed_models: $('k-models').value.split(',').map(s=>s.trim()).filter(Boolean),
+    rpm: +$('k-rpm').value||0, rpd: +$('k-rpd').value||0, tpd: +$('k-tpd').value||0,
+    enabled: $('k-enabled').checked,
+  };
+  if(!body.name){ toast('Name is required', true); return; }
+  try{
+    const r = await api('key?mode='+($('k-id').value?'edit':'create'), {method:'POST', body:JSON.stringify(body)});
+    if(r.error){ toast(r.error, true); return; }
+    closeModal('overlay-key');
+    if(r.created) toast('Key created: '+r.key.key);
+    else toast('Key saved');
+    await refreshState();
+  }catch(e){ toast(e.message||'Key save failed', true); }
+}
+async function delKey(id){
+  if(!await uiConfirm('Delete API key '+id+'?', {title:'Delete key', ok:'Delete', danger:true})) return;
+  try{
+    const r = await api('key?id='+encodeURIComponent(id), {method:'DELETE'});
+    if(r.error){ toast(r.error, true); return; }
+    toast('Key deleted'); await refreshState();
+  }catch(e){ toast(e.message||'Key delete failed', true); }
+}
+
+/* ================= COMBOS ================= */
+// A combo is a model name the user made up; its models are tried in order.
+function renderCombos(){
+  if(!STATE) return;
+  const combos = STATE.combos||[];
+  $('combos-body').innerHTML = combos.map(c=>{
+    const models = c.models||[];
+    const nameArg = esc(JSON.stringify(c.name));
+    const chain = models.map(m=>`<span class="mono">${esc(m)}</span>`).join('<span class="combo-arrow"> &#8594; </span>');
+    return `<tr>
+      <td class="combo-name"><strong class="mono">${esc(c.name)}</strong></td>
+      <td>${chain||'<span class="dim">no models</span>'}</td>
+      <td class="up-actions"><button type="button" onclick='comboModal(${esc(JSON.stringify(c))})'>edit</button><button type="button" class="danger" onclick='delCombo(${nameArg})'>del</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="3" class="empty-row">No combos yet</td></tr>';
+}
+function comboModal(combo){
+  $('combo-modal-title').textContent = combo ? 'Edit combo ' + combo.name : 'Add combo';
+  $('combo-original').value = combo ? combo.name : '';
+  $('combo-name').value = combo ? combo.name : '';
+  $('combo-models').value = combo ? (combo.models||[]).join(', ') : '';
+  $('combo-error').textContent = '';
+  const known = [...new Set([...(STATE.presentation_models||[])])];
+  $('combo-pick').innerHTML = '<option value="">Pick from the known models</option>' + known.map(m=>`<option value="${esc(m)}">${esc(m)}</option>`).join('');
+  openModal('overlay-combo');
+}
+function addComboModel(){
+  const pick = $('combo-pick'), model = pick.value;
+  pick.value = '';
+  if(!model) return;
+  const models = comboModelList($('combo-models').value);
+  if(!models.some(m=>m.toLowerCase()===model.toLowerCase())) models.push(model);
+  $('combo-models').value = models.join(', ');
+}
+function comboModelList(text){
+  return String(text||'').split(',').map(s=>s.trim()).filter(Boolean);
+}
+// Friendly checks for the mistakes the server would reject anyway.
+function comboProblem(name, models){
+  if(!name) return 'Give the combo a name.';
+  if(/[\s,]/.test(name)) return 'The name cannot contain spaces or commas.';
+  if(!models.length) return 'Add at least one model.';
+  if(models.some(m=>m.toLowerCase()===name.toLowerCase())) return 'A combo cannot contain itself.';
+  return '';
+}
+async function saveCombo(){
+  const name = $('combo-name').value.trim(), models = comboModelList($('combo-models').value);
+  const problem = comboProblem(name, models);
+  if(problem){ $('combo-error').textContent = problem; return; }
+  const btn = $('combo-save');
+  btn.disabled = true;
+  try{
+    const body = {name, models};
+    if($('combo-original').value) body.original_name = $('combo-original').value;
+    const r = await api('combo', {method:'POST', body:JSON.stringify(body)});
+    if(r.error){ $('combo-error').textContent = r.error; return; }
+    closeModal('overlay-combo');
+    toast('Combo saved');
+    await refreshState();
+  }catch(e){ $('combo-error').textContent = e.message||'Combo save failed'; }
+  finally{ btn.disabled = false; }
+}
+async function delCombo(name){
+  if(!await uiConfirm('Delete combo ' + name + '? Requests asking for this model name stop working.', {title:'Delete combo', ok:'Delete', danger:true})) return;
+  try{
+    const r = await api('combo?name='+encodeURIComponent(name), {method:'DELETE'});
+    if(r.error){ toast(r.error, true); return; }
+    toast('Combo deleted');
+    await refreshState();
+  }catch(e){ toast(e.message||'Combo delete failed', true); }
+}
+
+/* ================= UPSTREAMS ================= */
+function getProxyTag(u){
+  if(!u.use_proxy) return '';
+  let label = 'proxy';
+  if(STATE && STATE.proxies && STATE.proxies.list && STATE.proxies.list.length){
+    const p = STATE.proxies.list.find(x=>x.working) || STATE.proxies.list[0];
+    if(p && p.url){
+      try{
+        const parsed = new URL(p.url.includes('://') ? p.url : 'http://' + p.url);
+        label = parsed.host || p.url;
+      }catch(e){
+        label = p.url.replace(/^.*:\/\//, '');
+      }
+    }
+  }
+  return ` <span class="proxy-tag" title="Routed through the rotation proxies">via ${esc(label)}</span>`;
+}
+
+function upstreamHealthView(up){
+  const record = UPSTREAM_HEALTH[up.id] || {};
+  const status = !up.enabled ? 'disabled' : UPSTREAM_HEALTH_ERROR ? 'error' : record.status || (UPSTREAM_HEALTH_RECEIVED ? 'error' : 'pending');
+  const labels = {
+    available:['Available','on',0,'A model request succeeded recently.'],
+    ready:['Ready','warn',1,'Requests can be sent; no model response has been confirmed yet.'],
+    degraded:['Degraded','warn',2,'Some API keys or model routes are restricted; the rest are still used.'],
+    unavailable:['Unavailable','off',3,'No usable route: check the API base, the API keys and the models.'],
+    disabled:['Disabled','dim',4,'This upstream is turned off in its settings.'],
+    error:['No data','warn',1,'The health status could not be refreshed. This is not a test result.'],
+    pending:['Loading','dim',1,'Waiting for health data.'],
+    unknown:['Unknown','warn',1,'The server did not report readiness; update aisense.']
+  };
+  const [label,className,rank,title] = labels[status] || labels.error;
+  return {record,status,label,className,rank,title};
+}
+
+// Upstreams whose API key or model list is expanded; kept across the health refresh.
+const UP_OPEN_KEYS = new Set(), UP_OPEN_MODELS = new Set();
+function fmtTimeLeft(until){
+  const s = Math.ceil((Date.parse(until) - Date.now()) / 1000);
+  if(!(s > 0)) return '';
+  if(s < 100) return s + 's';
+  if(s < 6000) return Math.round(s / 60) + 'm';
+  if(s < 172800) return Math.round(s / 3600) + 'h';
+  return Math.round(s / 86400) + 'd';
+}
+// One Hitchance restriction, e.g. "cooling down 42s (rate_limit, rule rate-limit), 3 failures".
+function hitchanceStateText(st){
+  const left = fmtTimeLeft(st.until);
+  const what = st.action === 'quarantine' ? 'quarantined until reset' : left ? 'cooling down ' + left : 'cooling down';
+  const why = [st.category, st.rule_id && st.rule_id !== st.category ? 'rule ' + st.rule_id : ''].filter(Boolean).join(', ');
+  return what + (why ? ` (${why})` : '') + (st.failures > 1 ? `, ${st.failures} failures` : '');
+}
+function hitchanceModelsText(models){
+  const entries = Object.entries(models || {});
+  if(!entries.length) return '';
+  return `${entries.length} ${entries.length === 1 ? 'model' : 'models'} limited: ` + entries.slice(0, 3).map(([model, st]) => `${model} ${hitchanceStateText(st)}`).join('; ') + (entries.length > 3 ? `; ${entries.length - 3} more` : '');
+}
+// Hit chance: the share of the recent requests through an API base or API key that succeeded.
+function hitText(chance, attempts){
+  if(chance == null || !attempts) return {text:'--%', level:'none', title:'No requests yet'};
+  const pct = Math.round(chance * 100);
+  return {text: pct + '%', level: pct >= 80 ? 'good' : pct >= 40 ? 'mid' : 'bad', title: `${pct}% of the last ${attempts} ${attempts === 1 ? 'request' : 'requests'} succeeded`};
+}
+function hitHtml(chance, attempts, label){
+  const h = hitText(chance, attempts);
+  return `<span class="hit hit-${h.level}" title="${esc(label + ': ' + h.title)}">${h.text}</span>`;
+}
+// Hitchance state per scope. The API base (endpoint) and each API key are separate scopes;
+// only restricted ones are listed unless all is set.
+function upstreamHitchanceLines(up, health, all){
+  const level = st => st.action === 'quarantine' ? 'off' : 'warn';
+  const lines = [], base = [];
+  if(health.endpoint_state) base.push(hitchanceStateText(health.endpoint_state));
+  else if(health.cooldown_until && fmtTimeLeft(health.cooldown_until)) base.push('cooling down ' + fmtTimeLeft(health.cooldown_until) + (health.last_error ? ` (${health.last_error})` : ''));
+  if(health.endpoint_models) base.push(hitchanceModelsText(health.endpoint_models));
+  if(base.length || all) lines.push({scope:'API base', key:'', chance:health.hit_chance, attempts:health.attempts, level: health.endpoint_state ? level(health.endpoint_state) : base.length ? 'warn' : 'on', text: base.join('; ') || 'OK'});
+  const keys = up.api_keys || [];
+  for(const k of health.keys || []){
+    const parts = [];
+    if(k.state) parts.push(hitchanceStateText(k.state));
+    if(k.models) parts.push(hitchanceModelsText(k.models));
+    if(k.blocked_models) parts.push(`${k.blocked_models} ${k.blocked_models === 1 ? 'model' : 'models'} blacklisted by tests`);
+    if(!parts.length && !all) continue;
+    lines.push({scope:`API key ${k.index + 1}`, key: keys[k.index] || '', chance:k.hit_chance, attempts:k.attempts, level: k.state ? level(k.state) : parts.length ? 'warn' : 'on', text: parts.join('; ') || 'OK'});
+  }
+  return lines;
+}
+function upKeysDetail(u, health){
+  let lines = upstreamHitchanceLines(u, health, true);
+  if(!u.enabled || !health.keys){
+    const text = u.enabled ? 'no health data yet' : 'upstream disabled';
+    lines = [{scope:'API base', key:'', level:'dim', text}, ...(u.api_keys || []).map((key, i) => ({scope:`API key ${i + 1}`, key, level:'dim', text}))];
+  }
+  const rows = lines.map(l => `<tr>
+      <td class="up-scope">${esc(l.scope)}</td>
+      <td class="mono">${l.key ? `<button type="button" class="key-pill clickable" data-copy="${esc(l.key)}" onclick="copyText(this.dataset.copy,'API key copied')" title="Click to copy the API key">${esc(maskKeyShort(l.key))}</button>` : esc(u.base_url)}</td>
+      <td class="up-hit">${hitHtml(l.chance, l.attempts, l.scope)}</td>
+      <td class="hc-${l.level}">${esc(l.text)}</td>
+    </tr>`).join('');
+  return `<tr class="up-detail"><td></td><td colspan="3"><table class="up-scopes"><tbody>${rows}</tbody></table></td></tr>`;
+}
+function upModelsDetail(models){
+  const LIMIT = 400;
+  const chips = models.slice(0, LIMIT).map(m => `<button type="button" class="model-chip" data-copy="${esc(m)}" onclick="copyModelName(this.dataset.copy)" title="Click to copy">${esc(m)}</button>`).join('');
+  return `<tr class="up-detail"><td></td><td colspan="3"><div class="models-container">${chips || '<span class="dim">No models in the catalog yet.</span>'}${models.length > LIMIT ? `<span class="dim">+${models.length - LIMIT} more</span>` : ''}</div></td></tr>`;
+}
+
+function renderUps(){
+  if(!STATE) return;
+  const ups = (STATE.upstreams||[]).slice();
+  ups.sort((a,b)=>{
+    const ah = upstreamHealthView(a), bh = upstreamHealthView(b);
+    return ah.rank-bh.rank ||
+      (+a.priority||10)-(+b.priority||10) || (+ah.record.in_flight||0)-(+bh.record.in_flight||0) || String(a.id).localeCompare(String(b.id));
+  });
+  const liveIDs = new Set(ups.map(u=>u.id));
+  [...selectedUpstreams].forEach(id=>{ if(!liveIDs.has(id)) selectedUpstreams.delete(id); });
+  for(const open of [UP_OPEN_KEYS, UP_OPEN_MODELS]) for(const id of [...open]) if(!liveIDs.has(id)) open.delete(id);
+  $('ups-body').innerHTML = ups.map(u=>{
+    const idArg = JSON.stringify(u.id).replaceAll("'","&#39;");
+    const keyCount = (u.api_keys||[]).length;
+    const models = (u.models||[]).filter(m=>m!=='*');
+    const failureStatus = (u.models_refresh_error||'').match(/HTTP \d{3}/)?.[0] || (/deadline|timeout/i.test(u.models_refresh_error||'')?'timeout':'request or catalog error');
+    const catalogStatus = !u.enabled ? 'Discovery disabled' : u.models_refresh_error ? `Discovery failed: ${failureStatus}; previous catalog retained` : models.length ? 'Configured catalog (not an inference health check)' : 'Catalog not discovered';
+    const keysOpen = UP_OPEN_KEYS.has(u.id), modelsOpen = UP_OPEN_MODELS.has(u.id);
+    const keysToggle = keyCount ? `<button type="button" class="up-toggle" aria-expanded="${keysOpen}" onclick='toggleUpKeys(${idArg})' title="Show the Hitchance state of the API base and each API key">${keyCount} ${keyCount===1?'key':'keys'}</button>` : '<span class="dim">no key</span>';
+    const modelsToggle = `<button type="button" class="up-toggle" aria-expanded="${modelsOpen}" onclick='toggleUpModels(${idArg})' title="${esc(catalogStatus)}">${models.length} ${models.length===1?'model':'models'}</button>${u.enabled && u.models_refresh_error ? ' <span class="hc-warn">discovery failed</span>' : ''}`;
+    const view = upstreamHealthView(u), health = view.record;
+    const unavailable = (health.unavailable_models||[]).map(x=>x.model).slice(0,12);
+    const healthTitle = [view.title, health.status_reason, health.last_error, unavailable.length?('Limited models: '+unavailable.join(', ')):'', health.cooldown_until?('Retry after '+fmtTime(health.cooldown_until)):'', health.last_success_at?('Last successful request: '+fmtTime(health.last_success_at)):''].filter(Boolean).join(' · ');
+    const inFlight = (+health.in_flight||0)>0 ? `<div class="dim" title="Requests in progress">${health.in_flight} active</div>` : '';
+    const lines = u.enabled && !keysOpen ? upstreamHitchanceLines(u, health, false) : [];
+    const hitchance = lines.map(l => `<div class="hc-line hc-${l.level}"><span class="hc-scope">${esc(l.scope)}</span>${l.key ? ` <span class="mono">${esc(maskKeyShort(l.key))}</span>` : ''}: ${esc(l.text)}</div>`).join('');
+    const baseHit = u.enabled ? ' ' + hitHtml(health.hit_chance, health.attempts, 'API base') : '';
+    const keyHits = !keysOpen && (health.keys||[]).some(k => k.attempts) ? ` <span class="key-hits">(${health.keys.slice(0, 8).map(k => hitHtml(k.hit_chance, k.attempts, `API key ${k.index + 1}`)).join('<span class="sep"> · </span>')}${health.keys.length > 8 ? `<span class="sep"> +${health.keys.length - 8} more</span>` : ''})</span>` : '';
+
+    let html = `<tr>
+      <td class="up-check"><input type="checkbox" ${selectedUpstreams.has(u.id)?'checked':''} onchange='toggleUpSelection(${idArg},this.checked)' aria-label="Select ${esc(u.name||u.id)}"></td>
+      <td><span class="up-url mono">${esc(u.base_url)}</span>${baseHit}${getProxyTag(u)} ${keysToggle}${keyHits} ${modelsToggle}${hitchance}</td>
+      <td class="up-status"><span class="badge ${view.className}" title="${esc(healthTitle)}">${esc(view.label)}</span>${inFlight}</td>
+      <td class="up-actions"><button type="button" onclick='upModal(${JSON.stringify(u).replaceAll("'","&#39;")})'>edit</button><button type="button" onclick='testUp(${idArg})'>test</button><button type="button" title="Lift the Hitchance cooldowns and quarantines of this upstream" onclick='resetHitchanceHealth(${idArg})'>reset health</button><button type="button" class="danger" onclick='delUp(${idArg})'>del</button></td>
+    </tr>`;
+    if(keysOpen) html += upKeysDetail(u, health);
+    if(modelsOpen) html += upModelsDetail(models);
+    return html;
+  }).join('') || '<tr><td colspan="4" class="empty-row">No upstreams yet</td></tr>';
+  updateUpSelectionUI(ups);
+}
+function toggleUpKeys(id){
+  UP_OPEN_KEYS.has(id) ? UP_OPEN_KEYS.delete(id) : UP_OPEN_KEYS.add(id);
+  renderUps();
+}
+function toggleUpModels(id){
+  UP_OPEN_MODELS.has(id) ? UP_OPEN_MODELS.delete(id) : UP_OPEN_MODELS.add(id);
+  renderUps();
+}
+function toggleUpSelection(id, checked){
+  checked ? selectedUpstreams.add(id) : selectedUpstreams.delete(id);
+  updateUpSelectionUI((STATE&&STATE.upstreams)||[]);
+}
+function toggleAllUps(checked){
+  const ups = (STATE&&STATE.upstreams)||[];
+  if(checked) ups.forEach(u=>selectedUpstreams.add(u.id));
+  else selectedUpstreams.clear();
+  renderUps();
+}
+function updateUpSelectionUI(ups){
+  const count = selectedUpstreams.size;
+  $('ups-selected').textContent = count+' selected';
+  $('ups-selected').hidden = !count;
+  const all = $('ups-select-all');
+  all.checked = ups.length>0 && count===ups.length;
+  all.indeterminate = count>0 && count<ups.length;
+}
+function upModal(u){
+  $('up-modal-title').textContent = u?'Edit upstream':'Add upstreams';
+  $('up-add-mode').hidden = !!u;
+  $('up-add-select').value = 'single';
+  setUpAddMode('single');
+  $('up-import-text').value = '';
+  $('up-import-skipped').innerHTML = '';
+  $('u-id').value = u?u.id:'';
+  $('u-base').value = u?u.base_url:'';
+  renderUpstreamKeyInputs(u?(u.api_keys||[]):['']);
+  $('u-models').value = u?(u.models||[]).join(', '):'';
+  editingUpstreamModelAliases = u ? JSON.parse(JSON.stringify(u.model_aliases||{})) : null;
+  editingUpstreamOriginal = u ? JSON.parse(JSON.stringify(u)) : null;
+  $('u-model-aliases').value = formatModelAliases(editingUpstreamModelAliases||{});
+  $('u-blocked-models').value = u?(u.blocked_models||[]).join(', '):'';
+  $('u-proxy').checked = !!(u&&u.use_proxy);
+  $('u-enabled').checked = u?u.enabled:true;
+  $('u-hidden-invalid').checked = !!u?.hidden_invalid;
+  openModal('overlay-up');
+}
+function formatModelAliases(aliases){
+  return Object.keys(aliases||{}).sort((a,b)=>a.localeCompare(b)).map(canonical=>
+    `${canonical} = ${(aliases[canonical]||[]).join(', ')}`
+  ).join('\n');
+}
+function parseModelAliases(text){
+  const out = {};
+  for(const [index, rawLine] of String(text||'').split('\n').entries()){
+    const line = rawLine.trim();
+    if(!line || line.startsWith('#')) continue;
+    const split = line.indexOf('=');
+    if(split < 1) throw new Error(`alias line ${index+1}: expected canonical = alias1, alias2`);
+    const canonical = line.slice(0, split).trim();
+    const routes = line.slice(split+1).split(',').map(s=>s.trim()).filter(Boolean);
+    if(!canonical || !routes.length) throw new Error(`alias line ${index+1}: canonical and at least one alias are required`);
+    out[canonical] = [...new Set([...(out[canonical]||[]), ...routes])];
+  }
+  return out;
+}
+async function refreshUpstreamHealth(){
+  if(UPSTREAM_HEALTH_LOADING) return;
+  UPSTREAM_HEALTH_LOADING = true;
+  let changed = true;
+  try{
+    const data = await api('upstreams/health', {signal:AbortSignal.timeout(10000)});
+    if(!data || data.error || !Array.isArray(data.upstreams)) throw new Error('Invalid health response');
+    const next = Object.create(null);
+    for(const record of data.upstreams){
+      if(!record || typeof record.id!=='string' || typeof record.status!=='string') throw new Error('Invalid health record');
+      next[record.id] = record;
+    }
+    // Re-render only on a change, or while a cooldown countdown is shown.
+    const signature = JSON.stringify(data.upstreams);
+    changed = UPSTREAM_HEALTH_ERROR || !UPSTREAM_HEALTH_RECEIVED || signature !== UPSTREAM_HEALTH_SIGNATURE || signature.includes('"until"') || signature.includes('"cooldown_until"');
+    UPSTREAM_HEALTH_SIGNATURE = signature;
+    UPSTREAM_HEALTH = next;
+    UPSTREAM_HEALTH_ERROR = false;
+    UPSTREAM_HEALTH_RECEIVED = true;
+  }catch(e){
+    // Preserve the last snapshot for diagnostics, but never present it as fresh.
+    changed = !UPSTREAM_HEALTH_ERROR;
+    UPSTREAM_HEALTH_ERROR = true;
+  }finally{
+    UPSTREAM_HEALTH_LOADING = false;
+    if(changed && currentView==='upstreams') renderUps();
+  }
+}
+function renderUpstreamKeyInputs(keys){
+  keys = (keys&&keys.length?keys:['']);
+  $('u-keys').innerHTML = keys.map((key,i)=>`<div class="row upstream-key-row" style="margin:3px 0;align-items:center"><span class="dim" style="width:48px">Key ${i+1}</span><input type="password" class="mono upstream-key-input" value="${esc(key)}" placeholder="sk-..." style="flex:1" /><button type="button" class="danger" onclick="removeUpstreamKey(this)">remove</button></div>`).join('');
+}
+function addUpstreamKey(){
+  const keys = [...document.querySelectorAll('.upstream-key-input')].map(x=>x.value);
+  keys.push(''); renderUpstreamKeyInputs(keys);
+  const inputs = document.querySelectorAll('.upstream-key-input'); inputs[inputs.length-1].focus();
+}
+function removeUpstreamKey(btn){
+  const rows = [...document.querySelectorAll('.upstream-key-row')];
+  const keys = rows.filter(row=>row!==btn.closest('.upstream-key-row')).map(row=>row.querySelector('input').value);
+  renderUpstreamKeyInputs(keys.length?keys:['']);
+}
+function upMassEditModal(){
+  const selected = selectedUpstreams.size;
+  const total = (STATE&&STATE.upstreams||[]).length;
+  if(!total){ toast('There are no upstreams to edit', true); return; }
+  $('me-selected-count').textContent = selected;
+  $('me-all-count').textContent = total;
+  $('me-scope-selected').disabled = selected===0;
+  $('me-scope-selected').checked = selected>0;
+  $('me-scope-all').checked = selected===0;
+  document.querySelectorAll('#overlay-up-mass .me-apply').forEach(x=>x.checked=false);
+  $('me-models-mode').value = 'replace'; $('me-models').value = '';
+  $('me-blocked-mode').value = 'replace'; $('me-blocked').value = '';
+  $('me-enabled').value = 'true'; $('me-proxy').value = 'false';
+  $('me-base').value = ''; $('me-keys').value = '';
+  openModal('overlay-up-mass');
+}
+function setUpAddMode(mode){
+  const batch = mode==='batch';
+  $('up-single-fields').hidden = batch;
+  $('up-batch-fields').hidden = !batch;
+  $('up-save-btn').hidden = batch;
+  $('up-test-btn').hidden = batch;
+  $('up-import-btn').hidden = !batch;
+}
+async function saveUp(){
+  let modelAliases;
+  try{ modelAliases = parseModelAliases($('u-model-aliases').value); }
+  catch(e){ toast(e.message, true); return; }
+  const body = {
+    ...(editingUpstreamOriginal||{}),
+    id: $('u-id').value.trim() || undefined,
+    base_url: $('u-base').value.trim(),
+    api_keys: [...document.querySelectorAll('.upstream-key-input')].map(x=>x.value.trim()).filter(Boolean),
+    models: $('u-models').value.split(',').map(s=>s.trim()).filter(Boolean),
+    model_aliases: modelAliases,
+    blocked_models: $('u-blocked-models').value.split(',').map(s=>s.trim()).filter(Boolean),
+    use_proxy: $('u-proxy').checked,
+    enabled: $('u-enabled').checked,
+    hidden_invalid: $('u-hidden-invalid').checked,
+  };
+  if(!body.base_url){ toast('Base URL is required', true); return; }
+  delete body.type;
+  try{
+    const r = await api('upstream?mode='+(editingUpstreamOriginal?'edit':'create'), {method:'POST', body:JSON.stringify(body)});
+    if(r.error){ toast(r.error, true); return; }
+    closeModal('overlay-up'); toast((r.created?'Upstream created':'Upstream saved')+'; catalog discovery queued');
+    editingUpstreamOriginal = null;
+    await refreshState();
+  }catch(e){ toast(e.message||'Upstream save failed', true); }
+}
+function massCSV(id){ return $(id).value.split(',').map(s=>s.trim()).filter(Boolean); }
+async function saveUpMassEdit(){
+  const scope = document.querySelector('input[name="me-scope"]:checked');
+  const all = !!scope && scope.value==='all';
+  const ids = all ? [] : [...selectedUpstreams];
+  if(!all && !ids.length){ toast('Select upstreams or choose All', true); return; }
+  const patch = {};
+  if($('me-apply-models').checked) patch.models = {mode:$('me-models-mode').value, values:massCSV('me-models')};
+  if($('me-apply-blocked').checked) patch.blocked_models = {mode:$('me-blocked-mode').value, values:massCSV('me-blocked')};
+  if($('me-apply-enabled').checked) patch.enabled = $('me-enabled').value==='true';
+  if($('me-apply-proxy').checked) patch.use_proxy = $('me-proxy').value==='true';
+  if($('me-apply-base').checked) patch.base_url = $('me-base').value.trim();
+  if($('me-apply-keys').checked) patch.api_keys = $('me-keys').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  if(!Object.keys(patch).length){ toast('Tick Apply for at least one setting', true); return; }
+  const count = all ? ((STATE&&STATE.upstreams)||[]).length : ids.length;
+  if(!await uiConfirm(`Apply ${Object.keys(patch).length} setting(s) to ${count} upstream(s)?`, {title:'Bulk edit', ok:'Apply changes'})) return;
+  const btn = $('up-mass-save'); btn.disabled = true;
+  try{
+    const r = await api('upstreams/mass-edit', {method:'POST', body:JSON.stringify({all, ids, patch})});
+    if(r.error){ toast(r.error, true); return; }
+    closeModal('overlay-up-mass');
+    selectedUpstreams.clear();
+    toast('Updated '+r.updated+' upstreams');
+    await refreshState();
+  }catch(e){ toast(e.message||'Bulk edit failed', true); }
+  finally{ btn.disabled = false; }
+}
+async function testUp(id){
+  toast('Testing…');
+  const r = await api('upstream/test', {method:'POST', body:JSON.stringify({id})});
+  if(r.ok) toast(`Valid capability: ${Object.entries(r.capabilities||{}).filter(([,v])=>v.supported).map(([op])=>op).join(', ')} (${r.latency_ms}ms; model availability not verified)`);
+  else toast(`${r.error||('HTTP '+r.status)} — ${esc(r.detail||r.body_head||'').slice(0,140)}`, true);
+  await refreshUpstreamHealth().catch(()=>{});
+}
+let upTestController = null;
+function updateTestTasks(){
+  const tasks = ['test-delete','test-disable','test-hide'].map($);
+  const active = tasks.find(x=>x.checked);
+  tasks.forEach(x=>{ if(active && x!==active) x.checked=false; x.disabled=!!active && x!==active; });
+}
+function testAllUps(){
+  openModal('overlay-up-test');
+  $('test-run').focus();
+}
+function cancelUpTests(){
+  if(upTestController) upTestController.abort();
+}
+async function runAllUps(){
+  if(upTestController) return;
+  const request = {tasks:{delete_invalid:$('test-delete').checked, disable_invalid:$('test-disable').checked, hide_invalid:$('test-hide').checked}, checks:{models:$('test-models').checked, responses:$('test-responses').checked}, confirm:true};
+  const warning = request.checks.responses ? 'Response checks consume tokens and can blacklist models and permanently remove keys or upstreams even with no Tasks selected.' : 'Only confirmed invalid results can trigger the selected task. Unknown results are retained.';
+  if(!await uiConfirm('Run tests on all enabled upstreams?\n\n'+warning+'\n\nChanges are applied together after the whole run completes.', {title:'Test all enabled upstreams', ok:'Run tests'})) return;
+  upTestController = new AbortController();
+  const btn = $('test-run');
+  btn.disabled = true;
+  $('test-options').disabled = true;
+  $('test-cancel').disabled = false;
+  $('test-modal-body').innerHTML = '';
+  $('test-modal-summary').textContent = 'Starting... No changes applied yet.';
+  const requestCounts = new Map();
+  const observedRequests = () => [...requestCounts.values()].reduce((sum, n) => sum+n, 0);
+  const addResult = x => {
+    const row = `<tr>
+      <td class="mono">${esc(x.id)}</td>
+      <td><span class="badge ${x.valid==='yes'?'on':'dim'}" title="${esc(x.detail||'Not verified')}">${x.valid==='yes'?'Yes':x.valid==='no'?'No':'Unknown'}</span>${x.valid==='unknown'?'<div class="dim">Not verified</div>':''}</td>
+      <td class="mono">${x.latency_ms!=null?x.latency_ms+'ms':'—'}</td>
+      <td class="dim">${esc(x.error||x.detail||'')}<div>${Number(x.requests||0)} HTTP request attempts; ${Number(x.valid_keys||0)}/${Number(x.key_total||0)} credential slots with selected-check evidence</div>${x.tested!=null?`<div>${Number(x.tested)} model/key pairs tested: ${Number(x.succeeded||0)} successful, ${Number(x.blocked||0)} confirmed failing, ${Number(x.unknown||0)} unknown; ${Number(x.skipped||0)} skipped</div>`:''}${(x.diagnostics||[]).length?`<details><summary>Check details${x.diagnostics_truncated?' (first 200)':''}</summary>${x.diagnostics.map(d=>`<div>Key ${Number(d.key_index)}: ${esc(d.check)}${d.model_index?` model ${Number(d.model_index)}/${Number(d.model_total)}`:''}: ${esc(d.valid)} - ${esc(d.reason)}</div>`).join('')}</details>`:''}</td>
+    </tr>`;
+    $('test-modal-body').insertAdjacentHTML('afterbegin', row);
+    while($('test-modal-body').children.length>200) $('test-modal-body').lastElementChild.remove();
+  };
+  try{
+    const streamURL = ADMIN_BASE_PATH+'/admin/api/upstreams/test-all/stream';
+    const res = await fetch(streamURL, {method:'POST', credentials:'same-origin', signal:upTestController.signal, headers:{'Content-Type':'application/json','Accept':'text/event-stream','X-Aisense-Request':'1'}, body:JSON.stringify(request)});
+    if(res.status===401){ location.replace(ADMIN_BASE_PATH+'/'); throw new Error('Session expired. Please log in again.'); }
+    if(!res.ok){ const error = await res.json().catch(()=>({})); throw new Error(error.error||`HTTP ${res.status}`); }
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let pending = '', finalEvent = null;
+    const consume = line => {
+      line = line.trim(); if(!line) return;
+      if(line.startsWith('data:')) line = line.slice(5).trim();
+      const event = JSON.parse(line);
+      const requestSource = event.type==='result' ? event.result : event;
+      if(requestSource?.id && requestSource.requests!=null) requestCounts.set(requestSource.id, Math.max(requestCounts.get(requestSource.id)||0, Number(requestSource.requests)||0));
+      if(event.type==='error') throw new Error(event.error);
+      if(event.type==='start') $('test-modal-summary').textContent = `Upstreams: 0 / ${event.total||0}. Checks: capabilities${event.checks?.models||event.checks?.responses?', catalog':''}${event.checks?.responses?', model responses':''}. No changes applied yet.`;
+      if(event.type==='progress') $('test-modal-summary').textContent = `${event.id}: key ${event.key_index}/${event.key_total}, ${event.check}${event.model_index?` model ${event.model_index}/${event.model_total}`:''}: ${event.valid}; ${event.reason}. ${event.requests||0} HTTP request attempts for this upstream. No changes applied yet.`;
+      if(event.type==='result'){
+        addResult(event.result||{});
+        $('test-modal-summary').textContent = `Test results: ${event.completed||0} / ${event.total||0} upstreams; ${event.ok_count||0} valid for selected checks, ${event.fail_count||0} invalid, ${event.unknown_count||0} not verified. No changes applied yet.`;
+      }
+      if(event.type==='complete') finalEvent = event;
+    };
+    while(true){
+      const chunk = await reader.read();
+      const decoded = decoder.decode(chunk.value||new Uint8Array(), {stream:!chunk.done});
+      pending += decoded;
+      const lines = pending.split('\n'); pending = lines.pop()||'';
+      lines.forEach(consume);
+      if(chunk.done) break;
+    }
+    consume(pending);
+    if(!finalEvent) throw new Error('Stream ended without completion. Refresh state before retrying.');
+    const done = finalEvent;
+    $('test-modal-summary').textContent = `${done.total||0} complete: ${done.ok_count||0} valid for selected checks, ${done.fail_count||0} invalid, ${done.unknown_count||0} not verified; ${done.requests||0} HTTP request attempts; ${done.changed||0} upstreams changed. Showing the latest 200 results.`;
+    await refreshState();
+    await refreshUpstreamHealth().catch(()=>{});
+  }catch(e){
+    upTestController?.abort();
+    $('test-modal-summary').textContent = e.name==='AbortError' ? `Run cancelled after at least ${observedRequests()} reported HTTP request attempts. Uncommitted changes were discarded. If completion raced with cancellation, refresh state to check the final outcome.` : (e.message||'Test all failed');
+    await refreshState().catch(()=>{});
+  }finally{
+    upTestController = null;
+    btn.disabled = false;
+    $('test-options').disabled = false;
+    $('test-cancel').disabled = true;
+  }
+}
+async function delUp(id){
+  if(!await uiConfirm('Delete upstream '+id+'?', {title:'Delete upstream', ok:'Delete', danger:true})) return;
+  try{
+    const r = await api('upstream?id='+encodeURIComponent(id), {method:'DELETE'});
+    if(r.error){ toast(r.error, true); return; }
+    toast('Upstream deleted'); await refreshState();
+  }catch(e){ toast(e.message||'Upstream delete failed', true); }
+}
+async function importUpstream(){
+  const text = $('up-import-text').value.trim();
+  if(!text){ toast('Paste at least one URL first', true); return; }
+  const btn = $('up-import-btn');
+  btn.disabled = true;
+  try{
+    const r = await api('upstream/import', {method:'POST', body:JSON.stringify({text})});
+    if(r.error){ toast(r.error, true); return; }
+    const n = r.imported || (r.upstreams?r.upstreams.length:0);
+    const skipped = r.skipped || 0;
+    if(n>0){
+      if(!skipped) closeModal('overlay-up');
+      let msg = `${r.created||0} created, ${r.merged||0} merged, ${r.keys_added||0} keys added`;
+      if(r.models_discovery_queued) msg += '; catalog discovery queued';
+      if(skipped>0) msg += ` — auto-skipped ${skipped} bad ${skipped===1?'entry':'entries'}`;
+      toast(msg);
+    } else {
+      toast(`Nothing imported — ${skipped} ${skipped===1?'entry':'entries'} skipped`, true);
+    }
+    if(skipped>0 && (r.errors||[]).length){
+      renderImportSkipped(r.errors);
+    } else {
+      $('up-import-skipped').innerHTML = '';
+    }
+    if(n>0) await refreshState();
+  }catch(e){
+    toast(e.message||'Import failed', true);
+  }finally{
+    btn.disabled = false;
+  }
+}
+function renderImportSkipped(errors){
+  $('up-import-skipped').innerHTML = `<div class="note" style="margin-top:12px">
+    <b>Auto-skipped (${errors.length})</b> — everything else above was imported successfully.
+    <div class="tbl-wrap" style="margin-top:8px"><table>
+      <thead><tr><th>Entry / line</th><th>Reason</th></tr></thead>
+      <tbody>${errors.map(e=>`<tr><td class="mono">${esc(e.entry||'(unresolved)')}</td><td class="dim">${esc(e.reason)}</td></tr>`).join('')}</tbody>
+    </table></div>
+  </div>`;
+}
+async function refreshModelsNow(){
+  const btn = $('md-refresh-btn');
+  if(btn) btn.disabled = true;
+  try{
+    const r = await api('upstreams/refresh-models', {method:'POST', body:JSON.stringify({all:true})});
+    if(r.error) toast(r.error, true);
+    else toast('Catalog discovery queued; progress appears in Settings');
+    await refreshState();
+  }catch(e){ toast(e.message||'Model refresh failed', true); }
+  finally{ if(btn) btn.disabled = false; }
+}
+$('up-test-btn').onclick = () => { const id = $('u-id').value; if(id) testUp(id); else toast('Save the upstream first', true); };
+
+let discoveryPolling = false, discoveryVersion = '';
+function setDiscoveryStatus(settingsText, headerText){
+  $('discovery-progress').textContent = settingsText;
+  $('discovery-progress').hidden = !settingsText;
+  $('ups-discovery').textContent = headerText;
+  $('ups-discovery').hidden = !headerText;
+}
+setInterval(async()=>{
+  if(!STATE || discoveryPolling || document.hidden) return;
+  discoveryPolling = true;
+  try{
+    const p = await api('upstreams/discovery');
+    if(typeof p.running!=='boolean') throw new Error('Discovery status unavailable');
+    const active = p.running || p.queued>0 || p.all_queued;
+    // Nothing to report until a discovery run has happened.
+    let text = '';
+    if(active || p.total>0 || p.error){
+      text = `${active?'Discovering':'Last discovery'}: ${p.completed||0}/${p.total||0} checked, ${p.updated||0} catalogs saved, ${p.failed||0} failed.`;
+      if(p.all_queued) text += ' All upstreams queued.';
+      else if(p.queued) text += ` ${p.queued} queued.`;
+      if(p.error) text += ' '+p.error;
+    }
+    setDiscoveryStatus(text, active ? `discovering ${p.completed||0}/${p.total||0}` : '');
+    if(text!==discoveryVersion){
+      const state = await api('state');
+      if(state.error) throw new Error('State refresh failed');
+      STATE = state;
+      renderUps(); renderDashboardModels();
+      discoveryVersion = text;
+    }
+  }catch(e){
+    setDiscoveryStatus('Discovery status unavailable; retrying.', '');
+  }
+  finally{ discoveryPolling = false; }
+}, 5000);
+
+/* ================= USAGE ================= */
+async function loadUsage(){
+  if(STATE && STATE.usage && STATE.usage.enabled === false){
+    $('usage-body').innerHTML = '<tr><td colspan="7" class="empty-row">Statistics collection is disabled. Enable it in Settings → Statistics.</td></tr>';
+    return;
+  }
+  const r = await api('usage');
+  const recs = r.records||[];
+  const keyName = id => (STATE&&(STATE.api_keys||[]).find(k=>k.id===id)||{}).name||id;
+  $('usage-body').innerHTML = recs.map(x=>`
+    <tr>
+      <td class="mono">${x.day}</td>
+      <td>${esc(keyName(x.key_id))}</td>
+      <td class="mono">${esc(x.model)}</td>
+      <td class="mono">${x.requests}</td>
+      <td class="mono" style="color:${x.errors?'var(--red)':''}">${x.errors}</td>
+      <td class="mono">${x.tokens_in.toLocaleString()}</td>
+      <td class="mono">${x.tokens_out.toLocaleString()}</td>
+    </tr>`).join('') || '<tr><td colspan="7" class="empty-row">No usage recorded yet</td></tr>';
+}
+
+/* ================= HITCHANCE ================= */
+// Working copy of the policy being edited; it is saved with "Save all settings".
+let HC_POLICY = {rules:[]};
+let hcEditingIndex = -1;
+function hcNumberFields(){
+  return [
+    ['response_start_timeout_seconds', 'hc-start-timeout', 'Response start timeout', 1, 120],
+    ['invalid_confirmations', 'hc-confirmations', 'Failures before a key is deleted', 1, 20],
+  ];
+}
+function loadHitchanceEditor(policy){
+  HC_POLICY = JSON.parse(JSON.stringify(policy || {}));
+  if(!Array.isArray(HC_POLICY.rules)) HC_POLICY.rules = [];
+  $('hc-enabled').checked = !!HC_POLICY.enabled;
+  for(const [key, id] of hcNumberFields()) $(id).value = HC_POLICY[key] ?? '';
+  renderHitchanceRules();
+}
+function fillHitchance(){ loadHitchanceEditor(STATE.hitchance); }
+// The complete edited policy. The server rejects unknown fields, so only documented ones are sent.
+function readHitchancePolicy(){
+  const policy = JSON.parse(JSON.stringify(HC_POLICY));
+  policy.enabled = $('hc-enabled').checked;
+  for(const [key, id, label, min, max] of hcNumberFields()){
+    const value = Number($(id).value);
+    if(!Number.isInteger(value) || value < min || value > max) throw new Error(`Hitchance: ${label} must be a whole number from ${min} to ${max}.`);
+    policy[key] = value;
+  }
+  return policy;
+}
+function fmtDuration(seconds){
+  const s = Math.max(0, Math.round(+seconds || 0));
+  if(s >= 86400 && s % 86400 === 0) return s / 86400 + 'd';
+  if(s >= 3600 && s % 3600 === 0) return s / 3600 + 'h';
+  if(s >= 60 && s % 60 === 0) return s / 60 + 'm';
+  return s + 's';
+}
+function hcScopeName(scope){ return {key:'API key', model:'API key + model', endpoint:'API base'}[scope] || scope; }
+function hcRuleWhen(rule){
+  const signs = [], only = [], codes = rule.status_codes || [], messages = rule.messages || [], models = rule.models || [], ups = rule.upstream_ids || [];
+  if(codes.length) signs.push('HTTP ' + codes.join(', '));
+  if(messages.length) signs.push('text “' + messages.slice(0, 2).join('” or “') + '”' + (messages.length > 2 ? ` or ${messages.length - 2} more` : ''));
+  if(rule.pattern) signs.push(rule.pattern.length > 32 ? 'a text pattern' : 'text matching ' + rule.pattern);
+  if(models.length) only.push((models.length === 1 ? 'model ' : 'models ') + models.join(', '));
+  if(ups.length) only.push((ups.length === 1 ? 'upstream ' : 'upstreams ') + ups.join(', '));
+  // Model and upstream filters always apply; match_any only joins the error signs.
+  return [signs.join(rule.match_any ? ' or ' : ' and '), only.length ? 'only for ' + only.join(' and ') : ''].filter(Boolean).join(', ');
+}
+function hcRuleThen(rule){
+  const target = hcScopeName(rule.scope);
+  switch(rule.action){
+    case 'ignore': return 'Ignore, do not retry';
+    case 'delete': return `Delete the ${target} (cool down ${fmtDuration(rule.cooldown_seconds)} until confirmed${rule.match_any && (rule.status_codes || []).length ? '; a status code alone only cools it down' : ''})`;
+    case 'quarantine': return `Quarantine the ${target} until reset`;
+    default: return `Cool down the ${target} for ${fmtDuration(rule.cooldown_seconds)}`;
+  }
+}
+function renderHitchanceRules(){
+  const rules = HC_POLICY.rules || [];
+  $('hc-rules').innerHTML = rules.map((rule, i) => `<tr>
+      <td class="hc-num">${i + 1}</td>
+      <td class="hc-rule"><strong>${esc(rule.id)}</strong><div class="dim">${esc(rule.category || '')}</div></td>
+      <td>${esc(hcRuleWhen(rule))}</td>
+      <td class="hc-then hc-${esc(rule.action)}">${esc(hcRuleThen(rule))}</td>
+      <td class="hc-ops"><button type="button" onclick="moveHitchanceRule(${i},-1)" title="Move up" aria-label="Move rule ${i + 1} up"${i === 0 ? ' disabled' : ''}>&#8593;</button><button type="button" onclick="moveHitchanceRule(${i},1)" title="Move down" aria-label="Move rule ${i + 1} down"${i === rules.length - 1 ? ' disabled' : ''}>&#8595;</button><button type="button" onclick="editHitchanceRule(${i})">edit</button><button type="button" class="danger" onclick="deleteHitchanceRule(${i})">del</button></td>
+    </tr>`).join('') || '<tr><td colspan="5" class="empty-row">No rules: every failed request ends without a retry.</td></tr>';
+}
+function moveHitchanceRule(index, delta){
+  const rules = HC_POLICY.rules, to = index + delta;
+  if(to < 0 || to >= rules.length) return;
+  [rules[index], rules[to]] = [rules[to], rules[index]];
+  renderHitchanceRules();
+}
+async function deleteHitchanceRule(index){
+  const rule = HC_POLICY.rules[index];
+  if(!rule || !await uiConfirm(`Delete rule ${rule.id}? The change is applied with Save all settings.`, {title:'Delete rule', ok:'Delete', danger:true})) return;
+  HC_POLICY.rules.splice(index, 1);
+  renderHitchanceRules();
+}
+function editHitchanceRule(index){
+  hcEditingIndex = index;
+  const rule = HC_POLICY.rules[index] || {id:'', category:'', match_any:true, action:'demote', scope:'key', cooldown_seconds:60};
+  $('hc-rule-title').textContent = index < 0 ? 'New Hitchance rule' : 'Edit rule ' + rule.id;
+  $('hc-rule-id').value = rule.id || '';
+  $('hc-rule-category').value = rule.category || '';
+  $('hc-rule-match').value = rule.match_any ? 'any' : 'all';
+  $('hc-rule-status').value = (rule.status_codes || []).join(', ');
+  $('hc-rule-messages').value = (rule.messages || []).join('\n');
+  $('hc-rule-pattern').value = rule.pattern || '';
+  $('hc-rule-models').value = (rule.models || []).join(', ');
+  // Keep IDs of upstreams that no longer exist so saving never drops them silently.
+  const ups = STATE.upstreams || [], chosen = new Set(rule.upstream_ids || []);
+  const ids = [...ups.map(u => u.id), ...[...chosen].filter(id => !ups.some(u => u.id === id))];
+  $('hc-rule-upstreams').innerHTML = ids.map(id => {
+    const up = ups.find(u => u.id === id);
+    return `<label class="check"><input type="checkbox" value="${esc(id)}"${chosen.has(id) ? ' checked' : ''} /> ${esc(up ? up.base_url : id + ' (removed upstream)')}</label>`;
+  }).join('') || '<span class="dim">No upstreams yet.</span>';
+  $('hc-rule-action').value = rule.action || 'demote';
+  $('hc-rule-scope').value = rule.scope || 'key';
+  $('hc-rule-cooldown').value = rule.cooldown_seconds ?? 0;
+  $('hc-rule-error').textContent = '';
+  describeHitchanceRule();
+  openModal('overlay-hc-rule');
+}
+function describeHitchanceRule(){
+  const action = $('hc-rule-action').value;
+  if(action === 'delete') $('hc-rule-scope').value = 'key';
+  $('hc-rule-scope').disabled = action === 'delete';
+  const detail = {
+    demote: 'It moves to the end of the pool and is skipped until the cooldown ends; the request moves on to the next upstream.',
+    quarantine: 'It is skipped until someone resets health on the upstream; the request moves on to the next upstream.',
+    delete: 'After the configured number of failures the key is removed from the upstream; until then it cools down. Only the error text can delete a key, never an HTTP status alone.',
+    ignore: 'Nothing changes and the request ends without trying another upstream.',
+  }[action] || '';
+  $('hc-rule-summary').textContent = hcRuleThen({action, scope:$('hc-rule-scope').value, cooldown_seconds:$('hc-rule-cooldown').value}) + '. ' + detail;
+}
+function hcRuleFromForm(){
+  const list = text => text.split(',').map(s => s.trim()).filter(Boolean);
+  const rule = {id:$('hc-rule-id').value.trim(), category:$('hc-rule-category').value.trim(), action:$('hc-rule-action').value, scope:$('hc-rule-scope').value, cooldown_seconds:Number($('hc-rule-cooldown').value)};
+  const codes = list($('hc-rule-status').value).map(Number);
+  const messages = $('hc-rule-messages').value.split('\n').map(s => s.trim()).filter(Boolean);
+  const pattern = $('hc-rule-pattern').value.trim();
+  const models = list($('hc-rule-models').value);
+  const ups = [...$('hc-rule-upstreams').querySelectorAll('input:checked')].map(x => x.value);
+  if($('hc-rule-match').value === 'any') rule.match_any = true;
+  if(codes.length) rule.status_codes = codes;
+  if(messages.length) rule.messages = messages;
+  if(pattern) rule.pattern = pattern;
+  if(ups.length) rule.upstream_ids = ups;
+  if(models.length) rule.models = models;
+  return rule;
+}
+// Friendly checks for common mistakes; the server stays the authority (RE2 patterns, limits).
+function hitchanceRuleProblem(rule, otherIds){
+  if(!rule.id || rule.id.length > 80) return 'Give the rule an ID of up to 80 characters.';
+  if(otherIds.includes(rule.id)) return 'Another rule already uses this ID.';
+  if(!rule.category) return 'Give the rule a category, for example limit.';
+  if(!rule.status_codes && !rule.messages && !rule.pattern) return 'Add at least one HTTP status, error text or pattern.';
+  if((rule.status_codes || []).some(code => !Number.isInteger(code) || code < 400 || code > 599)) return 'HTTP status codes must be whole numbers from 400 to 599.';
+  if(!Number.isInteger(rule.cooldown_seconds) || rule.cooldown_seconds < 0 || rule.cooldown_seconds > 2592000) return 'Cooldown must be a whole number from 0 to 2592000 seconds.';
+  if(rule.action !== 'ignore' && rule.cooldown_seconds < 1) return 'Cooldown must be at least 1 second unless the rule ignores the error.';
+  if(rule.action === 'delete' && rule.scope !== 'key') return 'Only an API key can be deleted.';
+  if(rule.action === 'delete' && !rule.messages && !rule.pattern) return 'Deleting a key needs error text or a pattern; an HTTP status alone never proves a key is invalid.';
+  return '';
+}
+async function saveHitchanceRule(){
+  const rule = hcRuleFromForm();
+  const others = HC_POLICY.rules.filter((_, i) => i !== hcEditingIndex).map(r => r.id);
+  const problem = hitchanceRuleProblem(rule, others);
+  if(problem){ $('hc-rule-error').textContent = problem; return; }
+  const rules = HC_POLICY.rules.slice();
+  if(hcEditingIndex < 0) rules.push(rule); else rules[hcEditingIndex] = rule;
+  const btn = $('hc-rule-save');
+  btn.disabled = true;
+  try{
+    // Validate the whole list on the server without saving or changing anything.
+    const r = await api('hitchance/preview', {method:'POST', body:JSON.stringify({policy:{rules}, status:500, body:''})});
+    if(r.error){ $('hc-rule-error').textContent = r.error; return; }
+  }catch(e){ $('hc-rule-error').textContent = e.message; return; }
+  finally{ btn.disabled = false; }
+  HC_POLICY.rules = rules;
+  renderHitchanceRules();
+  closeModal('overlay-hc-rule');
+  toast('Rule updated; Save all settings to apply');
+}
+async function resetHitchanceDefaults(){
+  if(!await uiConfirm('Replace the rules in the editor with the default rules? Nothing is applied until Save all settings.', {title:'Load default rules', ok:'Load defaults'})) return;
+  try{
+    const defaults = await api('hitchance/defaults');
+    if(defaults.error) throw new Error(defaults.error);
+    const policy = readHitchancePolicy();
+    policy.rules = defaults.rules || [];
+    loadHitchanceEditor(policy);
+    toast('Default rules loaded; Save all settings to apply');
+  }catch(e){ toast(e.message, true); }
+}
+async function resetHitchanceHealth(id){
+  if(!await uiConfirm('Lift every cooldown and quarantine on this upstream: its API base, API keys and models? Deleted keys are not restored.', {title:'Reset health', ok:'Reset health'})) return;
+  try{
+    const result = await api('hitchance/reset', {method:'POST', body:JSON.stringify({upstream_id:id})});
+    if(result.error) throw new Error(result.error);
+    await refreshState();
+    await refreshUpstreamHealth();
+    toast('Health reset');
+  }catch(e){ toast(e.message, true); }
+}
+
+/* ================= SETTINGS ================= */
+
+function normalizeAdminBasePath(value){
+  const parts=[];
+  for(const part of String(value||'').trim().split('/')){
+    if(!part || part==='.') continue;
+    if(part==='..') parts.pop();
+    else parts.push(part);
+  }
+  return parts.length ? '/'+parts.join('/') : '';
+}
+
+function fillSettings(){
+  if(!STATE) return;
+  fillHitchance();
+  const s = STATE.server, u = STATE.usage, md = STATE.model_discovery||{}, p = STATE.proxies||{};
+  $('logging-enabled').checked = !!STATE.logging_enabled;
+  if($('s-oai-on')) $('s-oai-on').checked = !!(s.openai&&s.openai.enabled);
+  if($('s-oai-port')) $('s-oai-port').value = (s.openai&&s.openai.port)||8080;
+  if($('s-oai-path')) $('s-oai-path').value = (s.openai&&s.openai.path)||'/v1';
+  if($('s-anth-on')) $('s-anth-on').checked = !!(s.anthropic&&s.anthropic.enabled);
+  if($('s-anth-port')) $('s-anth-port').value = (s.anthropic&&s.anthropic.port)||8081;
+  if($('s-anth-path')) $('s-anth-path').value = (s.anthropic&&s.anthropic.path)||'/v1';
+  if($('s-web-port')) $('s-web-port').value = (s.admin&&s.admin.port)||8082;
+  if($('s-web-path')) $('s-web-path').value = (s.admin&&s.admin.path)||'/';
+  if($('admin-user')) $('admin-user').value = (s.admin&&s.admin.username)||'admin';
+  if($('admin-password')) $('admin-password').value = '';
+
+  // The old separate auto-discovery switch also refreshed on a timer; show both as one option.
+  if($('md-enabled')) $('md-enabled').checked = !!md.enabled || !!STATE.auto_models_discovery;
+  if($('md-minutes')) $('md-minutes').value = md.refresh_interval_minutes || 60;
+  if($('md-ignorecert')) $('md-ignorecert').checked = !!md.ignore_cert_errors;
+  if($('models-fast-mode')) $('models-fast-mode').checked = !!((STATE.models||{}).fast_mode);
+  $('models-reasoning-variants').checked = (STATE.models||{}).reasoning_variants !== false;
+  $('models-other-variants').checked = !!((STATE.models||{}).prefer_other_variants);
+  if($('usage-enabled')) $('usage-enabled').checked = !!(u&&u.enabled);
+  if($('p-enabled')) $('p-enabled').checked = !!p.enabled;
+  const workingCount = (p.list||[]).filter(x=>x.working).length;
+  if($('p-status')) $('p-status').textContent = (p.list&&p.list.length) ? `${workingCount} working / ${p.list.length} total` : '';
+  renderProxies();
+}
+
+
+function openAdminCredsModal(){
+  if(STATE && STATE.server && STATE.server.admin){
+    $('admin-user').value = STATE.server.admin.username || 'admin';
+  }
+  $('admin-password').value = '';
+  openModal('overlay-admin-creds');
+}
+
+async function saveAdminCreds(){
+  const username = $('admin-user').value.trim();
+  const password = $('admin-password').value;
+  if(!username){ toast('Username is required', true); return; }
+  const sVal = {
+    openai: STATE.server.openai,
+    anthropic: STATE.server.anthropic,
+    admin: {
+      enabled: (STATE.server.admin||{}).enabled !== false,
+      port: +(STATE.server.admin||{}).port || 0,
+      username: username,
+      password: password,
+    },
+  };
+  const r = await api('settings', {method:'POST', body:JSON.stringify({server:sVal})});
+  if(r.error){ toast(r.error, true); return; }
+  closeModal('overlay-admin-creds');
+  const authChanged = !!password || username !== (STATE.server.admin.username||'admin');
+  $('admin-password').value = '';
+   toast(authChanged?'Credentials saved. Please log in again.':'Credentials saved');
+   if(authChanged){ location.replace(ADMIN_BASE_PATH+'/'); return; }
+  await refreshState();
+}
+
+let twoFactorGeneration = 0;
+let twoFactorAction = 'setup';
+function clearTwoFactor(){
+  ++twoFactorGeneration;
+  $('two-factor-form').reset();
+  $('two-factor-password').value = '';
+  $('two-factor-code').value = '';
+  $('two-factor-secret').textContent = '';
+  $('two-factor-url').textContent = '';
+  $('two-factor-setup').hidden = true;
+  $('two-factor-fields').disabled = true;
+  $('two-factor-status').textContent = '';
+}
+window.addEventListener('pagehide', clearTwoFactor);
+async function open2FAModal(){
+  clearTwoFactor();
+  const generation = twoFactorGeneration;
+  openModal('overlay-2fa');
+  $('two-factor-status').textContent = 'Loading 2FA status...';
+  try{
+    const r = await api('2fa');
+    if(generation !== twoFactorGeneration || !isModalOpen('overlay-2fa')) return;
+    if(r.error || typeof r.enabled !== 'boolean') throw new Error('Unable to load 2FA status. Close and try again.');
+    twoFactorAction = r.enabled ? 'disable' : 'setup';
+    $('two-factor-status').textContent = r.enabled ? '2FA is enabled.' : '2FA is disabled.';
+    $('two-factor-password-label').hidden = false;
+    $('two-factor-password').required = true;
+    $('two-factor-code-label').hidden = !r.enabled;
+    $('two-factor-code').required = r.enabled;
+    $('two-factor-disable-note').hidden = !r.enabled;
+    $('two-factor-submit').textContent = r.enabled ? 'Disable 2FA' : 'Start setup';
+    $('two-factor-fields').disabled = false;
+    $('two-factor-password').focus();
+  }catch(e){ if(generation === twoFactorGeneration) $('two-factor-status').textContent = e.message; }
+}
+async function copyTwoFactor(id){
+  const generation = twoFactorGeneration;
+  try{
+    await navigator.clipboard.writeText($(id).textContent);
+    if(generation === twoFactorGeneration) $('two-factor-status').textContent = 'Copied. Keep your clipboard private and clear it when finished.';
+  }catch(e){ if(generation === twoFactorGeneration) $('two-factor-status').textContent = 'Clipboard unavailable. Select the key or URL above and copy it manually.'; }
+}
+$('two-factor-form').addEventListener('submit', async e=>{
+  e.preventDefault();
+  if($('two-factor-fields').disabled) return;
+  const generation = twoFactorGeneration;
+  const action = twoFactorAction;
+  $('two-factor-fields').disabled = true;
+  $('two-factor-status').textContent = 'Please wait...';
+  try{
+    const r = await api('2fa/'+action, {method:'POST', body:JSON.stringify(action === 'enable' ? {code:$('two-factor-code').value} : {password:$('two-factor-password').value, code:$('two-factor-code').value})});
+    if(generation !== twoFactorGeneration || !isModalOpen('overlay-2fa')) return;
+    if(r.error) throw new Error(r.error);
+    if(action === 'setup'){
+      if(!r.secret || !r.url) throw new Error('Setup failed. Please try again.');
+      $('two-factor-secret').textContent = r.secret;
+      $('two-factor-url').textContent = r.url;
+      $('two-factor-setup').hidden = false;
+      $('two-factor-password-label').hidden = true;
+      $('two-factor-password').required = false;
+      $('two-factor-code-label').hidden = false;
+      $('two-factor-code').required = true;
+      twoFactorAction = 'enable';
+      $('two-factor-submit').textContent = 'Confirm and enable 2FA';
+      $('two-factor-status').textContent = 'Setup pending. Add the key, then confirm with an authenticator code within 10 minutes.';
+    }else{
+      if(!r.ok) throw new Error('Unable to update 2FA. Please try again.');
+      clearTwoFactor();
+      location.replace(ADMIN_BASE_PATH+'/');
+    }
+  }catch(error){
+    if(generation === twoFactorGeneration) $('two-factor-status').textContent = error.message || 'Unable to update 2FA.';
+  }finally{
+    if(generation === twoFactorGeneration){
+      $('two-factor-password').value = '';
+      $('two-factor-code').value = '';
+      $('two-factor-fields').disabled = false;
+      (twoFactorAction === 'enable' ? $('two-factor-code') : $('two-factor-password')).focus();
+    }
+  }
+});
+async function logout(link){
+  if(link.getAttribute('aria-disabled') === 'true') return;
+  link.setAttribute('aria-disabled', 'true');
+  try{
+    const r = await api('logout', {method:'POST', body:'{}'});
+    if(r.error || !r.ok) throw new Error('Unable to log out. Please try again.');
+    location.replace(ADMIN_BASE_PATH+'/');
+  }catch(e){ toast(e.message, true); link.removeAttribute('aria-disabled'); }
+}
+function openProxyManagerModal(){
+  $('p-add').value = '';
+  $('p-add-status').textContent = '';
+  renderProxies();
+  openModal('overlay-proxy-manager');
+}
+
+async function addProxies(){
+  const urls = $('p-add').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  if(!urls.length){ toast('Enter at least one proxy URL', true); return; }
+  const btn = $('p-add-btn'); btn.disabled = true;
+  try{
+    const r = await api('proxies', {method:'POST', body:JSON.stringify({urls})});
+    if(r.error){ toast(r.error, true); return; }
+    if(!(r.added||[]).length){ toast('These proxies already exist', true); return; }
+    $('p-add').value = '';
+    toast(`Added ${r.added.length} proxies`);
+    await refreshState();
+    renderProxies();
+  }catch(e){ toast(e.message||'Proxy add failed', true); }
+  finally{ btn.disabled = false; }
+}
+
+function formatProxyHostPort(rawUrl){
+  if(!rawUrl) return '';
+  try {
+    const parsed = new URL(rawUrl.includes('://') ? rawUrl : 'http://' + rawUrl);
+    return parsed.host || rawUrl;
+  } catch(e) {
+    return rawUrl.replace(/^.*:\/\//, '').replace(/^.*@/, '');
+  }
+}
+
+function formatExitGeo(p){
+  const city = (p.city||'').trim();
+  const region = (p.region||'').trim();
+  if(city && region){
+    if(city.toLowerCase() === region.toLowerCase()) return region;
+    return `${city}, ${region}`;
+  }
+  if(city) return city;
+  if(region) return region;
+  return p.country || p.ip || '—';
+}
+
+function renderProxies(){
+  const p = (STATE&&STATE.proxies)||{};
+  const list = p.list||[];
+  const query = ($('p-search') ? $('p-search').value.trim().toLowerCase() : '');
+  
+  const liveURLs = new Set(list.map(x=>x.url));
+  [...selectedProxies].forEach(u=>{ if(!liveURLs.has(u)) selectedProxies.delete(u); });
+
+  const filtered = list.filter(x=>{
+    if(!query) return true;
+    const hp = formatProxyHostPort(x.url).toLowerCase();
+    const geo = formatExitGeo(x).toLowerCase();
+    const ip = (x.ip||'').toLowerCase();
+    const cc = (x.country||'').toLowerCase();
+    return hp.includes(query) || geo.includes(query) || ip.includes(query) || cc.includes(query);
+  });
+
+  $('p-body').innerHTML = filtered.map(x=>{
+    const hp = formatProxyHostPort(x.url);
+    const geo = formatExitGeo(x);
+    const cc = (x.country||'').toLowerCase();
+    const flagImg = cc ? `<img src="${ADMIN_BASE_PATH}/admin/flags/${esc(cc)}.png" class="flag-icon" onerror="this.style.display='none'" alt="${esc(cc)}" />` : '';
+    
+    let latHtml = '—';
+    if(x.working){
+      latHtml = `<span class="mono" style="color:rgb(180,230,30)">${x.latency_ms}ms</span>`;
+    } else if(x.excluded){
+      latHtml = `<span class="badge warn">Excluded</span>`;
+    } else if(x.error){
+      latHtml = `<span class="badge off" title="${esc(x.error)}">${esc(x.error.slice(0, 16))}</span>`;
+    }
+
+    return `<tr>
+      <td style="width:28px"><input type="checkbox" ${selectedProxies.has(x.url)?'checked':''} onchange='toggleProxySelection(${JSON.stringify(x.url).replaceAll("'","&#39;")},this.checked)' aria-label="Select ${esc(hp)}"></td>
+      <td><button type="button" class="key-pill clickable" title="Click to edit credentials" onclick='openProxyCredsModal(${JSON.stringify(x.url).replaceAll("'","&#39;")})'>${esc(hp)}</button></td>
+      <td><span class="exit-geo">${flagImg}<span>${esc(geo)}</span></span></td>
+      <td class="mono">${latHtml}</td>
+      <td style="width:45px"><button type="button" class="danger" onclick='delProxy(${JSON.stringify(x.url).replaceAll("'","&#39;")})'>del</button></td>
+    </tr>`;
+  }).join('') || '<tr><td colspan="5" class="empty-row">No proxies found</td></tr>';
+
+  updateProxySelectionUI(filtered);
+}
+
+function toggleProxySelection(url, checked){
+  checked ? selectedProxies.add(url) : selectedProxies.delete(url);
+  updateProxySelectionUI((STATE&&STATE.proxies&&STATE.proxies.list)||[]);
+}
+
+function toggleAllProxies(checked){
+  const p = (STATE&&STATE.proxies)||{};
+  const list = p.list||[];
+  const query = ($('p-search') ? $('p-search').value.trim().toLowerCase() : '');
+  const filtered = list.filter(x=>{
+    if(!query) return true;
+    const hp = formatProxyHostPort(x.url).toLowerCase();
+    const geo = formatExitGeo(x).toLowerCase();
+    const ip = (x.ip||'').toLowerCase();
+    const cc = (x.country||'').toLowerCase();
+    return hp.includes(query) || geo.includes(query) || ip.includes(query) || cc.includes(query);
+  });
+  if(checked) filtered.forEach(x=>selectedProxies.add(x.url));
+  else selectedProxies.clear();
+  renderProxies();
+}
+
+function updateProxySelectionUI(list){
+  const count = selectedProxies.size;
+  $('p-selected-cnt').textContent = count+' selected';
+  $('p-selected-cnt').hidden = !count;
+  const all = $('p-select-all');
+  if(all){
+    all.checked = list.length>0 && count===list.length;
+    all.indeterminate = count>0 && count<list.length;
+  }
+}
+
+async function removeSelectedProxies(){
+  if(!selectedProxies.size){ toast('Select proxies to remove first', true); return; }
+  const count = selectedProxies.size;
+  if(!await uiConfirm(`Remove ${count} selected ${count===1?'proxy':'proxies'}?`, {title:'Remove proxies', ok:'Remove', danger:true})) return;
+  const list = (STATE&&STATE.proxies&&STATE.proxies.list)||[];
+  const remaining = list.filter(p => !selectedProxies.has(p.url));
+  try{
+    const r = await api('settings', {method:'POST', body:JSON.stringify({proxies:{...STATE.proxies, list:remaining}})});
+    if(r.error){ toast(r.error, true); return; }
+    selectedProxies.clear();
+    toast(`Removed ${count} proxies`);
+    await refreshState();
+  }catch(e){ toast(e.message||'Failed to remove proxies', true); }
+}
+
+async function toggleSelectedProxies(){
+  if(!selectedProxies.size){ toast('Select proxies to toggle first', true); return; }
+  const list = (STATE&&STATE.proxies&&STATE.proxies.list)||[];
+  const updated = list.map(p => {
+    if(selectedProxies.has(p.url)){
+      const copy = {...p};
+      copy.excluded = !copy.excluded;
+      if(copy.excluded) copy.working = false;
+      return copy;
+    }
+    return p;
+  });
+  try{
+    const r = await api('settings', {method:'POST', body:JSON.stringify({proxies:{...STATE.proxies, list:updated}})});
+    if(r.error){ toast(r.error, true); return; }
+    toast(`Toggled ${selectedProxies.size} proxies`);
+    await refreshState();
+  }catch(e){ toast(e.message||'Failed to toggle proxies', true); }
+}
+
+async function checkAndAddProxies(){
+  const lines = $('p-add').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
+  if(!lines.length){ toast('Enter at least one proxy URL', true); return; }
+  const btn = $('p-check-btn');
+  btn.disabled = true;
+  $('p-add-status').textContent = 'Checking proxies and their exit locations…';
+  try{
+    const r = await api('proxies/check', {method:'POST', body:JSON.stringify({proxies:lines, add_working:true})});
+    if(r.error) throw new Error(r.error);
+    const checked = (r.proxies||[]).length, working = (r.proxies||[]).filter(x=>x.working && !x.excluded).length;
+    $('p-add-status').textContent = `Checked ${checked}, added ${working} working.`;
+    if(working) $('p-add').value = '';
+    await refreshState();
+    renderProxies();
+  }catch(e){
+    $('p-add-status').textContent = e.message || 'Check failed';
+  }finally{
+    btn.disabled = false;
+  }
+}
+
+function openProxyCredsModal(rawUrl){
+  $('p-creds-orig-url').value = rawUrl;
+  let proto = 'socks5';
+  let user = '';
+  let pass = '';
+  let hostPort = rawUrl;
+  try{
+    const parsed = new URL(rawUrl.includes('://') ? rawUrl : 'socks5://' + rawUrl);
+    proto = parsed.protocol.replace(':', '') || 'socks5';
+    user = decodeURIComponent(parsed.username || '');
+    pass = decodeURIComponent(parsed.password || '');
+    hostPort = parsed.host;
+  }catch(e){
+    hostPort = formatProxyHostPort(rawUrl);
+  }
+  $('p-creds-target').value = `${proto}://${hostPort}`;
+  $('p-creds-user').value = user;
+  $('p-creds-pass').value = pass;
+  openModal('overlay-proxy-creds');
+}
+
+async function saveProxyCreds(){
+  const oldUrl = $('p-creds-orig-url').value;
+  const target = $('p-creds-target').value;
+  const user = $('p-creds-user').value.trim();
+  const pass = $('p-creds-pass').value;
+
+  let newUrl = oldUrl;
+  try{
+    const parsed = new URL(oldUrl.includes('://') ? oldUrl : 'socks5://' + oldUrl);
+    parsed.username = user ? encodeURIComponent(user) : '';
+    parsed.password = pass ? encodeURIComponent(pass) : '';
+    newUrl = parsed.toString();
+  }catch(e){
+    if(user && pass){
+      newUrl = target.replace('://', `://${encodeURIComponent(user)}:${encodeURIComponent(pass)}@`);
+    } else {
+      newUrl = target;
+    }
+  }
+
+  try{
+    const r = await api('proxies/update', {method:'POST', body:JSON.stringify({old_url:oldUrl, new_url:newUrl})});
+    if(r.error){ toast(r.error, true); return; }
+    closeModal('overlay-proxy-creds');
+    toast('Proxy credentials updated');
+    await refreshState();
+  }catch(e){
+    toast(e.message||'Failed to update credentials', true);
+  }
+}
+
+async function delProxy(url){
+  if(!await uiConfirm('Remove proxy '+formatProxyHostPort(url)+'?', {title:'Remove proxy', ok:'Remove', danger:true})) return;
+  try{
+    const r = await api('proxies?url='+encodeURIComponent(url), {method:'DELETE'});
+    if(r.error){ toast(r.error, true); return; }
+    toast('Proxy removed');
+    await refreshState();
+    renderProxies();
+  }catch(e){ toast(e.message||'Proxy remove failed', true); }
+}
+
+$('save-settings').onclick = async () => {
+  try{
+    const sVal = {
+      openai: {enabled:$('s-oai-on').checked, port:+$('s-oai-port').value||8080, path:$('s-oai-path').value||'/v1'},
+      anthropic: {enabled:$('s-anth-on').checked, port:+$('s-anth-port').value||8081, path:$('s-anth-path').value||'/v1'},
+      admin: {
+        enabled: true,
+        port:+$('s-web-port').value||8082,
+        path:$('s-web-path').value||'/',
+        username: (STATE.server.admin||{}).username || 'admin',
+        password: '',
+      },
+    };
+    const usage = {
+      enabled: $('usage-enabled').checked,
+    };
+
+    const model_discovery = {
+      enabled: $('md-enabled').checked,
+      refresh_interval_minutes: Math.max(1, +$('md-minutes').value||60),
+      ignore_cert_errors: $('md-ignorecert') ? $('md-ignorecert').checked : false,
+    };
+    const models = {
+      fast_mode: $('models-fast-mode') ? $('models-fast-mode').checked : !!((STATE.models||{}).fast_mode),
+      reasoning_variants: $('models-reasoning-variants').checked,
+      prefer_other_variants: $('models-other-variants').checked,
+    };
+    const proxies = {
+      enabled: $('p-enabled').checked,
+      check_url: (STATE.proxies||{}).check_url || 'https://api.ipify.org',
+      exclude_countries: (STATE.proxies||{}).exclude_countries || [],
+    };
+    const r = await api('settings', {method:'POST', body:JSON.stringify({server:sVal, usage, hitchance:readHitchancePolicy(), model_discovery, models, proxies, logging_enabled:$('logging-enabled').checked, auto_models_discovery:false})});
+    if(r.error){ toast(r.error, true); return; }
+    const nextBasePath = normalizeAdminBasePath(sVal.admin.path);
+    if(nextBasePath !== normalizeAdminBasePath(STATE.server.admin?.path)){
+      location.assign(nextBasePath+'/');
+      return;
+    }
+    toast('Settings saved');
+    await refreshState();
+  }catch(e){ toast(e.message||'Settings save failed', true); }
+};
+
+/* ---------- util ---------- */
+function closeModal(id){
+  if(id === 'overlay-confirm'){ settleConfirm(false); return; }
+  if(id==='overlay-up-test' && upTestController){
+    uiConfirm('Cancel the running test and close? Uncommitted changes will be discarded.', {title:'Cancel test run', ok:'Stop and close', cancel:'Keep running', danger:true}).then(ok=>{
+      if(!ok) return;
+      if(upTestController) cancelUpTests();
+      hideModal(id);
+    });
+    return;
+  }
+  if(id === 'overlay-2fa') clearTwoFactor();
+  if(id === 'overlay-admin-creds') $('admin-password').value = '';
+  hideModal(id);
+}
+function fmtTime(t){
+  const d = new Date(t);
+  return d.toLocaleString([], {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'});
+}
+document.querySelectorAll('.modal-backdrop').forEach(o=>{
+  let pressedOnBackdrop = false;
+  o.addEventListener('mousedown', e=>{ pressedOnBackdrop = e.target===o; });
+  o.addEventListener('click', e=>{ if(e.target===o && pressedOnBackdrop) closeModal(o.id); pressedOnBackdrop = false; });
+});
+
+/* ---------- init ---------- */
+currentView = location.hash.slice(1)||'dashboard';
+go(currentView, false);
+refreshState().catch(()=>{});
+setInterval(()=>{
+  if(currentView==='dashboard' && !document.hidden) loadStats().catch(()=>{});
+}, 15000);
+setInterval(()=>{
+  if(currentView==='upstreams' && !document.hidden) refreshUpstreamHealth().catch(()=>{});
+}, 2000);
+
+</script>
+</body>
+</html>

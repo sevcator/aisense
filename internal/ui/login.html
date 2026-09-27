@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="ROBOTS" content="NOINDEX, NOFOLLOW" />
+<meta name="referrer" content="no-referrer" />
+<meta name="theme-color" content="#151514" />
+<meta name="admin-base-path" content="__AISENSE_BASE_PATH__" />
+<title>Login / aisense</title>
+<style type="text/css">
+/* Same dark Cobalt / FluxBB theme as the panel, trimmed to what a login page uses. */
+.pun abbr, .pun blockquote, .pun cite, .pun dd, .pun dl, .pun dt, .pun fieldset, .pun form, .pun h1, .pun h2, .pun h3, .pun img, .pun li, .pun ol, .pun p, .pun table, .pun td, .pun th, .pun ul { margin: 0px; padding: 0px; border: 0px; }
+.pun ol, .pun ul { list-style: none; }
+.pun .clearer { height: 0px; width: 0px; line-height: 0; font-size: 0px; overflow: hidden; clear: both; }
+.pun .clearb { clear: both; }
+.pun, .pun .inbox, .pun .inform { min-height: 1px; }
+#brdfooter h2, .pun .required strong span { position: absolute; display: block; overflow: hidden; width: 0px; left: -9999em; text-indent: -9999em; }
+.pun { font: 68.75% Verdana, Helvetica, Arial, sans-serif; padding: 12px 0px; }
+.pun input, .pun legend, .pun select { font-size: 10px; font-family: verdana, helvetica, arial, sans-serif; }
+.pun strong { font-weight: 700; }
+.pun dl, .pun ol, .pun p, .pun ul { font-size: 11px; padding: 3px 0px; }
+.pun h2 { font-size: 1em; font-weight: 400; padding: 4px 6px; }
+body, html { margin: 0px; padding: 0px; }
+.pun { max-width: 1070px; min-width: 0; margin: 0px auto; padding: 12px 20px; }
+#brdheader { margin: 0px 0px 12px; }
+#brdtitle p { padding-top: 0px; }
+.pun .block, .pun .blockform { margin-bottom: 12px; }
+.pun .box { border-style: solid; border-width: 1px; }
+#brdheader .box { border-top-width: 4px; border-radius: 4px; }
+.pun .block .inbox { padding: 6px 12px; }
+#brdtitle h1 { font-size: 22px; font-weight: 400; padding: 0px 0px 10px; font-family: Verdana, Helvetica, Arial, sans-serif; }
+#brdheader #brdtitle { padding: 12px 12px 0; }
+#brdtitle h1 a { color: rgb(234, 234, 234); }
+#brdtitle h1 a span { color: rgb(149, 184, 6); }
+#brdmenu li { display: inline; margin-right: 12px; }
+#brdmenu a:link, #brdmenu a:visited { text-decoration: none; }
+#brdmenu a:active, #brdmenu a:hover { text-decoration: underline; }
+#brdwelcome .conl { float: left; }
+#brdwelcome .conr { float: right; text-align: right; }
+.pun .blockform form { padding: 18px 18px 14px; }
+.pun .inform { padding-bottom: 12px; }
+.pun fieldset { padding: 0px 12px; border-style: solid; border-width: 1px; }
+.pun legend { padding: 0px 6px; }
+.pun .infldset { padding: 10px 0px 12px; }
+.pun label { display: block; padding: 4px 0px; }
+.pun label.conl { float: left; overflow: visible; margin-right: 10px; }
+.pun fieldset .rbox br { display: none; }
+.pun fieldset .rbox label { padding: 3px 0px 3px 25px; position: relative; vertical-align: middle; }
+.pun fieldset .rbox input { margin: 0px 9px 0px -25px; padding: 0px; width: 16px; position: relative; vertical-align: middle; }
+.pun .blockform .buttons { padding-left: 12px; }
+.pun .blockform .buttons input { margin-right: 8px; }
+.pun p.actions span { margin-right: 12px; }
+#brdwelcome, div.rbox input { line-height: 1.4em; }
+body { background-color: rgb(21, 21, 20); color: rgb(212, 212, 211); }
+.pun { color: rgb(212, 212, 211); }
+.pun .box { background-color: rgb(39, 39, 38); border-color: rgb(53, 53, 52); }
+.pun h2 { border-top-left-radius: 4px; border-top-right-radius: 4px; background-color: rgb(53, 53, 52); border-top: 1px solid rgb(53, 53, 52); border-right: 1px solid rgb(53, 53, 52); border-left: 1px solid rgb(53, 53, 52); padding: 8px; font-size: 11px; line-height: 1.4; font-weight: 700; color: rgb(187, 187, 187); }
+#brdmenu { background-color: rgb(53, 53, 52); color: rgb(212, 212, 211); }
+.pun legend { color: rgb(96, 160, 220); }
+.pun input { background-color: rgb(33, 33, 32); color: rgb(204, 204, 204); border: 1px solid rgb(62, 62, 61); }
+.pun input:hover { background-color: rgb(27, 27, 26); border-color: rgb(68, 68, 68); color: rgb(170, 170, 170); }
+.pun input:disabled, .pun input:disabled:hover { opacity: 0.5; background-color: rgb(27, 27, 26); color: rgb(204, 204, 204); border: 1px solid rgb(62, 62, 61); }
+.pun input:focus { outline: 0px; border-color: rgb(102, 102, 102); }
+.pun fieldset { border-color: rgb(96, 96, 96); }
+.pun a:link, .pun a:visited { color: rgb(96, 160, 220); text-decoration: none; }
+.pun a:active, .pun a:focus, .pun a:hover { color: rgb(128, 214, 255); }
+#brdmenu a:link, #brdmenu a:visited, #brdmenu a:active, #brdmenu a:hover { color: rgb(212, 212, 211); }
+
+/* aisense adapter: the same type scale, checkbox and button treatment as the panel. */
+html, body { background-color: rgb(21, 21, 20); color: rgb(212, 212, 211); font-family: Verdana, Helvetica, Arial, sans-serif; line-height: normal; }
+.pun label { font-weight: 700; }
+.pun legend, .pun input { font-weight: 400; }
+.pun input, .pun legend { font-size: 11px; }
+.pun fieldset input, .pun fieldset label, .pun fieldset legend, .pun fieldset p { font-size: 11px; line-height: 1.45; }
+.pun input[type=text], .pun input[type=password] { height: 20px; padding: 1px 5px; max-width: 100%; }
+/* the original gamesense submit button */
+.pun input[type=submit] { padding: 4px 8px; cursor: pointer; }
+.pun input[type=checkbox] { height: 16px; }
+.pun input:not([type=checkbox]):focus-visible { outline: none; box-shadow: none; }
+.pun input[type=checkbox]:focus-visible, .pun a:focus-visible { outline: 2px solid rgb(96, 160, 220); outline-offset: 2px; }
+.pun .dim { color: rgb(136, 136, 136); }
+#status { min-height: 18px; color: rgb(231, 138, 128); padding-left: 12px; }
+#status.working { color: rgb(136, 136, 136); }
+@media(max-width:600px),(pointer:coarse){
+  .pun { padding: 10px; }
+  .pun .blockform form { padding: 14px 14px 12px; }
+  .pun label.conl { float: none; margin-right: 0; }
+  .pun input[type=text], .pun input[type=password] { height: 44px; font-size: 16px; width: 100%; }
+  .pun input[type=submit] { min-height: 44px; }
+  .pun fieldset .rbox label { min-height: 44px; display: flex; align-items: center; }
+  .pun input[type=checkbox] { width: 20px; height: 20px; }
+}
+/* gamesense divider, pinned to the top edge. The colours flow; reduced motion only slows it down. */
+.top-divider{position:sticky;top:0;z-index:2147483000;height:2px;padding:0;margin:0;overflow:hidden;background:#1e5799;border-bottom:1px solid #000}
+.top-divider::before{content:"";position:absolute;top:0;left:0;height:100%;width:200%;background:linear-gradient(90deg,#1e5799 0%,#f300ff 16.666%,#e0ff00 33.333%,#1e5799 50%,#f300ff 66.666%,#e0ff00 83.333%,#1e5799 100%);animation:divider-flow 8s linear infinite;will-change:transform}
+@keyframes divider-flow{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.top-divider::before{animation-duration:12s}}
+</style>
+</head>
+<body>
+<div class="top-divider"></div>
+<div id="punlogin" class="pun">
+<div class="top-box"></div>
+<div class="punwrap">
+
+  <div id="brdheader" class="block">
+    <div class="box">
+      <div id="brdtitle" class="inbox">
+        <h1><a href="/">ai<span>sense</span></a></h1>
+        <div id="brddesc"></div>
+      </div>
+      <div id="brdmenu" class="inbox">
+        <ul>
+          <li id="navlogin" class="isactive"><a href="/login">Login</a></li>
+        </ul>
+      </div>
+      <div id="brdwelcome" class="inbox">
+        <p class="conl">You are not logged in.</p>
+        <div class="clearer"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="brdmain">
+    <div class="blockform">
+      <h2><span>Login</span></h2>
+      <div class="box">
+        <form id="login-form" method="post" action="/admin/api/login">
+          <div class="inform">
+            <fieldset>
+              <legend>Enter your username and password below</legend>
+              <div class="infldset">
+                <label class="conl required" for="username"><strong>Username <span>(Required)</span></strong><br /><input type="text" id="username" name="username" size="25" maxlength="80" autocomplete="username" required="required" autofocus="autofocus" /><br /></label>
+                <label class="conl required" for="password"><strong>Password <span>(Required)</span></strong><br /><input type="password" id="password" name="password" size="25" autocomplete="current-password" required="required" /><br /></label>
+
+                <div class="rbox clearb">
+                  <label for="show-password"><input type="checkbox" id="show-password" />Show the password while I type it.<br /></label>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+          <div class="inform">
+            <fieldset>
+              <legend>Two factor authentication</legend>
+              <div class="infldset">
+                <label for="code"><strong>2FA code</strong><br /><input type="text" id="code" name="code" size="32" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" autocomplete="one-time-code" /><br /></label>
+
+                <p class="clearb">This field can be ignored if two factor authentication is not enabled. Otherwise enter a fresh six-digit authenticator code: after enabling 2FA, wait for the next code, because the setup code has already been used.</p>
+              </div>
+            </fieldset>
+          </div>
+          <p id="status" role="status" aria-live="polite"></p>
+          <p class="buttons"><input type="submit" id="login-button" value="Login" /></p>
+          <noscript><p class="clearb">JavaScript is required to log in.</p></noscript>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div id="brdfooter" class="block">
+    <div class="box">
+      <div class="inbox">
+        <p class="conl dim">aisense</p>
+        <div class="clearer"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<div class="end-box"></div>
+</div>
+<script type="text/javascript">
+'use strict';
+const form = document.getElementById('login-form');
+const ADMIN_BASE_PATH = document.querySelector('meta[name="admin-base-path"]').content === '/' ? '' : document.querySelector('meta[name="admin-base-path"]').content;
+form.action = ADMIN_BASE_PATH + '/admin/api/login';
+const password = document.getElementById('password');
+const code = document.getElementById('code');
+const show = document.getElementById('show-password');
+const statusLine = document.getElementById('status');
+show.addEventListener('change', () => { password.type = show.checked ? 'text' : 'password'; });
+form.addEventListener('submit', async event => {
+  event.preventDefault();
+  const button = document.getElementById('login-button');
+  if(button.disabled) return;
+  button.disabled = true;
+  statusLine.className = 'working';
+  statusLine.textContent = 'Logging in...';
+  try {
+    const response = await fetch(ADMIN_BASE_PATH + '/admin/api/login', {
+      method:'POST', credentials:'same-origin',
+      headers:{'Content-Type':'application/json', 'X-Aisense-Request':'1'},
+      body:JSON.stringify({username:document.getElementById('username').value, password:password.value, code:code.value})
+    });
+    const result = await response.json();
+    if(response.ok && result.ok){ form.reset(); location.replace(ADMIN_BASE_PATH + '/'); return; }
+    statusLine.className = '';
+    statusLine.textContent = response.status === 429 ? 'Too many attempts. Please wait before trying again.' : 'Login failed. Check your credentials and use a fresh authenticator code if 2FA is enabled.';
+  } catch {
+    statusLine.className = '';
+    statusLine.textContent = 'Unable to log in. Please check your connection and try again.';
+  } finally {
+    password.value = ''; code.value = ''; show.checked = false; password.type = 'password'; button.disabled = false;
+  }
+});
+window.addEventListener('pagehide', () => { form.reset(); password.type = 'password'; });
+</script>
+</body>
+</html>
