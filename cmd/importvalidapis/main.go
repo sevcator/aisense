@@ -71,12 +71,7 @@ func run(file, cfgPath string, dryRun bool) error {
 	if err != nil {
 		return err
 	}
-	tmp := cfgPath + ".importvalidapis.tmp"
-	if err := config.WriteFile(tmp, out); err != nil {
-		return err
-	}
-	if err := os.Rename(tmp, cfgPath); err != nil {
-		_ = os.Remove(tmp)
+	if err := config.WriteFile(cfgPath, out); err != nil {
 		return err
 	}
 	fmt.Printf("config rewritten: %s (%d upstreams total)\n", cfgPath, len(cfg.Upstreams))

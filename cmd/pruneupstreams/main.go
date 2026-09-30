@@ -104,11 +104,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	tmp := *cfgPath + ".prune.tmp"
-	if err := config.WriteFile(tmp, nb); err != nil {
-		panic(err)
-	}
-	if err := os.Rename(tmp, *cfgPath); err != nil {
+	if err := config.WriteFile(*cfgPath, nb); err != nil {
 		panic(err)
 	}
 	fmt.Printf("kept %d, removed by keep-list %d, removed by model match %d\n", kept, removedKeep, removedModels)

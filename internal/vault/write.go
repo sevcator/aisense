@@ -22,11 +22,23 @@ func WriteSealed(path string, plain []byte) error {
 	if err != nil {
 		return err
 	}
+	return writeAtomic(path, sealed)
+}
+
+// WritePlain atomically replaces a readable settings file. Callers must remove
+// credentials before passing data here.
+func WritePlain(path string, plain []byte) error {
+	return writeAtomic(path, plain)
+}
+
+func writeAtomic(path string, data []byte) error {
 	if dir := filepath.Dir(path); dir != "" {
-		_ = os.MkdirAll(dir, 0o755)
+		if err := os.MkdirAll(dir, 0o755); err != nil {
+			return err
+		}
 	}
 	tmp := path + ".tmp"
-	if err := os.WriteFile(tmp, sealed, 0o600); err != nil {
+	if err := os.WriteFile(tmp, data, 0o600); err != nil {
 		return err
 	}
 	if err := replaceFile(tmp, path); err != nil {

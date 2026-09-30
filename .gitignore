@@ -3,3 +3,4 @@ usage.json
 tier-pricing.json
 *.exe
 /.publish-worktree/
+*.credentials.vault

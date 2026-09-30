@@ -29,8 +29,8 @@ type AdminCfg struct {
 	Enabled  bool   `json:"enabled"`
 	Port     int    `json:"port"`
 	Path     string `json:"path"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username string `json:"username,omitempty"`
+	Password string `json:"password,omitempty"`
 	Token    string `json:"token,omitempty"` // legacy: migrated to Password on startup
 	// TOTPSecret enables two-factor authentication for the admin panel when
 	// non-empty (base32 RFC 6238 secret).
@@ -89,7 +89,7 @@ type Upstream struct {
 	Name           string                     `json:"name"`
 	Type           string                     `json:"type"` // legacy identity hint, not a protocol filter
 	BaseURL        string                     `json:"base_url"`
-	APIKeys        []string                   `json:"api_keys"`
+	APIKeys        []string                   `json:"api_keys,omitempty"`
 	Models         []string                   `json:"models"`
 	ModelAliases   map[string][]string        `json:"model_aliases,omitempty"`
 	BlockedModels  []string                   `json:"blocked_models,omitempty"`
@@ -130,8 +130,8 @@ func (u *Upstream) UnmarshalJSON(data []byte) error {
 
 type OAuthCfg struct {
 	TokenURL     string `json:"token_url"`
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
+	ClientID     string `json:"client_id,omitempty"`
+	ClientSecret string `json:"client_secret,omitempty"`
 	Scope        string `json:"scope,omitempty"`
 }
 
@@ -158,7 +158,7 @@ type ProxyCfg struct {
 type APIKey struct {
 	ID            string   `json:"id"`
 	Name          string   `json:"name"`
-	Key           string   `json:"key"`
+	Key           string   `json:"key,omitempty"`
 	Enabled       bool     `json:"enabled"`
 	AllowedModels []string `json:"allowed_models"`
 	// BlockedModels is the blacklist counterpart of AllowedModels: a matching
@@ -172,6 +172,7 @@ type APIKey struct {
 }
 
 type Config struct {
+	CredentialsRevision string            `json:"credentials_revision,omitempty"`
 	Hitchance           hitchance.Config  `json:"hitchance"`
 	AutoModelsDiscovery bool              `json:"auto_models_discovery"`
 	LoggingEnabled      bool              `json:"logging_enabled"`
@@ -248,17 +249,8 @@ func Load(path string) (*Manager, error) {
 	cfg := Default()
 	loaded, wasSealed := false, false
 	var original []byte
-	if raw, err := os.ReadFile(path); err == nil {
-		b, sealed, err := vault.OpenOrPlain(raw)
-		if err != nil {
-			// Never treat an unreadable file as "no config": that would start
-			// empty and overwrite upstreams and keys that are still on disk.
-			return nil, fmt.Errorf("read %s: %w", path, err)
-		}
+	if b, sealed, err := readConfig(path, cfg); err == nil {
 		loaded, wasSealed, original = true, sealed, b
-		if err := json.Unmarshal(b, cfg); err != nil {
-			return nil, fmt.Errorf("parse %s: %w", path, err)
-		}
 		if err := migrateHitchanceScheduler(b, &cfg.Hitchance); err != nil {
 			return nil, err
 		}
@@ -275,7 +267,8 @@ func Load(path string) (*Manager, error) {
 		cfg.Hitchance.RetryCycles = 0
 	} else {
 		if !os.IsNotExist(err) {
-			return nil, err
+			// Never treat an unreadable file as empty: that could overwrite keys.
+			return nil, fmt.Errorf("read %s: %w", path, err)
 		}
 		if err := m.persist(cfg); err != nil {
 			return nil, err
@@ -294,12 +287,18 @@ func Load(path string) (*Manager, error) {
 		return nil, err
 	}
 	if loaded {
-		canonical, _ := json.MarshalIndent(cfg, "", "  ")
-		// A file still in plain text is encrypted on this first load.
-		if !wasSealed || !bytes.Equal(bytes.TrimSpace(original), bytes.TrimSpace(canonical)) {
+		public, _, err := splitCredentials(cfg)
+		if err != nil {
+			return nil, err
+		}
+		canonical, _ := json.MarshalIndent(public, "", "  ")
+		// Legacy sealed and plaintext files are migrated to split storage.
+		if wasSealed || cfg.CredentialsRevision == "" || !bytes.Equal(bytes.TrimSpace(original), bytes.TrimSpace(canonical)) {
 			if err := m.persist(cfg); err != nil {
 				return nil, err
 			}
+		} else {
+			m.lastWritten = canonical
 		}
 	}
 	m.cfg = cfg
@@ -309,29 +308,41 @@ func Load(path string) (*Manager, error) {
 
 func (m *Manager) Get() *Config { return m.active.Load() }
 
-// ReadFile reads a config file and decrypts it when it was sealed for this
-// account. Tools and tests use it instead of reading the file themselves.
+// ReadFile returns a complete logical config, including credentials. Tools
+// must treat this result as sensitive and use WriteFile to save it again.
 func ReadFile(path string) ([]byte, error) {
-	raw, err := os.ReadFile(path)
-	if err != nil {
+	cfg := &Config{}
+	if _, _, err := readConfig(path, cfg); err != nil {
 		return nil, err
 	}
-	plain, _, err := vault.OpenOrPlain(raw)
-	return plain, err
+	return json.MarshalIndent(cfg, "", "  ")
 }
 
-// WriteFile writes a config file sealed for this account.
-func WriteFile(path string, plain []byte) error { return vault.WriteSealed(path, plain) }
+// ExportFile produces a self-contained plaintext config for transfer. The
+// destination must create its own credential generation and vault.
+func ExportFile(path string) ([]byte, error) {
+	cfg := &Config{}
+	if _, _, err := readConfig(path, cfg); err != nil {
+		return nil, err
+	}
+	cfg.CredentialsRevision = ""
+	return json.MarshalIndent(cfg, "", "  ")
+}
 
-func (m *Manager) persist(cfg *Config) error {
-	plain, err := json.MarshalIndent(cfg, "", "  ")
-	if err != nil {
+// WriteFile splits a complete logical config into readable settings and the
+// encrypted credential store. It atomically replaces each file in order.
+func WriteFile(path string, plain []byte) error {
+	var cfg Config
+	if err := json.Unmarshal(plain, &cfg); err != nil {
 		return err
 	}
-	if bytes.Equal(plain, m.lastWritten) {
-		return nil // nothing changed: no encryption, no disk write
-	}
-	if err := vault.WriteSealed(m.path, plain); err != nil {
+	_, err := writeSplit(path, &cfg, nil)
+	return err
+}
+
+func (m *Manager) persist(cfg *Config) error {
+	plain, err := writeSplit(m.path, cfg, m.lastWritten)
+	if err != nil {
 		return err
 	}
 	m.lastWritten = plain
@@ -345,7 +356,8 @@ func (m *Manager) Update(fn func(*Config) error) error {
 	cur := m.cfg
 	next := *cur // shallow copy
 	next.Upstreams = cloneUpstreams(cur.Upstreams)
-	next.APIKeys = append([]*APIKey(nil), cur.APIKeys...)
+	next.APIKeys = cloneAPIKeys(cur.APIKeys)
+	next.Proxies = cloneProxies(cur.Proxies)
 	next.Hitchance = cur.Hitchance.Clone()
 	next.Combos = cloneCombos(cur.Combos)
 	if err := fn(&next); err != nil {
@@ -383,7 +395,8 @@ func (m *Manager) Mutate(fn func(*Config)) {
 	defer m.mu.Unlock()
 	next := *m.cfg
 	next.Upstreams = cloneUpstreams(m.cfg.Upstreams)
-	next.APIKeys = append([]*APIKey(nil), m.cfg.APIKeys...)
+	next.APIKeys = cloneAPIKeys(m.cfg.APIKeys)
+	next.Proxies = cloneProxies(m.cfg.Proxies)
 	fn(&next)
 	next.Server.Admin.Enabled = true
 	next.Server.Admin.Path = NormalizeAdminPath(next.Server.Admin.Path)
@@ -414,17 +427,10 @@ func (m *Manager) Watch(interval time.Duration) {
 					return
 				}
 				last = st.ModTime()
-				raw, err := os.ReadFile(m.path)
-				if err != nil {
-					return
-				}
-				b, _, err := vault.OpenOrPlain(raw)
+				cfg := *Default()
+				b, _, err := readConfig(m.path, &cfg)
 				if err != nil {
 					log.Printf("[config] reload rejected: %v", err)
-					return
-				}
-				cfg := *Default()
-				if err := json.Unmarshal(b, &cfg); err != nil {
 					return
 				}
 				if err := migrateHitchanceScheduler(b, &cfg.Hitchance); err != nil {
@@ -533,6 +539,33 @@ func cloneUpstreams(in []*Upstream) []*Upstream {
 			cp.OAuth = &oauth
 		}
 		out = append(out, &cp)
+	}
+	return out
+}
+
+func cloneAPIKeys(in []*APIKey) []*APIKey {
+	out := make([]*APIKey, len(in))
+	for i, key := range in {
+		if key == nil {
+			continue
+		}
+		copy := *key
+		copy.AllowedModels = append([]string(nil), key.AllowedModels...)
+		copy.BlockedModels = append([]string(nil), key.BlockedModels...)
+		out[i] = &copy
+	}
+	return out
+}
+
+func cloneProxies(in ProxyCfg) ProxyCfg {
+	out := in
+	out.ExcludeCountries = append([]string(nil), in.ExcludeCountries...)
+	out.List = make([]*ProxyEntry, len(in.List))
+	for i, proxy := range in.List {
+		if proxy != nil {
+			copy := *proxy
+			out.List[i] = &copy
+		}
 	}
 	return out
 }

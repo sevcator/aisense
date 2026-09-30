@@ -114,17 +114,17 @@ func main() {
 	exportPath := flag.String("export-config", "", "write a readable copy of the config to this file and exit")
 	flag.Parse()
 
-	// The stored config is encrypted for this account, so it cannot be moved to
-	// another machine as it is. This writes the readable copy to do that with.
+	// Export combines readable settings with the protected credentials for a
+	// manual transfer to another machine. The export itself is sensitive.
 	if *exportPath != "" {
-		plain, err := config.ReadFile(*cfgPath)
+		plain, err := config.ExportFile(*cfgPath)
 		if err != nil {
 			log.Fatalf("export: %v", err)
 		}
 		if err := os.WriteFile(*exportPath, plain, 0o600); err != nil {
 			log.Fatalf("export: %v", err)
 		}
-		log.Printf("[aisense] readable copy written to %s; it holds every API key, so keep it safe and delete it when done", *exportPath)
+		log.Printf("[aisense] readable copy written to %s; it holds login credentials and every API key, so protect it and delete it when done", *exportPath)
 		return
 	}
 
@@ -136,8 +136,8 @@ func main() {
 	cfg, err := config.Load(*cfgPath)
 	if err != nil {
 		log.Fatalf("config: %v\n"+
-			"The config is encrypted for the account that wrote it. Start aisense as that account, "+
-			"or put a readable config.json back in place and it will be encrypted again.", err)
+			"The credential store is protected for the account that wrote it. Start aisense as that account, "+
+			"or restore a complete readable config export to migrate it.", err)
 	}
 
 	// Session login uses admin credentials. Existing installations
