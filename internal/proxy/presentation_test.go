@@ -32,7 +32,7 @@ func TestPresentationPreservesExplicitRawRoutes(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := []string{"abcdefghijklmnopqrst", "deepseek-v3-flash", "deepseek-v4-flash", "longmodelname-20b", "longmodelname-21b", "standalone-low"}
+	want := []string{"abcdefghijklmnopqrst", "best", "deepseek-v3-flash", "deepseek-v4-flash", "longmodelname-20b", "longmodelname-21b", "shit", "standalone-low"}
 	if got := modelsListIDs(t, gateway); !reflect.DeepEqual(got, want) {
 		t.Fatalf("list = %v, want %v", got, want)
 	}

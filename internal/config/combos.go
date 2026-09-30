@@ -94,6 +94,8 @@ func ValidateCombos(combos []*ModelCombo) error {
 			return fmt.Errorf("%s: name must not contain spaces or commas", where)
 		case modelalias.IsMetaName(name):
 			return fmt.Errorf("%s: %s is a reserved model name", where, name)
+		case modelalias.IsTierName(name):
+			return fmt.Errorf("%s: %s is a reserved price-tier router name", where, name)
 		case len(combo.Models) == 0:
 			return fmt.Errorf("%s: add at least one model", where)
 		case len(combo.Models) > maxComboModels:

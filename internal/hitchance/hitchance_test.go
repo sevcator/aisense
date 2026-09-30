@@ -14,6 +14,8 @@ func TestDefaultClassification(t *testing.T) {
 		body, category, action, scope string
 	}{
 		{"invalid", 401, `{"error":{"message":"Your key is invalid"}}`, "auth", "delete", "key"},
+		{"plain invalid key", 401, `{"error":{"message":"invalid key"}}`, "auth", "delete", "key"},
+		{"api key is invalid", 401, `{"error":{"message":"API key is invalid"}}`, "auth", "delete", "key"},
 		{"auth", 403, `{"error":{"message":"Authentication failed"}}`, "auth", "delete", "key"},
 		{"billing wins over auth", 401, `{"error":{"type":"authentication_error","message":"quota is exceeded"}}`, "limit", "demote", "key"},
 		{"paid model entitlement", 402, `{"error":{"type":"api_error","message":"this model is not included in your free usage, add usage credits to pay as you go or upgrade for included usage"}}`, "model", "demote", "model"},
@@ -29,6 +31,11 @@ func TestDefaultClassification(t *testing.T) {
 		{"quota on 429", 429, `{"error":{"message":"You exceeded your current quota, please check your plan and billing details"}}`, "limit", "demote", "key"},
 		{"daily limit on 429", 429, `{"error":{"message":"daily request limit reached"}}`, "limit", "demote", "key"},
 		{"provider credentials", 400, `{"error":{"message":"No active credentials for provider: forge"}}`, "model", "demote", "model"},
+		// Relay catch-all failures: the provider's own upstream broke, so the
+		// model rests on this upstream and the walk tries the next one.
+		{"relay catch-all type", 400, `{"error":{"type":"openai_error","message":"The server had an error while processing your request"}}`, "model", "demote", "model"},
+		{"relay catch-all message", 400, `{"error":{"message":"upstream error: connection reset by peer"}}`, "model", "demote", "model"},
+		{"bare 400 stays terminal", 400, `{}`, "", "", ""},
 		// A relay reporting its own provider's failure cools only that model on our key.
 		{"nested provider key", 502, `{"error":{"message":"upstream provider authentication failed: invalid api key"}}`, "model", "demote", "model"},
 		{"model", 404, `{"error":{"code":"model_not_found"}}`, "model", "demote", "model"},
@@ -61,17 +68,20 @@ func TestRetryAfterAndDisabled(t *testing.T) {
 	}
 }
 
-func TestDefaultPolicyIsFourRules(t *testing.T) {
+func TestDefaultPolicyIsFiveRules(t *testing.T) {
 	c := Default()
 	var ids []string
 	for _, r := range c.Rules {
 		ids = append(ids, r.ID)
 	}
-	if got := strings.Join(ids, ","); got != "model-unavailable,key-limit,api-base-down,key-rejected" {
+	if got := strings.Join(ids, ","); got != "model-unavailable,key-limit,provider-catch-all,api-base-down,key-rejected" {
 		t.Fatalf("default rules = %s", got)
 	}
 	if err := c.Validate(); err != nil {
 		t.Fatal(err)
+	}
+	if previous := PreviousDefaultRules(); len(previous) != 4 || c.Validate() != nil {
+		t.Fatal("previous default rules must stay valid for migration")
 	}
 	c.Rules = LegacyDefaultRules()
 	if len(c.Rules) != 13 || c.Validate() != nil {

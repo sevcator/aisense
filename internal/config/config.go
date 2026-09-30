@@ -69,6 +69,14 @@ type ModelsCfg struct {
 	FastMode bool `json:"fast_mode"`
 }
 
+// TierPricingCfg controls the online price catalog behind the built-in
+// "best"/"shit" tier router. Prices refresh in the background so tier
+// rankings follow the current market rather than a shipped snapshot.
+type TierPricingCfg struct {
+	Enabled                bool `json:"enabled"`
+	RefreshIntervalMinutes int  `json:"refresh_interval_minutes"`
+}
+
 // Missing reasoning_variants preserves the shipped effort-routing default.
 func (c ModelsCfg) VariantOptions() modelalias.VariantOptions {
 	return modelalias.VariantOptions{Reasoning: c.ReasoningVariants == nil || *c.ReasoningVariants, Other: c.PreferOtherVariants, Fast: c.FastMode}
@@ -85,7 +93,10 @@ type Upstream struct {
 	Models         []string                   `json:"models"`
 	ModelAliases   map[string][]string        `json:"model_aliases,omitempty"`
 	BlockedModels  []string                   `json:"blocked_models,omitempty"`
-	HiddenInvalid  bool                       `json:"hidden_invalid,omitempty"`
+	// AllowedModels is the whitelist counterpart of BlockedModels: when set,
+	// only these model patterns are visible and routable on this upstream.
+	AllowedModels []string `json:"allowed_models,omitempty"`
+	HiddenInvalid bool     `json:"hidden_invalid,omitempty"`
 	// Fingerprinted credentials map to exact raw routes, not entire model families.
 	KeyBlockedModels map[string][]string `json:"key_blocked_models,omitempty"`
 	Priority         int                 `json:"priority"`
@@ -145,11 +156,14 @@ type ProxyCfg struct {
 }
 
 type APIKey struct {
-	ID            string    `json:"id"`
-	Name          string    `json:"name"`
-	Key           string    `json:"key"`
-	Enabled       bool      `json:"enabled"`
-	AllowedModels []string  `json:"allowed_models"`
+	ID            string   `json:"id"`
+	Name          string   `json:"name"`
+	Key           string   `json:"key"`
+	Enabled       bool     `json:"enabled"`
+	AllowedModels []string `json:"allowed_models"`
+	// BlockedModels is the blacklist counterpart of AllowedModels: a matching
+	// model is refused for this key even when whitelists would allow it.
+	BlockedModels []string  `json:"blocked_models,omitempty"`
 	RPM           int       `json:"rpm"`
 	RPD           int       `json:"rpd"`
 	TPD           int       `json:"tpd"`
@@ -165,6 +179,7 @@ type Config struct {
 	Usage               UsageCfg          `json:"usage"`
 	ModelDiscovery      ModelDiscoveryCfg `json:"model_discovery"`
 	Models              ModelsCfg         `json:"models"`
+	TierPricing         TierPricingCfg    `json:"tier_pricing"`
 	Proxies             ProxyCfg          `json:"proxies"`
 	Upstreams           []*Upstream       `json:"upstreams"`
 	APIKeys             []*APIKey         `json:"api_keys"`
@@ -189,6 +204,7 @@ func Default() *Config {
 			Enabled: true,
 		},
 		ModelDiscovery: ModelDiscoveryCfg{Enabled: false, RefreshIntervalMinutes: 60, AutoFixProblems: true},
+		TierPricing:    TierPricingCfg{Enabled: true, RefreshIntervalMinutes: 60},
 		Proxies: ProxyCfg{
 			Enabled:          false,
 			CheckURL:         "https://api.ipify.org",
@@ -246,8 +262,12 @@ func Load(path string) (*Manager, error) {
 		if err := migrateHitchanceScheduler(b, &cfg.Hitchance); err != nil {
 			return nil, err
 		}
-		// An untouched copy of the old 13 default rules becomes the current 4.
-		if reflect.DeepEqual(cfg.Hitchance.Rules, hitchance.LegacyDefaultRules()) {
+		// Untouched copies of older default rule sets become the current rules,
+		// so an updated binary gains new default behavior. Customised policies
+		// never match and are left alone.
+		if reflect.DeepEqual(cfg.Hitchance.Rules, hitchance.PreviousExpandedDefaultRules()) ||
+			reflect.DeepEqual(cfg.Hitchance.Rules, hitchance.LegacyDefaultRules()) ||
+			reflect.DeepEqual(cfg.Hitchance.Rules, hitchance.PreviousDefaultRules()) {
 			cfg.Hitchance.Rules = hitchance.Default().Rules
 		}
 		// Retry cycles are no longer a user limit; old files migrate to
@@ -264,6 +284,7 @@ func Load(path string) (*Manager, error) {
 	cfg.Server.Admin.Enabled = true
 	cfg.Server.Admin.Path = NormalizeAdminPath(cfg.Server.Admin.Path)
 	normalizeModelDiscovery(&cfg.ModelDiscovery)
+	normalizeTierPricing(&cfg.TierPricing)
 	normalizeUpstreams(cfg)
 	cfg.Combos = NormalizeCombos(cfg.Combos)
 	if err := cfg.Hitchance.Validate(); err != nil {
@@ -340,6 +361,7 @@ func (m *Manager) Update(fn func(*Config) error) error {
 	next.Server.Admin.Enabled = true
 	next.Server.Admin.Path = NormalizeAdminPath(next.Server.Admin.Path)
 	normalizeModelDiscovery(&next.ModelDiscovery)
+	normalizeTierPricing(&next.TierPricing)
 	normalizeUpstreams(&next)
 	if m.validateLogging != nil && next.LoggingEnabled {
 		if err := m.validateLogging(true); err != nil {
@@ -366,6 +388,7 @@ func (m *Manager) Mutate(fn func(*Config)) {
 	next.Server.Admin.Enabled = true
 	next.Server.Admin.Path = NormalizeAdminPath(next.Server.Admin.Path)
 	normalizeModelDiscovery(&next.ModelDiscovery)
+	normalizeTierPricing(&next.TierPricing)
 	normalizeUpstreams(&next)
 	m.cfg = &next
 	m.active.Store(&next)
@@ -415,6 +438,7 @@ func (m *Manager) Watch(interval time.Duration) {
 				cfg.Server.Admin.Enabled = true
 				cfg.Server.Admin.Path = NormalizeAdminPath(cfg.Server.Admin.Path)
 				normalizeModelDiscovery(&cfg.ModelDiscovery)
+				normalizeTierPricing(&cfg.TierPricing)
 				normalizeUpstreams(&cfg)
 				if m.validateLogging != nil && cfg.LoggingEnabled {
 					if err := m.validateLogging(true); err != nil {
@@ -530,6 +554,14 @@ func normalizeModelDiscovery(cfg *ModelDiscoveryCfg) {
 	}
 	// HTTP/HTTPS auto-detection is a default behavior, not a user-facing toggle.
 	cfg.AutoFixProblems = true
+}
+
+// normalizeTierPricing keeps the refresh cadence inside a polite band: the
+// catalogs are public and free, but they are someone else's service.
+func normalizeTierPricing(cfg *TierPricingCfg) {
+	if cfg.RefreshIntervalMinutes < 15 {
+		cfg.RefreshIntervalMinutes = 60
+	}
 }
 
 // NormalizeAdminPath returns a clean absolute URL path for the admin panel.

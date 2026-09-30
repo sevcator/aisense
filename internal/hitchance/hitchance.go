@@ -70,7 +70,7 @@ type State struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-// Default is four rules, one per outcome. Order matters: model and relay-provider
+// Default is five rules, one per outcome. Order matters: model and relay-provider
 // errors never touch the key, quota text beats an auth error type, 5xx cools the
 // API base, and only invalid-key text (not a bare 401/403) deletes a key.
 // Repeated failures double each cooldown up to MaxCooldownSeconds.
@@ -83,12 +83,59 @@ func Default() Config {
 			StatusCodes: []int{402, 429},
 			Messages:    []string{"not enough credits", "quota is exceeded", "insufficient_quota", "quota exceeded", "quota exhausted", "exceeded your current quota", "insufficient balance", "insufficient credits", "insufficient funds", "credit balance", "add credits", "billing hard limit", "payment required", "balance is too low", "额度不足", "余额不足", "rate limit", "rate_limit_exceeded", "tpm limit", "too many requests"},
 			Pattern:     `(?i)((weekly|monthly).*(limit|quota)|每(周|月).*使用上限|每周/每月使用上限|限额将.*重置)`},
+		// Relay providers answer 400 with a provider catch-all type when their own
+		// upstream failed ("openai_error"). Real client mistakes carry a validation
+		// type instead, which the request-validation guard terminates earlier, so
+		// anything reaching this rule is the provider's fault: rest the model on
+		// this upstream briefly and let the walk try the next upstream or alias.
+		{ID: "provider-catch-all", Category: "model", Action: "demote", Scope: "model", CooldownSeconds: 30,
+			StatusCodes: []int{400},
+			Messages:    []string{"openai_error", "upstream error", "upstream_error"}},
+		{ID: "api-base-down", Category: "outage", Action: "demote", Scope: "endpoint", CooldownSeconds: 30,
+			StatusCodes: []int{404, 405, 408, 425, 500, 501, 502, 503, 504, 507, 529}},
+		{ID: "key-rejected", MatchAny: true, Category: "auth", Action: "delete", Scope: "key", CooldownSeconds: 300,
+			StatusCodes: []int{401, 403},
+			Messages:    []string{"your key is invalid", "invalid api key", "invalid_api_key", "invalid key", "invalid_key", "api key is invalid", "api key invalid", "incorrect api key", "api key not valid", "authentication failed", "authentication_error", "invalid authentication", "invalid token", "token is invalid", "api key has been revoked", "api key is expired", "invalid x-api-key"}},
+	}}
+}
+
+// PreviousExpandedDefaultRules is the shipped five-rule set before the
+// generic invalid-key wording was recognized.
+func PreviousExpandedDefaultRules() []Rule {
+	rules := Default().Rules
+	last := len(rules) - 1
+	rules[last].Messages = append([]string(nil), rules[last].Messages...)
+	oldMessages := rules[last].Messages[:0]
+	for _, message := range rules[last].Messages {
+		switch message {
+		case "invalid key", "invalid_key", "api key is invalid", "api key invalid":
+		default:
+			oldMessages = append(oldMessages, message)
+		}
+	}
+	rules[last].Messages = oldMessages
+	return rules
+}
+
+// PreviousDefaultRules is the four-rule default before the provider catch-all
+// rule was added. Configs that still carry it unchanged are migrated to the
+// current defaults on load, so an updated binary gains the new rule without
+// touching customised policies.
+func PreviousDefaultRules() []Rule {
+	return []Rule{
+		{ID: "model-unavailable", MatchAny: true, Category: "model", Action: "demote", Scope: "model", CooldownSeconds: 300,
+			Messages: []string{"model_not_found", "model not found", "unknown model", "unsupported model", "model_not_supported", "model retired", "model_retired", "model does not exist", "model unavailable", "model is not available", "no available channel"},
+			Pattern:  `(?i)(model.*(not included|not allowed|access|permission|requires.*(credit|paid|subscription))|not included in your|do not have access|provider.*(credential|authentication|quota|unavailable|not configured)|no active credentials|upstream.*(invalid.*key|authentication failed))`},
+		{ID: "key-limit", MatchAny: true, Category: "limit", Action: "demote", Scope: "key", CooldownSeconds: 60,
+			StatusCodes: []int{402, 429},
+			Messages:    []string{"not enough credits", "quota is exceeded", "insufficient_quota", "quota exceeded", "quota exhausted", "exceeded your current quota", "insufficient balance", "insufficient credits", "insufficient funds", "credit balance", "add credits", "billing hard limit", "payment required", "balance is too low", "额度不足", "余额不足", "rate limit", "rate_limit_exceeded", "tpm limit", "too many requests"},
+			Pattern:     `(?i)((weekly|monthly).*(limit|quota)|每(周|月).*使用上限|每周/每月使用上限|限额将.*重置)`},
 		{ID: "api-base-down", Category: "outage", Action: "demote", Scope: "endpoint", CooldownSeconds: 30,
 			StatusCodes: []int{404, 405, 408, 425, 500, 501, 502, 503, 504, 507, 529}},
 		{ID: "key-rejected", MatchAny: true, Category: "auth", Action: "delete", Scope: "key", CooldownSeconds: 300,
 			StatusCodes: []int{401, 403},
 			Messages:    []string{"your key is invalid", "invalid api key", "invalid_api_key", "incorrect api key", "api key not valid", "authentication failed", "authentication_error", "invalid authentication", "invalid token", "token is invalid", "api key has been revoked", "api key is expired", "invalid x-api-key"}},
-	}}
+	}
 }
 
 // LegacyDefaultRules is the previous 13-rule default. Configs that still carry it

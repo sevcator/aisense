@@ -107,6 +107,14 @@ func (s *Store) Add(keyID, model string, tokensIn, tokensOut int64, ok bool) {
 	s.dirty = true
 }
 
+// Clear wipes every usage bucket. The next flush persists the empty state.
+func (s *Store) Clear() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.data = map[string]*UsageRec{}
+	s.dirty = true
+}
+
 // DayTokens returns total tokens used by a key today (across models).
 func (s *Store) DayTokens(keyID string) (in, out int64) {
 	day := time.Now().Format("2006-01-02")

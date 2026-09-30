@@ -102,7 +102,7 @@ func TestCachedUpstreamsSurviveRestart(t *testing.T) {
 	}
 	defer st.Close()
 	p := New(cfg, st)
-	p.setCachedUpstream("openai", "model", cfg.Get().Upstreams[0])
+	p.setCachedUpstream("openai", "model", cfg.Get().Upstreams[0], "")
 	reloaded, err := config.Load(path)
 	if err != nil {
 		t.Fatal(err)

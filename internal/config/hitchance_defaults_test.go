@@ -35,13 +35,77 @@ func TestUntouchedLegacyDefaultRulesMoveToCurrentDefaults(t *testing.T) {
 			t.Fatalf("load %d kept the legacy rules: %d rules", i, len(m.Get().Hitchance.Rules))
 		}
 	}
+	// The previous four-rule default migrates the same way, so an updated
+	// binary gains new default rules without touching customised policies.
+	path = write(hitchance.PreviousDefaultRules())
+	m, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(m.Get().Hitchance.Rules, hitchance.Default().Rules) {
+		t.Fatal("previous default rules were not migrated")
+	}
 	customised := hitchance.LegacyDefaultRules()[:12]
-	m, err := Load(write(customised))
+	m, err = Load(write(customised))
 	if err != nil {
 		t.Fatal(err)
 	}
 	if !reflect.DeepEqual(m.Get().Hitchance.Rules, customised) {
 		t.Fatal("customised rules must never be replaced")
+	}
+}
+
+// The rules JSON here is what an older binary actually persisted for its
+// untouched default policy (exported from a saved config). A transcription
+// mistake in a Go literal would pass the DeepEqual checks above and silently
+// break the migration for real configs; this test reads the persisted form.
+func TestPersistedPreviousDefaultRulesMigrate(t *testing.T) {
+	b, err := os.ReadFile(filepath.Join("testdata", "previous_default_hitchance_rules.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var frozen struct {
+		Rules []json.RawMessage `json:"rules"`
+	}
+	if err := json.Unmarshal(b, &frozen); err != nil {
+		t.Fatal(err)
+	}
+	cfg := Default()
+	stored, err := json.Marshal(cfg) // a config saved by the previous binary
+	if err != nil {
+		t.Fatal(err)
+	}
+	var doc map[string]json.RawMessage
+	if err := json.Unmarshal(stored, &doc); err != nil {
+		t.Fatal(err)
+	}
+	hitchanceDoc := map[string]json.RawMessage{}
+	if err := json.Unmarshal(doc["hitchance"], &hitchanceDoc); err != nil {
+		t.Fatal(err)
+	}
+	rules, err := json.Marshal(frozen.Rules)
+	if err != nil {
+		t.Fatal(err)
+	}
+	hitchanceDoc["rules"] = rules
+	doc["hitchance"], err = json.Marshal(hitchanceDoc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	stored, err = json.Marshal(doc)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := filepath.Join(t.TempDir(), "config.json")
+	if err := os.WriteFile(path, stored, 0o644); err != nil {
+		t.Fatal(err)
+	}
+	m, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(m.Get().Hitchance.Rules, hitchance.Default().Rules) {
+		t.Fatal("the persisted previous default policy did not migrate to the current rules")
 	}
 }
 

@@ -6,6 +6,20 @@ import (
 	"testing"
 )
 
+func TestIdentityAliasesAreNotPersisted(t *testing.T) {
+	catalog := Build([]string{"plain-model", "provider/other-model"}, nil)
+	if len(catalog.Aliases["plain-model"]) != 0 {
+		t.Fatalf("identity alias persisted: %v", catalog.Aliases)
+	}
+	if got := Candidates(catalog.Models, catalog.Aliases, "plain-model", false); len(got) == 0 || got[0] != "plain-model" {
+		t.Fatalf("plain route lost: %v", got)
+	}
+	models, aliases := Normalize([]string{"plain-model"}, map[string][]string{"plain-model": {"plain-model"}})
+	if len(models) != 1 || len(aliases) != 0 {
+		t.Fatalf("legacy identity alias not removed: %v %v", models, aliases)
+	}
+}
+
 func TestBuildCanonicalizesAndPreservesRawRoutes(t *testing.T) {
 	raw := []string{
 		"aug/glm-5.2", "opencode-zen/glm-5.2", "forge/glm-5.2", "oc/glm-5.2",

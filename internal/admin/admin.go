@@ -12,6 +12,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -33,12 +34,16 @@ type ProxyInfo interface {
 }
 
 // CachedRouteEntry mirrors proxy.CachedUpstreamEntry but is re-declared here
-// to avoid a cross-package dependency.
+// to avoid a cross-package dependency. UsedKey is resolved against the
+// upstream's current keys from the stored fingerprint: the panel shows only
+// the credential that actually served the route, not the whole key list.
 type CachedRouteEntry struct {
-	Type       string    `json:"type"`
-	Model      string    `json:"model"`
-	UpstreamID string    `json:"upstream_id"`
-	CachedAt   time.Time `json:"cached_at"`
+	Type           string    `json:"type"`
+	Model          string    `json:"model"`
+	UpstreamID     string    `json:"upstream_id"`
+	KeyFingerprint string    `json:"-"`
+	UsedKey        string    `json:"used_key,omitempty"`
+	CachedAt       time.Time `json:"cached_at"`
 }
 
 type Server struct {
@@ -218,6 +223,7 @@ func adminHandlerName(r *http.Request) string {
 		http.MethodPost + " key":                       "admin.upsertKey",
 		http.MethodDelete + " key":                     "admin.deleteKey",
 		http.MethodGet + " usage":                      "admin.usage",
+		http.MethodPost + " stats/clear":               "admin.clearStats",
 		http.MethodGet + " stats":                      "admin.stats",
 		http.MethodPost + " proxies":                   "admin.addProxies",
 		http.MethodDelete + " proxies":                 "admin.deleteProxy",
@@ -331,8 +337,9 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 		}
 		s.writeJSON(w, 200, struct {
 			*config.Config
-			PresentationModels []string `json:"presentation_models"`
-		}{&state, modelalias.PresentationNames(names, state.Models.VariantOptions())})
+			PresentationModels []string          `json:"presentation_models"`
+			ResolvedProtocols  map[string]string `json:"resolved_protocols,omitempty"`
+		}{&state, modelalias.PresentationNames(names, state.Models.VariantOptions()), s.resolvedProtocols()})
 	case path == "cached-routes" && r.Method == http.MethodGet:
 		s.cachedRoutes(w)
 	case path == "debug/event" && r.Method == http.MethodPost:
@@ -380,6 +387,8 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 		s.deleteKey(w, r)
 	case path == "usage" && r.Method == http.MethodGet:
 		s.usage(w, r)
+	case path == "stats/clear" && r.Method == http.MethodPost:
+		s.clearStats(w)
 	case path == "stats" && r.Method == http.MethodGet:
 		s.stats(w)
 	case path == "proxies" && r.Method == http.MethodPost:
@@ -586,6 +595,7 @@ func (s *Server) upsertUpstream(w http.ResponseWriter, r *http.Request) {
 		up.ModelAliases = filterModelAliases(up.Models, up.ModelAliases)
 	}
 	up.BlockedModels = normalizeStringList(up.BlockedModels)
+	up.AllowedModels = normalizeStringList(up.AllowedModels)
 	changedID := up.ID
 	created, merged, keysAdded := false, false, 0
 	errUpstreamNotFound := errors.New("upstream not found")
@@ -683,6 +693,9 @@ func preserveModelAliases(existing *config.Upstream, requested []string) map[str
 
 func filterModelAliases(requested []string, aliases map[string][]string) map[string][]string {
 	out := map[string][]string{}
+	if slices.Contains(requested, "*") {
+		return config.CloneModelAliases(aliases)
+	}
 	for _, model := range requested {
 		for canonical, routes := range aliases {
 			if modelalias.Matches(model, canonical) {
@@ -1476,9 +1489,11 @@ func (s *Server) cachedRoutes(w http.ResponseWriter) {
 		for _, up := range s.Cfg.Get().Upstreams {
 			if up.ID == route.UpstreamID && up.ModelVisible(route.Model) {
 				names = append(names, route.Model)
-				visibleRoutes = append(visibleRoutes, route)
+				entry := route
+				entry.UsedKey = usedKeyOf(up, route.KeyFingerprint)
+				visibleRoutes = append(visibleRoutes, entry)
 				upstreamByID[up.ID] = map[string]any{
-					"id": up.ID, "base_url": up.BaseURL, "api_keys": up.APIKeys,
+					"id": up.ID, "base_url": up.BaseURL, "type": up.Type, "api_keys": up.APIKeys,
 					"enabled": up.Enabled, "hidden_invalid": up.HiddenInvalid,
 				}
 				break
@@ -1495,6 +1510,64 @@ func (s *Server) cachedRoutes(w http.ResponseWriter) {
 		"presentation_models": modelalias.PresentationNames(names, s.Cfg.Get().Models.VariantOptions()),
 		"routes":              visibleRoutes,
 		"upstreams":           upstreams,
+		"resolved_protocols":  s.resolvedProtocols(),
 		"ttl_hours":           ttlHours,
 	})
+}
+
+// clearStats wipes every usage bucket on the operator's request.
+func (s *Server) clearStats(w http.ResponseWriter) {
+	if s.Store == nil {
+		s.writeJSON(w, 200, map[string]string{"status": "no store"})
+		return
+	}
+	s.Store.Clear()
+	s.writeJSON(w, 200, map[string]string{"status": "cleared"})
+}
+
+// resolvedProtocols derives the effective wire protocol per upstream from the
+// routes the proxy actually served (most recent win). Upstream.Type may stay
+// "auto" forever because routing resolves the protocol per request, so the
+// panel icons must be re-derived from live evidence instead of the configured
+// hint — today an endpoint may be OpenAI-compatible and tomorrow Anthropic.
+func (s *Server) resolvedProtocols() map[string]string {
+	out := map[string]string{}
+	if s.Proxy == nil {
+		return out
+	}
+	latest := map[string]time.Time{}
+	for _, route := range s.Proxy.CachedUpstreams() {
+		if route.Type != "openai" && route.Type != "anthropic" {
+			continue
+		}
+		if at, ok := latest[route.UpstreamID]; ok && !route.CachedAt.After(at) {
+			continue
+		}
+		latest[route.UpstreamID] = route.CachedAt
+		out[route.UpstreamID] = route.Type
+	}
+	return out
+}
+
+// usedKeyOf returns the upstream credential matching the fingerprint recorded
+// with a cached route. Routes recorded before fingerprints existed — and keys
+// rotated away — fall back to the upstream's own key: with a single key there
+// is exactly one candidate, and with several the pool's first is the
+// least-wrong display until the model is served again and the real
+// fingerprint lands.
+func usedKeyOf(up *config.Upstream, fingerprint string) string {
+	if up == nil {
+		return ""
+	}
+	if fingerprint != "" {
+		for _, key := range up.APIKeys {
+			if config.KeyFingerprint(key) == fingerprint {
+				return key
+			}
+		}
+	}
+	if len(up.APIKeys) > 0 {
+		return up.APIKeys[0]
+	}
+	return ""
 }

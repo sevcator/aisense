@@ -33,6 +33,21 @@ func (u *Upstream) ModelKeyAvailable(raw string) bool {
 
 func (u *Upstream) ModelsVisible() bool { return u != nil && u.Enabled && !u.HiddenInvalid }
 
+// allowedByWhitelist reports whether the upstream's AllowedModels list admits
+// the model. An empty list means no whitelist is configured: everything not
+// blacklisted passes.
+func (u *Upstream) AllowedByWhitelist(model string) bool {
+	if u == nil || len(u.AllowedModels) == 0 {
+		return true
+	}
+	for _, allowed := range u.AllowedModels {
+		if allowed == "*" || modelalias.Matches(allowed, model) {
+			return true
+		}
+	}
+	return false
+}
+
 func (u *Upstream) ModelVisible(model string) bool {
 	if u == nil {
 		return false
@@ -41,6 +56,9 @@ func (u *Upstream) ModelVisible(model string) bool {
 		if blocked == "*" || modelalias.Matches(blocked, model) {
 			return false
 		}
+	}
+	if !u.AllowedByWhitelist(model) {
+		return false
 	}
 	for _, raw := range u.VisibleModelNames() {
 		if raw == "*" || modelalias.Matches(raw, model) {

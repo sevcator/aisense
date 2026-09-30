@@ -69,6 +69,20 @@ func TestHitchanceInvalidKeyRemovedWithoutProtocolProbes(t *testing.T) {
 		t.Fatalf("unexpected protocol probes: %d", calls.Load())
 	}
 }
+
+func TestHitchanceLastInvalidKeyRemovesUpstream(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusUnauthorized)
+		_, _ = w.Write([]byte(`{"error":{"message":"invalid key"}}`))
+	}))
+	defer server.Close()
+	p := hitchanceProxy(t, server.URL, []string{"bad"})
+	hitchanceRequest(p)
+	if len(p.Cfg.Get().Upstreams) != 0 {
+		t.Fatalf("invalid final credential retained: %+v", p.Cfg.Get().Upstreams)
+	}
+}
 func TestHitchanceCoolingNeverBypassedAndExactRouteRecovery(t *testing.T) {
 	p := hitchanceProxy(t, "https://one.invalid", []string{"key"})
 	up := p.Cfg.Get().Upstreams[0]
@@ -100,7 +114,7 @@ func TestHitchanceStickyCannotOverrideHealth(t *testing.T) {
 		return nil
 	})
 	up := p.Cfg.Get().Upstreams[0]
-	p.setCachedUpstream("openai", "model", up)
+	p.setCachedUpstream("openai", "model", up, "")
 	p.Health.MarkFailure(up, "model", routehealth.Global, time.Minute, "unavailable")
 	got := p.candidates("openai", "model", true, nil)
 	if len(got) != 2 || got[0].ID != "other" {

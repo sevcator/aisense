@@ -1,0 +1,5 @@
+config.json
+usage.json
+tier-pricing.json
+*.exe
+/.publish-worktree/

@@ -346,7 +346,7 @@ func TestImportNoAuthPlaceholder(t *testing.T) {
 		})
 	}
 	r := parseUpstreamImports("http://206.183.130.97:8081/v1 <no-auth-needed> | qwen36,qwen36-128k")
-	if len(r.Upstreams) != 1 || len(r.Upstreams[0].Models) != 2 || !slices.Contains(r.Upstreams[0].ModelAliases["qwen36"], "qwen36") {
+	if len(r.Upstreams) != 1 || len(r.Upstreams[0].Models) != 2 || len(r.Upstreams[0].ModelAliases["qwen36"]) != 0 {
 		t.Fatalf("no-auth models missing: %+v", r.Upstreams[0])
 	}
 }
@@ -404,7 +404,7 @@ func TestMergeImportUpstreamsByURL(t *testing.T) {
 	if b.AuthMode != "none" || len(b.APIKeys) != 0 {
 		t.Fatalf("no-auth merge got credentials: %+v", b)
 	}
-	if len(b.Models) != 2 || !slices.Contains(b.ModelAliases["qwen36"], "qwen36") {
+	if len(b.Models) != 2 || len(b.ModelAliases["qwen36"]) != 0 {
 		t.Fatalf("no-auth models missing: %+v", b)
 	}
 	// Parsing again and merging against the already-merged set skips both URLs.

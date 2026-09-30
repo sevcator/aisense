@@ -570,8 +570,8 @@ func TestRefreshUpstreamModelsUnionsSuccessfulKeyPools(t *testing.T) {
 	if summary.Updated != 1 || strings.Join(cfg.Get().Upstreams[0].Models, ",") != "model-a,model-b" {
 		t.Fatalf("summary=%#v upstream=%#v", summary, cfg.Get().Upstreams[0])
 	}
-	if len(cfg.Get().Upstreams[0].ModelAliases["model-a"]) == 0 || len(cfg.Get().Upstreams[0].ModelAliases["model-b"]) == 0 {
-		t.Fatalf("discovery lost raw model aliases: %#v", cfg.Get().Upstreams[0].ModelAliases)
+	if len(cfg.Get().Upstreams[0].ModelAliases) != 0 {
+		t.Fatalf("discovery persisted identity aliases: %#v", cfg.Get().Upstreams[0].ModelAliases)
 	}
 }
 

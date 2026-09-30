@@ -192,6 +192,17 @@ func (s *Server) refreshUpstreamModels(ctx context.Context, ids []string) (model
 	// Explicit import/save IDs always discover the ordinary catalog. The auto
 	// routes toggle only narrows periodic/manual all-upstream refreshes.
 	autoOnly := len(ids) == 0 && cfg.AutoModelsDiscovery && !cfg.ModelDiscovery.Enabled
+	// Protocol-twin merging compares every upstream against every other, so the
+	// identities are computed once per run. Recomputing them inside the pair
+	// loop made large catalogs stall for seconds before discovery even started.
+	twinIdentities := map[string]string{}
+	if cfg.ModelDiscovery.AutoFixProblems && !autoOnly {
+		for _, twin := range cfg.Upstreams {
+			if twin != nil {
+				twinIdentities[twin.ID] = config.ProtocolEndpointIdentity(twin)
+			}
+		}
+	}
 	var autoNames []string
 	if cfg.AutoModelsDiscovery {
 		s.mu.Lock()
@@ -235,8 +246,9 @@ func (s *Server) refreshUpstreamModels(ctx context.Context, ids []string) (model
 		copy.BlockedModels = append([]string(nil), up.BlockedModels...)
 		copy.FailCodes = append([]int(nil), up.FailCodes...)
 		if cfg.ModelDiscovery.AutoFixProblems && !autoOnly {
+			identity := twinIdentities[up.ID]
 			for _, twin := range cfg.Upstreams {
-				if twin != nil && twin.Enabled && (len(selected) == 0 || selected[twin.ID]) && twin.ID != up.ID && config.ProtocolEndpointIdentity(twin) == config.ProtocolEndpointIdentity(up) {
+				if twin != nil && twin.Enabled && (len(selected) == 0 || selected[twin.ID]) && twin.ID != up.ID && twinIdentities[twin.ID] == identity {
 					config.MergeUpstreamKeys(&copy, twin)
 				}
 			}
@@ -514,7 +526,11 @@ func autoOnlyResult(up *config.Upstream, res modelRefreshResult, names []string)
 			}
 		}
 	}
-	for _, aliases := range res.modelAliases {
+	for _, model := range res.models {
+		aliases := res.modelAliases[model]
+		if len(aliases) == 0 {
+			aliases = []string{model}
+		}
 		for _, raw := range aliases {
 			if autodiscovery.Matches(names, raw) {
 				routes = append(routes, raw)

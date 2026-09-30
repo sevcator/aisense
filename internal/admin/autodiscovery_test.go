@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"slices"
 	"strings"
 	"testing"
 
@@ -64,14 +65,14 @@ func TestAutoDiscoveryEnabledRoutesOnly(t *testing.T) {
 	if _, err := srv.refreshUpstreamModels(context.Background(), nil); err != nil {
 		t.Fatal(err)
 	}
-	if got := strings.Join(cfg.Get().Upstreams[0].ModelAliases["best-reasoning"], ","); got != "best-reasoning" {
-		t.Fatal(got)
+	if got := cfg.Get().Upstreams[0].ModelAliases["best-reasoning"]; len(got) != 0 {
+		t.Fatalf("identity alias persisted: %v", got)
 	}
 	response = `invalid JSON`
 	if _, err := srv.refreshUpstreamModels(context.Background(), nil); err == nil {
 		t.Fatal("expected upstream failure")
 	}
-	if len(cfg.Get().Upstreams[0].ModelAliases["best-reasoning"]) == 0 {
+	if !slices.Contains(cfg.Get().Upstreams[0].Models, "best-reasoning") {
 		t.Fatal("failure lost cached route")
 	}
 	response = `{"data":[]}`

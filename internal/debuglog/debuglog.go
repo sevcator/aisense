@@ -20,16 +20,17 @@ import (
 const redacted = "[REDACTED]"
 
 type Logger struct {
-	mu      sync.Mutex
-	path    string
-	file    *os.File
-	size    int64
-	maxSize int64
-	backups int
-	closed  bool
-	dir     string
-	enabled func() bool
-	now     func() time.Time
+	mu               sync.Mutex
+	path             string
+	file             *os.File
+	size             int64
+	maxSize          int64
+	backups          int
+	closed           bool
+	dir              string
+	enabled          func() bool
+	now              func() time.Time
+	lastResponseOnly bool
 }
 
 func New(path string, maxSize int64, backups int) (*Logger, error) {
@@ -54,6 +55,15 @@ func NewDynamic(dir, override string, enabled func() bool) *Logger {
 	return l
 }
 
+// NewLastResponseDynamic writes only completed, idle conversation responses.
+func NewLastResponseDynamic(dir, override string, enabled func() bool) *Logger {
+	l := NewDynamic(dir, override, enabled)
+	l.lastResponseOnly = true
+	return l
+}
+
+func (l *Logger) LastResponseOnly() bool { return l != nil && l.lastResponseOnly }
+
 func (l *Logger) Enabled() bool {
 	return l != nil && (l.enabled == nil || l.enabled())
 }
@@ -75,8 +85,10 @@ func (l *Logger) Validate(enabled bool) error {
 	if err := l.openLocked(); err != nil {
 		return err
 	}
-	if _, err := l.file.WriteString("{\"event\":\"logging.write_check\"}\n"); err != nil {
-		return err
+	if !l.lastResponseOnly {
+		if _, err := l.file.WriteString("{\"event\":\"logging.write_check\"}\n"); err != nil {
+			return err
+		}
 	}
 	return l.file.Sync()
 }
@@ -146,6 +158,9 @@ func (l *Logger) Path() string {
 
 func (l *Logger) Event(traceID, event string, fields map[string]any) {
 	if !l.Enabled() {
+		return
+	}
+	if l.lastResponseOnly && event != "conversation.last_response" {
 		return
 	}
 	record := map[string]any{
@@ -234,7 +249,7 @@ func (l *Logger) URL(raw string) string {
 
 // Body renders complete payloads with sensitive structured fields masked.
 func (l *Logger) Body(body []byte, contentType string) any {
-	if l != nil && !l.Enabled() {
+	if l != nil && (!l.Enabled() || l.lastResponseOnly) {
 		return nil
 	}
 	return Body(body, contentType)

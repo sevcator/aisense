@@ -22,10 +22,10 @@ func TestDisabledHiddenAndKeyBlockedPresentationIncludingCache(t *testing.T) {
 		}
 	})
 	for _, up := range cfg.Get().Upstreams {
-		p.setCachedUpstream("openai", up.Models[0], up)
+		p.setCachedUpstream("openai", up.Models[0], up, "")
 		p.recordUsedModel(up.Models[0])
 	}
-	if got := modelsListIDs(t, p); !reflect.DeepEqual(got, []string{"gpt-visible"}) {
+	if got := modelsListIDs(t, p); !reflect.DeepEqual(got, []string{"best", "gpt-visible", "shit"}) {
 		t.Fatal(got)
 	}
 	if got := p.UsedModels(); !reflect.DeepEqual(got, []string{"gpt-visible"}) {
@@ -50,7 +50,7 @@ func TestDisabledHiddenAndKeyBlockedPresentationIncludingCache(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
-	if got := modelsListIDs(t, p); !reflect.DeepEqual(got, []string{"gpt-hidden"}) {
+	if got := modelsListIDs(t, p); !reflect.DeepEqual(got, []string{"best", "gpt-hidden", "shit"}) {
 		t.Fatal(got)
 	}
 	if got := p.CachedUpstreams(); len(got) != 1 || got[0].UpstreamID != "hidden" {

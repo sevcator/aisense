@@ -10,11 +10,12 @@ import (
 // CachedRoute is a successful model/upstream pair shown in the admin panel.
 // Identity prevents a route from surviving an endpoint or auth-context edit.
 type CachedRoute struct {
-	Type       string    `json:"type"`
-	Model      string    `json:"model"`
-	UpstreamID string    `json:"upstream_id"`
-	Identity   string    `json:"identity"`
-	CachedAt   time.Time `json:"cached_at"`
+	Type           string    `json:"type"`
+	Model          string    `json:"model"`
+	UpstreamID     string    `json:"upstream_id"`
+	Identity       string    `json:"identity"`
+	KeyFingerprint string    `json:"key_fingerprint,omitempty"`
+	CachedAt       time.Time `json:"cached_at"`
 }
 
 var errCachedRoutesUnchanged = errors.New("cached routes unchanged")
@@ -57,7 +58,7 @@ func normalizeCachedRoutes(c *Config) {
 // RecordCachedRoute persists distinct working upstreams for a model. Repeated
 // successes refresh a route at most once a minute, avoiding a config write for
 // every request while keeping the dashboard useful after a restart.
-func (m *Manager) RecordCachedRoute(snapshot *Upstream, typ, model string) error {
+func (m *Manager) RecordCachedRoute(snapshot *Upstream, typ, model, keyFingerprint string) error {
 	if snapshot == nil || typ == "" || model == "" {
 		return nil
 	}
@@ -90,13 +91,14 @@ func (m *Manager) RecordCachedRoute(snapshot *Upstream, typ, model string) error
 				if now.Sub(route.CachedAt) >= time.Minute {
 					route.CachedAt = now
 					route.Model = model
+					route.KeyFingerprint = keyFingerprint
 					changed = true
 				}
 			}
 			routes = append(routes, route)
 		}
 		if !found {
-			routes = append(routes, CachedRoute{Type: typ, Model: model, UpstreamID: up.ID, Identity: up.HitchanceIdentity(), CachedAt: now})
+			routes = append(routes, CachedRoute{Type: typ, Model: model, UpstreamID: up.ID, Identity: up.HitchanceIdentity(), KeyFingerprint: keyFingerprint, CachedAt: now})
 			changed = true
 		}
 		if !changed {

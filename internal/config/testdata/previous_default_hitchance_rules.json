@@ -1,0 +1,108 @@
+{
+ "rules": [
+  {
+   "id": "model-unavailable",
+   "messages": [
+    "model_not_found",
+    "model not found",
+    "unknown model",
+    "unsupported model",
+    "model_not_supported",
+    "model retired",
+    "model_retired",
+    "model does not exist",
+    "model unavailable",
+    "model is not available",
+    "no available channel"
+   ],
+   "pattern": "(?i)(model.*(not included|not allowed|access|permission|requires.*(credit|paid|subscription))|not included in your|do not have access|provider.*(credential|authentication|quota|unavailable|not configured)|no active credentials|upstream.*(invalid.*key|authentication failed))",
+   "match_any": true,
+   "category": "model",
+   "action": "demote",
+   "scope": "model",
+   "cooldown_seconds": 300
+  },
+  {
+   "id": "key-limit",
+   "status_codes": [
+    402,
+    429
+   ],
+   "messages": [
+    "not enough credits",
+    "quota is exceeded",
+    "insufficient_quota",
+    "quota exceeded",
+    "quota exhausted",
+    "exceeded your current quota",
+    "insufficient balance",
+    "insufficient credits",
+    "insufficient funds",
+    "credit balance",
+    "add credits",
+    "billing hard limit",
+    "payment required",
+    "balance is too low",
+    "额度不足",
+    "余额不足",
+    "rate limit",
+    "rate_limit_exceeded",
+    "tpm limit",
+    "too many requests"
+   ],
+   "pattern": "(?i)((weekly|monthly).*(limit|quota)|每(周|月).*使用上限|每周/每月使用上限|限额将.*重置)",
+   "match_any": true,
+   "category": "limit",
+   "action": "demote",
+   "scope": "key",
+   "cooldown_seconds": 60
+  },
+  {
+   "id": "api-base-down",
+   "status_codes": [
+    404,
+    405,
+    408,
+    425,
+    500,
+    501,
+    502,
+    503,
+    504,
+    507,
+    529
+   ],
+   "category": "outage",
+   "action": "demote",
+   "scope": "endpoint",
+   "cooldown_seconds": 30
+  },
+  {
+   "id": "key-rejected",
+   "status_codes": [
+    401,
+    403
+   ],
+   "messages": [
+    "your key is invalid",
+    "invalid api key",
+    "invalid_api_key",
+    "incorrect api key",
+    "api key not valid",
+    "authentication failed",
+    "authentication_error",
+    "invalid authentication",
+    "invalid token",
+    "token is invalid",
+    "api key has been revoked",
+    "api key is expired",
+    "invalid x-api-key"
+   ],
+   "match_any": true,
+   "category": "auth",
+   "action": "delete",
+   "scope": "key",
+   "cooldown_seconds": 300
+  }
+ ]
+}

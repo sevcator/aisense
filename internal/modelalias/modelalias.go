@@ -417,7 +417,7 @@ func Build(models []string, existing map[string][]string) Catalog {
 	}
 
 	aliasKeys := make([]string, 0, len(existing))
-	filterExisting := len(models) > 0
+	filterExisting := len(models) > 0 && !containsWildcard(models)
 	allowedFamilies := map[string]bool{}
 	for _, model := range models {
 		if model != "*" && !IsMetaName(model) {
@@ -487,7 +487,10 @@ func Build(models []string, existing map[string][]string) Catalog {
 	result := Catalog{Models: make([]string, 0, len(routes)), Aliases: map[string][]string{}}
 	for key, canonical := range canonicalByKey {
 		result.Models = append(result.Models, canonical)
-		result.Aliases[canonical] = append([]string(nil), routes[key]...)
+		// A model that routes to itself needs no persisted alias entry.
+		if len(routes[key]) != 1 || routes[key][0] != canonical {
+			result.Aliases[canonical] = append([]string(nil), routes[key]...)
+		}
 	}
 	sort.Strings(result.Models)
 	if containsWildcard(models) {
@@ -620,16 +623,47 @@ func ForcedCandidates(model string) []string {
 // builds it otherwise. Saving a config runs this for every upstream, so the
 // common case must not rebuild anything.
 func Normalize(models []string, aliases map[string][]string) ([]string, map[string][]string) {
-	return normalizedCatalog(models, aliases)
+	models, aliases = normalizedCatalog(models, aliases)
+	for canonical, routes := range aliases {
+		if len(routes) == 1 && routes[0] == canonical {
+			delete(aliases, canonical)
+		}
+	}
+	return models, aliases
 }
 
 func normalizedCatalog(models []string, aliases map[string][]string) ([]string, map[string][]string) {
 	normalized := aliases != nil
 	if normalized {
-		for _, model := range models {
-			if model != "*" && len(aliases[model]) == 0 {
+		for canonical := range aliases {
+			found := false
+			for _, model := range models {
+				if model == canonical {
+					found = true
+					break
+				}
+			}
+			if !found {
 				normalized = false
 				break
+			}
+		}
+		for _, model := range models {
+			if model != "*" && IsMetaName(model) {
+				normalized = false
+				break
+			}
+			if len(aliases[model]) == 0 {
+				for canonical, routes := range aliases {
+					if canonical != model {
+						for _, raw := range routes {
+							if raw == model {
+								normalized = false
+								break
+							}
+						}
+					}
+				}
 			}
 		}
 	}
@@ -751,7 +785,11 @@ func BoostedVariantCandidates(models []string, aliases map[string][]string, requ
 			continue
 		}
 		canonical, _ := canonicalForCatalog(models, aliases, variant)
-		for _, route := range aliases[canonical] {
+		routes := aliases[canonical]
+		if len(routes) == 0 {
+			routes = []string{canonical}
+		}
+		for _, route := range routes {
 			if Matches(route, variant) {
 				out = appendUnique(out, seen, route)
 			}

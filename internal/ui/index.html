@@ -204,7 +204,18 @@ body{font-family:Verdana,Helvetica,Arial,sans-serif;line-height:normal}
 .pun .h2-tabs button + button{margin-left:0}
 .pun .h2-tabs button.active,.pun .h2-tabs button.active:not(:disabled):hover{color:rgb(212,212,211)!important;cursor:default;text-decoration:none}
 
-/* Cached Upstreams: gamesense forum table */
+/* Model policy picker inside the edit dialogs */
+.model-pick{display:flex;flex-wrap:wrap;gap:4px;max-height:180px;overflow:auto;margin-top:5px;padding:6px;border:1px solid var(--line,#3a3f4b);border-radius:8px;background:rgba(0,0,0,.25)}
+.model-pick .model-chip.picked{color:#48DBB5;font-weight:700}
+.model-pick .model-chip:hover{color:#48DBB5}
+input.model-line{cursor:pointer}
+.model-pick[hidden]{display:none}
+select{background:inherit;color:inherit;border:1px solid var(--line,#3a3f4b);border-radius:6px;padding:3px 6px}
+
+/* Targets (formerly Cached Upstreams): gamesense forum table */
+.proto-icon{width:14px;height:14px;vertical-align:-2px;margin-right:5px;opacity:.85;flex:none}
+.target-line{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.target-line .up-url{overflow:hidden;text-overflow:ellipsis}
 .pun .cached-table th.c-model{width:26%}.pun .cached-table th.c-keys{width:30%}
 .pun .cached-table th.c-time,.pun .cached-table td.c-time{width:92px;text-align:right;white-space:nowrap}
 .pun .cached-table td{vertical-align:middle}
@@ -351,16 +362,20 @@ body.modal-open{overflow:hidden}
   <div id="brdmain">
     <div class="view active" id="v-dashboard">
       <div class="block" id="dash-overview">
-        <h2><span>Overview</span></h2>
+        <h2>
+          <span class="conr"><button type="button" class="danger" id="clear-stats-btn" onclick="clearStats()" title="Delete every recorded request, token and error statistic">Clear statistics</button></span>
+          <span>Overview</span>
+          <div class="clearer"></div>
+        </h2>
         <div class="box"><div class="inbox"><div class="statsbox" id="stats-grid"></div></div></div>
       </div>
       <div class="blocktable" id="dash-cached-upstreams-block">
         <h2>
           <span class="conr">
-            <input type="text" id="cached-ups-search" class="h2-filter" placeholder="Filter cached..." aria-label="Filter cached upstreams" oninput="filterCachedUpstreams(this.value)" />
-            <span class="dim" id="cached-ups-count">0 cached</span>
+            <input type="text" id="cached-ups-search" class="h2-filter" placeholder="Filter targets..." aria-label="Filter targets" oninput="filterCachedUpstreams(this.value)" />
+            <span class="dim" id="cached-ups-count">0 targets</span>
           </span>
-          <span>Cached Upstreams</span>
+          <span>Targets</span>
           <div class="clearer"></div>
         </h2>
         <div class="box scrollbox">
@@ -369,8 +384,7 @@ body.modal-open{overflow:hidden}
               <thead>
                 <tr>
                   <th class="c-model" scope="col">Model</th>
-                  <th class="c-up" scope="col">Upstream</th>
-                  <th class="c-keys" scope="col">API keys</th>
+                  <th class="c-up" scope="col">Targets</th>
                   <th class="c-time" scope="col">Cached</th>
                 </tr>
               </thead>
@@ -397,7 +411,7 @@ body.modal-open{overflow:hidden}
           </div>
         </div>
       </div>
-      <div class="block"><h2><span>Requests, last 14 days</span></h2><div class="box"><div class="inbox"><div class="bars" id="req-bars"></div></div></div></div>
+      <div class="block" id="dash-reqbars"><h2><span>Requests</span></h2><div class="box"><div class="inbox"><div class="bars" id="req-bars"></div></div></div></div>
     </div>
 
     <div class="view" id="v-keys">
@@ -524,7 +538,7 @@ body.modal-open{overflow:hidden}
           <p><button type="button" id="md-refresh-btn" onclick="refreshModelsNow()">Refresh models now</button> <span id="discovery-progress" class="dim" role="status" hidden></span></p>
         </div></fieldset></div>
 
-        <div class="inform"><fieldset><legend>Models</legend><div class="infldset">
+        <div class="inform"><fieldset><legend>Model variants</legend><div class="infldset">
           <label class="check"><input type="checkbox" id="models-reasoning-variants" /> Prefer reasoning variants (-low, -medium, ...) when available</label>
           <label class="check"><input type="checkbox" id="models-other-variants" /> Prefer -free, -exp and -turbo variants when available</label>
           <label class="check"><input type="checkbox" id="models-fast-mode" /> Prefer -fast variants when available</label>
@@ -543,8 +557,8 @@ body.modal-open{overflow:hidden}
 
         <div class="inform"><fieldset><legend>Statistics and logging</legend><div class="infldset">
           <label class="check"><input type="checkbox" id="usage-enabled" /> Collect usage statistics</label>
-          <label class="check"><input type="checkbox" id="logging-enabled" /> Log full prompts and responses</label>
-          <p class="dim">The log is written to YYYY-MM-DD.log next to the config. Credentials are redacted; logs are never deleted automatically.</p>
+          <label class="check"><input type="checkbox" id="logging-enabled" /> Last response logging</label>
+          <p class="dim">After 60 seconds without another request in the conversation, save its last model response to YYYY-MM-DD.log next to the config. Credentials are redacted.</p>
         </div></fieldset></div>
 
         <p class="buttons" style="margin-top:14px"><button class="primary" id="save-settings">Save all settings</button></p>
@@ -596,8 +610,15 @@ body.modal-open{overflow:hidden}
 <label>Name<br />
 <input type="text" id="k-name" />
 </label>
-<label>Allowed models<br />
-<input type="text" id="k-models" class="mono" placeholder="*" />
+<label>Model policy<br />
+<select id="k-model-policy" onchange="syncPolicyLabel('k')">
+  <option value="whitelist">Whitelist — only these models are served</option>
+  <option value="blacklist">Blacklist — these models are blocked</option>
+</select>
+</label>
+<label><span id="k-policy-models-label">Allowed models</span> — click the line to pick<br />
+<input type="text" id="k-models" class="mono model-line" placeholder="*" autocomplete="off" onclick="toggleModelPicker('k-models')" />
+<div class="model-pick" id="k-models-pick" hidden></div>
 </label>
 <div class="row">
 <div class="field">
@@ -664,15 +685,19 @@ body.modal-open{overflow:hidden}
 <p><button type="button" onclick="addUpstreamKey()">Add key</button></p>
 </div>
 </div>
-<label>Models<br />
-<input type="text" id="u-models" class="mono" placeholder="*" />
-</label>
 <label>Model aliases<br />
 <textarea id="u-model-aliases" class="mono" rows="7" placeholder="claude-opus-4.6 = claude-opus-4.6-thinking, opus4.6">
 </textarea>
 </label>
-<label>Blacklist models<br />
-<input type="text" id="u-blocked-models" class="mono" placeholder="gpt-4-32k" />
+<label>Model policy<br />
+<select id="u-model-policy" onchange="syncPolicyLabel('u')">
+  <option value="blacklist">Blacklist — these models are blocked</option>
+  <option value="whitelist">Whitelist — only these models are served</option>
+</select>
+</label>
+<label><span id="u-policy-models-label">Blocked models</span> — click the line to pick<br />
+<input type="text" id="u-blocked-models" class="mono model-line" placeholder="gpt-4-32k" autocomplete="off" onclick="toggleModelPicker('u-blocked-models')" />
+<div class="model-pick" id="u-blocked-models-pick" hidden></div>
 </label>
 <div class="row" style="margin-top:6px">
 <div class="field">
@@ -1324,6 +1349,25 @@ let DASHBOARD_CACHED_MODEL_NAMES = [];
 let LAST_TTL_HOURS = 24;
 let cachedRoutesRequest = 0;
 
+// Protocol icons are resolved from the upstream's CURRENT type on every
+// render: discovery may flip an endpoint between OpenAI- and
+// Anthropic-compatible at any time, so the icon is never cached client-side.
+// The effective wire protocol of an upstream: the live evidence from served
+// routes wins over the configured type hint ("auto" says nothing).
+function upProto(u){
+  if(!u) return '';
+  const resolved = (STATE && STATE.resolved_protocols) || {};
+  return resolved[u.id] || u.type || '';
+}
+function protoIcon(type){
+  const t = (type || '').toLowerCase();
+  if(t === 'openai') return '<svg class="proto-icon" viewBox="0 0 24 24" width="14" height="14" role="img" aria-label="OpenAI-compatible"><title>OpenAI-compatible</title><path fill="currentColor" d="' + OPENAI_ICON_PATH + '"/></svg>';
+  if(t === 'anthropic') return '<svg class="proto-icon" viewBox="0 0 24 24" width="14" height="14" role="img" aria-label="Anthropic-compatible"><title>Anthropic-compatible</title><path fill="currentColor" d="' + ANTHROPIC_ICON_PATH + '"/></svg>';
+  return '';
+}
+const OPENAI_ICON_PATH = `M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729zm-9.022 12.6081a4.4755 4.4755 0 0 1-2.8764-1.0408l.1419-.0804 4.7783-2.7582a.7948.7948 0 0 0 .3927-.6813v-6.7369l2.02 1.1686a.071.071 0 0 1 .038.052v5.5826a4.504 4.504 0 0 1-4.4945 4.4944zm-9.6607-4.1254a4.4708 4.4708 0 0 1-.5346-3.0137l.142.0852 4.783 2.7582a.7712.7712 0 0 0 .7806 0l5.8428-3.3685v2.3324a.0804.0804 0 0 1-.0332.0615L9.74 19.9502a4.4992 4.4992 0 0 1-6.1408-1.6464zM2.3408 7.8956a4.485 4.485 0 0 1 2.3655-1.9728V11.6a.7664.7664 0 0 0 .3879.6765l5.8144 3.3543-2.0201 1.1685a.0757.0757 0 0 1-.071 0l-4.8303-2.7865A4.504 4.504 0 0 1 2.3408 7.872zm16.5963 3.8558L13.1038 8.364 15.1192 7.2a.0757.0757 0 0 1 .071 0l4.8303 2.7913a4.4944 4.4944 0 0 1-.6765 8.1042v-5.6772a.79.79 0 0 0-.407-.667zm2.0107-3.0231l-.142-.0852-4.7735-2.7818a.7759.7759 0 0 0-.7854 0L9.409 9.2297V6.8974a.0662.0662 0 0 1 .0284-.0615l4.8303-2.7866a4.4992 4.4992 0 0 1 6.6802 4.66zM8.3065 12.863l-2.02-1.1638a.0804.0804 0 0 1-.038-.0567V6.0742a4.4992 4.4992 0 0 1 7.3757-3.4537l-.142.0805L8.704 5.459a.7948.7948 0 0 0-.3927.6813zm1.0976-2.3654l2.602-1.4998 2.6069 1.4998v2.9994l-2.5974 1.4997-2.6067-1.4997Z`;
+const ANTHROPIC_ICON_PATH = `M17.3041 3.541h-3.6718l6.696 16.918H24Zm-10.6082 0L0 20.459h3.7442l1.3693-3.5527h7.0052l1.3693 3.5528h3.7442L10.5363 3.5409Zm-.3712 10.2232 2.2914-5.9456 2.2914 5.9456Z`;
+
 async function renderCachedUpstreams(){
   const el = $('cached-upstreams-body');
   if(!el) return;
@@ -1354,7 +1398,7 @@ async function renderCachedUpstreams(){
     .map(r => {
       const u = byID[r.upstream_id];
       if(!u || !u.enabled || u.hidden_invalid) return null;
-      return { model: r.model, upstream: u, cachedAt: r.cached_at };
+      return { model: r.model, upstream: u, type: r.type || '', usedKey: r.used_key || '', cachedAt: r.cached_at };
     })
     .filter(Boolean)
     .sort((a, b) => a.model.localeCompare(b.model, undefined, { numeric: true, sensitivity: 'base' }));
@@ -1374,47 +1418,50 @@ function applyCachedUpstreamsFilter(query, ttlHours){
   const countEl = $('cached-ups-count');
   if(!el) return;
 
-  const total = DASHBOARD_CACHED_UPS_CACHE.length;
-  let filtered = DASHBOARD_CACHED_UPS_CACHE;
+  // One row per model with the ONE endpoint currently serving it: the most
+  // recently used of its cached upstreams. Older working upstreams stay in
+  // the routing cache for failover but are not listed here.
+  const latest = new Map();
+  for(const item of DASHBOARD_CACHED_UPS_CACHE){
+    const prev = latest.get(item.model);
+    if(!prev || item.cachedAt > prev.cachedAt) latest.set(item.model, item);
+  }
+  let rows = [...latest.values()];
+  const total = rows.length;
   if(query){
-    filtered = DASHBOARD_CACHED_UPS_CACHE.filter(item => {
+    rows = rows.filter(item => {
       const mMatch = item.model.toLowerCase().includes(query);
       const uBaseMatch = (item.upstream.base_url || '').toLowerCase().includes(query);
-      const uKeyMatch = (item.upstream.api_keys || []).some(k => k.toLowerCase().includes(query));
+      const uKeyMatch = item.usedKey.toLowerCase().includes(query);
       return mMatch || uBaseMatch || uKeyMatch;
     });
   }
+  rows.sort((a, b) => a.model.localeCompare(b.model, undefined, { numeric: true, sensitivity: 'base' }));
 
   if(countEl){
-    if(query && filtered.length !== total){
-      countEl.textContent = `${filtered.length} / ${total} cached`;
+    if(query && rows.length !== total){
+      countEl.textContent = `${rows.length} / ${total} targets`;
     } else {
-      countEl.textContent = `${total} ${total === 1 ? 'cached' : 'cached'} · TTL ${ttlHours || 24}h`;
+      countEl.textContent = `${total} ${total === 1 ? 'target' : 'targets'} · TTL ${ttlHours || 24}h`;
     }
   }
 
-  if(filtered.length === 0){
-    if(total === 0){
-      el.innerHTML = '<tr><td colspan="4" class="empty-row">No cached upstreams yet — upstreams are cached after a model is requested</td></tr>';
-    } else {
-      el.innerHTML = '<tr><td colspan="4" class="empty-row">No cached upstreams match filter</td></tr>';
-    }
+  if(rows.length === 0){
+    el.innerHTML = total === 0
+      ? '<tr><td colspan="3" class="empty-row">No targets yet — upstreams are pinned after a model is requested</td></tr>'
+      : '<tr><td colspan="3" class="empty-row">No targets match filter</td></tr>';
     return;
   }
 
-  el.innerHTML = filtered.map(item => {
-    const m = item.model;
+  el.innerHTML = rows.map(item => {
     const u = item.upstream;
-    const keys = u.api_keys || [];
-    const keysDisplay = keys.length
-      ? keys.map(k => `<button type="button" class="key-pill clickable" data-copy="${esc(k)}" onclick="copyText(this.dataset.copy, 'API key copied')" title="Click to copy API key">${esc(maskKeyShort(k))}</button>`).join('')
+    const keyHtml = item.usedKey
+      ? `<button type="button" class="key-pill clickable" data-copy="${esc(item.usedKey)}" onclick="copyText(this.dataset.copy, 'API key copied')" title="The API key that served this model — click to copy">${esc(maskKeyShort(item.usedKey))}</button>`
       : '<span class="dim">no key</span>';
     const cachedTitle = item.cachedAt ? ` title="Cached at ${esc(fmtTime(item.cachedAt))}"` : '';
-
     return `<tr>
-      <td class="c-model"><button type="button" class="linkbtn" data-copy="${esc(m)}" onclick="copyModelName(this.dataset.copy)" title="Click to copy">${esc(m)}</button></td>
-      <td class="c-up">${esc(u.base_url)}</td>
-      <td class="c-keys">${keysDisplay}</td>
+      <td class="c-model"><button type="button" class="linkbtn" data-copy="${esc(item.model)}" onclick="copyModelName(this.dataset.copy)" title="Click to copy">${esc(item.model)}</button></td>
+      <td class="c-up"><div class="target-line">${protoIcon(item.type)}<span class="up-url mono">${esc(u.base_url)}</span>${keyHtml}</div></td>
       <td class="c-time"${cachedTitle}>${esc(fmtRelTime(item.cachedAt)) || '—'}</td>
     </tr>`;
   }).join('');
@@ -1435,11 +1482,14 @@ async function loadStats(){
   renderDashboardModels();
   // Fetch cached routes (non-blocking; updates table asynchronously).
   renderCachedUpstreams().catch(()=>{});
-  if(STATE && STATE.usage && STATE.usage.enabled === false){
-    $('stats-grid').innerHTML = '<p>Statistics collection is disabled. Enable it in Settings → Statistics.</p>';
-    $('req-bars').innerHTML = '<div class="empty-row" style="width:100%">Statistics collection is disabled.</div>';
-    return;
+  // With statistics disabled the two data blocks vanish entirely instead of
+  // showing empty placeholder boxes.
+  const statsOff = !!(STATE && STATE.usage && STATE.usage.enabled === false);
+  for(const id of ['dash-overview','dash-reqbars']){
+    const block = $(id);
+    if(block) block.style.display = statsOff ? 'none' : '';
   }
+  if(statsOff) return;
   const s = await api('stats');
   const num = v => (+v || 0).toLocaleString();
   const requests = +s.requests || 0, errors = +s.errors || 0;
@@ -1482,6 +1532,66 @@ async function loadStats(){
   }).join('');
 }
 
+async function clearStats(){
+  if(!await uiConfirm('Delete every recorded request, token and error statistic? This cannot be undone.', {title:'Clear statistics', ok:'Clear', danger:true})) return;
+  try{
+    const r = await api('stats/clear', {method:'POST'});
+    toast(r && r.status === 'cleared' ? 'Statistics cleared' : 'Nothing to clear');
+  }catch(e){
+    toast('Could not clear statistics: '+(e.message||e), true);
+  }
+  loadStats().catch(()=>{});
+}
+
+/* ================= MODEL POLICY PICKER ================= */
+
+// The line's caption follows the selected policy so the dialog never shows
+// two fields both called "Models".
+function syncPolicyLabel(prefix){
+  const sel = $(prefix + '-model-policy');
+  const label = $(prefix + '-policy-models-label');
+  if(sel && label) label.textContent = sel.value === 'blacklist' ? 'Blocked models' : 'Allowed models';
+}
+
+// The dropdown under a policy input: every catalog model is one click away;
+// clicking a model toggles it in the comma-separated list (several are fine).
+
+// The dropdown under a policy input: every catalog model is one click away;
+// clicking toggles it in the comma-separated list (several are fine).
+function toggleModelPicker(inputId){
+  const menu = $(inputId + '-pick');
+  if(!menu) return;
+  if(!menu.hidden){ menu.hidden = true; return; }
+  const selected = $(inputId).value.split(',').map(s => s.trim()).filter(Boolean).map(s => s.toLowerCase());
+  const candidates = modelPickerCandidates(inputId);
+  menu.innerHTML = candidates.length
+    ? candidates.map(m => {
+        const on = selected.includes(m.toLowerCase());
+        return `<button type="button" class="model-chip${on ? ' picked' : ''}" data-model="${esc(m)}" onclick="togglePickedModel('${inputId}', this.dataset.model)" title="${on ? 'Remove from' : 'Add to'} the list">${esc(m)}</button>`;
+      }).join('')
+    : '<span class="dim">No models discovered yet — type them as a comma-separated list</span>';
+  menu.hidden = false;
+}
+function togglePickedModel(inputId, model){
+  const input = $(inputId);
+  const parts = input.value.split(',').map(s => s.trim()).filter(Boolean);
+  const i = parts.findIndex(p => p.toLowerCase() === model.toLowerCase());
+  if(i >= 0) parts.splice(i, 1); else parts.push(model);
+  input.value = parts.join(', ');
+  toggleModelPicker(inputId); // close
+  toggleModelPicker(inputId); // re-open with the updated selection
+}
+function modelPickerCandidates(inputId){
+  if(inputId === 'k-models'){
+    const all = collectConfiguredModels().models || [];
+    const cached = collectCachedModels().models || [];
+    return [...new Set([...cached, ...all])];
+  }
+  // Upstream dialog: that upstream's own catalog.
+  const original = (editingUpstreamOriginal && editingUpstreamOriginal.models) || [];
+  return [...new Set(original.filter(m=>m!=='*'))];
+}
+
 /* ================= KEYS ================= */
 function renderKeys(){
   if(!STATE) return;
@@ -1492,9 +1602,12 @@ function renderKeys(){
   $('keys-body').innerHTML = keys.map(k=>{
     const idArg = JSON.stringify(k.id).replaceAll("'","&#39;");
     const allowed = k.allowed_models||[];
-    const modelsText = (!allowed.length || (allowed.length === 1 && allowed[0] === '*'))
-      ? `<span class="dim" title="All models (*)">all models</span>`
-      : `<span class="dim" title="${esc(allowed.join(', '))}">${allowed.length} ${allowed.length===1?'model':'models'}</span>`;
+    const blocked = k.blocked_models||[];
+    const modelsText = blocked.length
+      ? `<span class="dim" title="Blacklist: ${esc(blocked.join(', '))}">${blocked.length} blocked</span>`
+      : ((!allowed.length || (allowed.length === 1 && allowed[0] === '*'))
+        ? `<span class="dim" title="All models (*)">all models</span>`
+        : `<span class="dim" title="Whitelist: ${esc(allowed.join(', '))}">${allowed.length} ${allowed.length===1?'model':'models'}</span>`);
     const limits = [];
     if(k.rpm) limits.push(`${k.rpm} req/min`);
     if(k.rpd) limits.push(`${k.rpd} req/day`);
@@ -1556,7 +1669,11 @@ function keyModal(k){
   $('overlay-key').querySelector('h2 span').textContent = k?'Edit key':'New key';
   $('k-id').value = k?k.id:'';
   $('k-name').value = k?k.name:'';
-  $('k-models').value = k?(k.allowed_models||[]).join(', '):'';
+  const kBlocked = k ? (k.blocked_models || []) : [];
+  const kAllowed = k ? (k.allowed_models || []) : [];
+  $('k-model-policy').value = kBlocked.length ? 'blacklist' : 'whitelist';
+  syncPolicyLabel('k');
+  $('k-models').value = (kBlocked.length ? kBlocked : kAllowed).join(', ');
   $('k-rpm').value = k?k.rpm:0;
   $('k-rpd').value = k?k.rpd:0;
   $('k-tpd').value = k?k.tpd:0;
@@ -1564,10 +1681,13 @@ function keyModal(k){
   openModal('overlay-key');
 }
 async function saveKey(){
+  const policyModels = $('k-models').value.split(',').map(s=>s.trim()).filter(Boolean);
+  const kPolicy = $('k-model-policy').value;
   const body = {
     id: $('k-id').value||undefined,
     name: $('k-name').value.trim(),
-    allowed_models: $('k-models').value.split(',').map(s=>s.trim()).filter(Boolean),
+    allowed_models: kPolicy === 'whitelist' ? policyModels : [],
+    blocked_models: kPolicy === 'blacklist' ? policyModels : [],
     rpm: +$('k-rpm').value||0, rpd: +$('k-rpd').value||0, tpd: +$('k-tpd').value||0,
     enabled: $('k-enabled').checked,
   };
@@ -1757,7 +1877,7 @@ function upKeysDetail(u, health){
   }
   const rows = lines.map(l => `<tr>
       <td class="up-scope">${esc(l.scope)}</td>
-      <td class="mono">${l.key ? `<button type="button" class="key-pill clickable" data-copy="${esc(l.key)}" onclick="copyText(this.dataset.copy,'API key copied')" title="Click to copy the API key">${esc(maskKeyShort(l.key))}</button>` : esc(u.base_url)}</td>
+      <td class="mono">${l.key ? `<button type="button" class="key-pill clickable" data-copy="${esc(l.key)}" onclick="copyText(this.dataset.copy,'API key copied')" title="Click to copy the API key">${esc(maskKeyShort(l.key))}</button>` : protoIcon(upProto(u)) + esc(u.base_url)}</td>
       <td class="up-hit">${hitHtml(l.chance, l.attempts, l.scope)}</td>
       <td class="hc-${l.level}">${esc(l.text)}</td>
     </tr>`).join('');
@@ -1800,7 +1920,7 @@ function renderUps(){
 
     let html = `<tr>
       <td class="up-check"><input type="checkbox" ${selectedUpstreams.has(u.id)?'checked':''} onchange='toggleUpSelection(${idArg},this.checked)' aria-label="Select ${esc(u.name||u.id)}"></td>
-      <td><span class="up-url mono">${esc(u.base_url)}</span>${baseHit}${getProxyTag(u)} ${keysToggle}${keyHits} ${modelsToggle}${hitchance}</td>
+      <td><span class="up-url mono">${protoIcon(upProto(u))}${esc(u.base_url)}</span>${baseHit}${getProxyTag(u)} ${keysToggle}${keyHits} ${modelsToggle}${hitchance}</td>
       <td class="up-status"><span class="badge ${view.className}" title="${esc(healthTitle)}">${esc(view.label)}</span>${inFlight}</td>
       <td class="up-actions"><button type="button" onclick='upModal(${JSON.stringify(u).replaceAll("'","&#39;")})'>edit</button><button type="button" onclick='testUp(${idArg})'>test</button><button type="button" title="Lift the Hitchance cooldowns and quarantines of this upstream" onclick='resetHitchanceHealth(${idArg})'>reset health</button><button type="button" class="danger" onclick='delUp(${idArg})'>del</button></td>
     </tr>`;
@@ -1846,11 +1966,14 @@ function upModal(u){
   $('u-id').value = u?u.id:'';
   $('u-base').value = u?u.base_url:'';
   renderUpstreamKeyInputs(u?(u.api_keys||[]):['']);
-  $('u-models').value = u?(u.models||[]).join(', '):'';
   editingUpstreamModelAliases = u ? JSON.parse(JSON.stringify(u.model_aliases||{})) : null;
   editingUpstreamOriginal = u ? JSON.parse(JSON.stringify(u)) : null;
   $('u-model-aliases').value = formatModelAliases(editingUpstreamModelAliases||{});
-  $('u-blocked-models').value = u?(u.blocked_models||[]).join(', '):'';
+  const uBlocked = u ? (u.blocked_models || []) : [];
+  const uAllowed = u ? (u.allowed_models || []) : [];
+  $('u-model-policy').value = uAllowed.length ? 'whitelist' : 'blacklist';
+  syncPolicyLabel('u');
+  $('u-blocked-models').value = (uAllowed.length ? uAllowed : uBlocked).join(', ');
   $('u-proxy').checked = !!(u&&u.use_proxy);
   $('u-enabled').checked = u?u.enabled:true;
   $('u-hidden-invalid').checked = !!u?.hidden_invalid;
@@ -1950,9 +2073,10 @@ async function saveUp(){
     id: $('u-id').value.trim() || undefined,
     base_url: $('u-base').value.trim(),
     api_keys: [...document.querySelectorAll('.upstream-key-input')].map(x=>x.value.trim()).filter(Boolean),
-    models: $('u-models').value.split(',').map(s=>s.trim()).filter(Boolean),
+    models: editingUpstreamOriginal ? (editingUpstreamOriginal.models||[]) : ['*'],
     model_aliases: modelAliases,
-    blocked_models: $('u-blocked-models').value.split(',').map(s=>s.trim()).filter(Boolean),
+    blocked_models: $('u-model-policy').value === 'blacklist' ? $('u-blocked-models').value.split(',').map(s=>s.trim()).filter(Boolean) : [],
+    allowed_models: $('u-model-policy').value === 'whitelist' ? $('u-blocked-models').value.split(',').map(s=>s.trim()).filter(Boolean) : [],
     use_proxy: $('u-proxy').checked,
     enabled: $('u-enabled').checked,
     hidden_invalid: $('u-hidden-invalid').checked,
@@ -2298,7 +2422,7 @@ function editHitchanceRule(index){
   const ids = [...ups.map(u => u.id), ...[...chosen].filter(id => !ups.some(u => u.id === id))];
   $('hc-rule-upstreams').innerHTML = ids.map(id => {
     const up = ups.find(u => u.id === id);
-    return `<label class="check"><input type="checkbox" value="${esc(id)}"${chosen.has(id) ? ' checked' : ''} /> ${esc(up ? up.base_url : id + ' (removed upstream)')}</label>`;
+    return `<label class="check"><input type="checkbox" value="${esc(id)}"${chosen.has(id) ? ' checked' : ''} /> ${protoIcon(upProto(up))}${esc(up ? up.base_url : id + ' (removed upstream)')}</label>`;
   }).join('') || '<span class="dim">No upstreams yet.</span>';
   $('hc-rule-action').value = rule.action || 'demote';
   $('hc-rule-scope').value = rule.scope || 'key';

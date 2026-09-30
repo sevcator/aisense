@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"slices"
+	"sort"
 	"strings"
 	"testing"
 
@@ -44,7 +45,9 @@ func TestVariantRoutingMatrixAndPolicy(t *testing.T) {
 				c.Models = config.ModelsCfg{ReasoningVariants: &reasoning, PreferOtherVariants: o.Other, FastMode: o.Fast}
 				c.Upstreams = []*config.Upstream{{ID: "up", Enabled: true, Type: "openai", BaseURL: upstream.URL, Models: names, AuthMode: "none"}}
 			})
-			if got := modelsListIDs(t, gateway); !slices.Equal(got, modelalias.PresentationNames(names, o)) {
+			wantIDs := append(append([]string(nil), modelalias.PresentationNames(names, o)...), modelalias.TierBest, modelalias.TierShit)
+			sort.Strings(wantIDs)
+			if got := modelsListIDs(t, gateway); !slices.Equal(got, wantIDs) {
 				t.Fatal(got)
 			}
 			chat := func() {
@@ -99,7 +102,7 @@ func TestVariantsPrecedeForcedAndCachedRoutes(t *testing.T) {
 		boost := manager.Get().Models.VariantOptions().Suffixes(effort)
 		up := manager.Get().Upstreams[1]
 		gateway.rememberModelRoute(up, base, true, boost, base+"-thinking")
-		gateway.setCachedUpstream("openai", base, manager.Get().Upstreams[0])
+		gateway.setCachedUpstream("openai", base, manager.Get().Upstreams[0], "")
 		if got := gateway.candidates("openai", base, true, boost); len(got) != 2 || got[0].ID != "variant" {
 			t.Fatalf("cached base overrode preference: %v", got)
 		}

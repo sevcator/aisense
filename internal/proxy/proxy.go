@@ -24,6 +24,7 @@ import (
 	"aisense/internal/debuglog"
 	"aisense/internal/hitchance"
 	"aisense/internal/modelalias"
+	"aisense/internal/pricing"
 	"aisense/internal/protocol"
 	"aisense/internal/routehealth"
 	"aisense/internal/store"
@@ -34,6 +35,9 @@ type Proxy struct {
 	Store  *store.Store
 	Debug  *debuglog.Logger
 	Health *routehealth.Manager
+	// Pricing feeds the built-in best/shit tier router with online prices;
+	// nil falls back to the offline heuristic ranking.
+	Pricing *pricing.Manager
 	// lastProbe throttles the last-resort attempts on cooling upstreams.
 	probeMu   sync.Mutex
 	lastProbe map[string]time.Time
@@ -56,6 +60,19 @@ type Proxy struct {
 	// usedModels is the set of display-normalised model names that have been
 	// served successfully since process start (ephemeral — resets on restart).
 	usedModels sync.Map // string → time.Time
+
+	// Thinking-mode providers that require reasoning_content passed back get
+	// the last answer's reasoning cached here (see reasoning.go).
+	reasoningMu     sync.Mutex
+	reasoningCache  map[string]reasoningCacheEntry // key: upID|model|apiKeyID
+	reasoningDemand map[string]time.Time
+
+	// Upstreams whose configured scheme does not match their server protocol
+	// get their working scheme remembered here (see schemeheal.go).
+	schemeHealMu   sync.Mutex
+	schemeHeals    map[string]schemeHealEntry // key: upstream ID
+	lastResponseMu sync.Mutex
+	lastResponses  map[string]pendingResponse
 }
 
 // routeEntry is a sticky model→route mapping with a creation timestamp so it
@@ -67,11 +84,12 @@ type routeEntry struct {
 
 // CachedUpstreamEntry represents a pinned model→upstream cache mapping with TTL.
 type CachedUpstreamEntry struct {
-	Type       string    `json:"type"`
-	Model      string    `json:"model"`
-	UpstreamID string    `json:"upstream_id"`
-	CachedAt   time.Time `json:"cached_at"`
-	Identity   string    `json:"-"`
+	Type           string    `json:"type"`
+	Model          string    `json:"model"`
+	UpstreamID     string    `json:"upstream_id"`
+	KeyFingerprint string    `json:"-"`
+	CachedAt       time.Time `json:"cached_at"`
+	Identity       string    `json:"-"`
 }
 
 type upstreamKeyPoolState struct {
@@ -96,9 +114,19 @@ func New(cfg *config.Manager, st *store.Store, debug ...*debuglog.Logger) *Proxy
 		modelAliases:    map[string]routeEntry{},
 		cachedUpstreams: map[string]*CachedUpstreamEntry{},
 		lastProbe:       map[string]time.Time{},
+		reasoningCache:  map[string]reasoningCacheEntry{},
+		reasoningDemand: map[string]time.Time{},
+		schemeHeals:     map[string]schemeHealEntry{},
 	}
 	if len(debug) > 0 {
 		p.Debug = debug[0]
+	}
+	// Served-model history survives restarts through the persisted cached
+	// routes, so the panel never falls back to an empty "no data" state.
+	for _, route := range cfg.Get().CachedRoutes {
+		if route.Model != "" && route.Model != "*" {
+			p.usedModels.Store(route.Model, route.CachedAt)
+		}
 	}
 	return p
 }
@@ -124,7 +152,7 @@ func traceFrom(r *http.Request) *traceContext {
 }
 
 func (p *Proxy) trace(r *http.Request, event string, fields map[string]any) {
-	if p.Debug == nil {
+	if p.Debug == nil || p.Debug.LastResponseOnly() {
 		return
 	}
 	traceID := ""
@@ -136,12 +164,15 @@ func (p *Proxy) trace(r *http.Request, event string, fields map[string]any) {
 
 type traceResponseWriter struct {
 	http.ResponseWriter
-	proxy  *Proxy
-	req    *http.Request
-	status int
-	bytes  int64
-	seq    int
-	stream *debuglog.Stream
+	proxy           *Proxy
+	req             *http.Request
+	status          int
+	bytes           int64
+	seq             int
+	stream          *debuglog.Stream
+	conversationID  string
+	conversationSeq uint64
+	responseBody    bytes.Buffer
 }
 
 func (w *traceResponseWriter) WriteHeader(status int) {
@@ -160,6 +191,12 @@ func (w *traceResponseWriter) Write(body []byte) (int, error) {
 	if n > 0 {
 		w.seq++
 		w.bytes += int64(n)
+		if w.proxy.Debug.LastResponseOnly() {
+			if w.proxy.Debug.Enabled() && w.conversationID != "" {
+				_, _ = w.responseBody.Write(body[:n])
+			}
+			return n, err
+		}
 		if strings.Contains(w.Header().Get("Content-Type"), "text/event-stream") {
 			if w.stream == nil {
 				w.stream = &debuglog.Stream{Logger: w.proxy.Debug, Emit: func(body any) {
@@ -297,6 +334,12 @@ func (p *Proxy) rateCheck(key *config.APIKey) (bool, string) {
 }
 
 func allowedModel(key *config.APIKey, model string) bool {
+	// The blacklist always wins over any whitelist.
+	for _, m := range key.BlockedModels {
+		if m == "*" || modelalias.Matches(m, model) {
+			return false
+		}
+	}
 	if len(key.AllowedModels) == 0 {
 		return true
 	}
@@ -410,7 +453,7 @@ func upstreamModelBlocked(up *config.Upstream, requested string) bool {
 			return true
 		}
 	}
-	return false
+	return !up.AllowedByWhitelist(requested)
 }
 
 // Resolve across the complete enabled catalog, before health/policy filtering:
@@ -423,9 +466,10 @@ func (p *Proxy) fuzzyRoutingModel(typ, requested string) (string, bool) {
 		}
 		var explicit []string
 		for _, model := range up.Models {
-			if strings.TrimSpace(model) != "*" {
-				explicit = append(explicit, model)
+			if strings.TrimSpace(model) == "*" || modelalias.IsJunkName(model) {
+				continue
 			}
+			explicit = append(explicit, model)
 		}
 		if len(explicit) == 0 {
 			continue
@@ -489,7 +533,7 @@ func (p *Proxy) writeModelsList(w http.ResponseWriter, typ string, key *config.A
 		}
 		for _, raw := range up.VisibleModelNames() {
 			model := displayModelName(raw)
-			if model == "" || model == "*" || modelalias.IsMetaName(model) || !allowedModel(key, model) {
+			if model == "" || model == "*" || !modelalias.SelectableModel(model) || !modelalias.SelectableModel(raw) || !allowedModel(key, model) {
 				continue
 			}
 			names = append(names, raw)
@@ -502,6 +546,11 @@ func (p *Proxy) writeModelsList(w http.ResponseWriter, typ string, key *config.A
 	}
 	for _, combo := range p.comboNamesFor(key) {
 		items = append(items, modelItem{ID: combo, Object: "model", Created: 0, OwnedBy: "aisense"})
+	}
+	for _, tier := range []string{modelalias.TierBest, modelalias.TierShit} {
+		if walk := p.tierWalk(tier, key); len(walk) > 0 {
+			items = append(items, modelItem{ID: tier, Object: "model", Created: 0, OwnedBy: "aisense"})
+		}
 	}
 	sort.Slice(items, func(i, j int) bool { return items[i].ID < items[j].ID })
 	w.Header().Set("Content-Type", "application/json")
@@ -550,8 +599,66 @@ func anyAllowedModel(key *config.APIKey, models []string) bool {
 	return false
 }
 
+// ---------------------------------------------------------------------------
+// built-in price tiers ("best" / "shit")
+
+// tierPool collects every selectable model the enabled catalog currently
+// advertises: the raw routes tiers are ranked and later resolved against.
+func (p *Proxy) tierPool() []string {
+	var pool []string
+	for _, up := range p.Cfg.Get().Upstreams {
+		if !up.ModelsVisible() {
+			continue
+		}
+		for _, raw := range up.VisibleModelNames() {
+			if !modelalias.SelectableModel(raw) || upstreamModelBlocked(up, raw) {
+				continue
+			}
+			pool = append(pool, raw)
+		}
+	}
+	return pool
+}
+
+// tierRank orders a model pool for a tier: by the live online price catalog
+// when the pricing manager is wired, otherwise by the offline heuristic.
+func (p *Proxy) tierRank(pool []string, tier string) []string {
+	if p.Pricing != nil {
+		return p.Pricing.TierCandidates(pool, tier)
+	}
+	return modelalias.TierCandidates(pool, tier)
+}
+
+// tierWalk expands a built-in tier name into the ordered list of models to
+// try, keeping only models this API key may use. It returns nil for every
+// name that is not a tier.
+func (p *Proxy) tierWalk(model string, key *config.APIKey) []string {
+	tier, ok := modelalias.TierName(model)
+	if !ok {
+		return nil
+	}
+	var out []string
+	seen := map[string]bool{}
+	for _, name := range p.tierRank(p.tierPool(), tier) {
+		if seen[name] || !allowedModel(key, name) {
+			continue
+		}
+		seen[name] = true
+		out = append(out, name)
+	}
+	return out
+}
+
 func (p *Proxy) writeModelObject(w http.ResponseWriter, key *config.APIKey, model string) bool {
-	if model == "" || modelalias.IsMetaName(model) {
+	if model == "" || modelalias.IsMetaName(model) || modelalias.IsJunkName(model) {
+		return false
+	}
+	if tier, ok := modelalias.TierName(model); ok {
+		if walk := p.tierWalk(tier, key); len(walk) > 0 {
+			w.Header().Set("Content-Type", "application/json")
+			_ = json.NewEncoder(w).Encode(map[string]any{"id": tier, "object": "model", "created": 0, "owned_by": "aisense"})
+			return true
+		}
 		return false
 	}
 	for _, combo := range p.comboNamesFor(key) {
@@ -688,29 +795,29 @@ func (p *Proxy) getCachedUpstream(typ, model string) *config.Upstream {
 	return nil
 }
 
-func (p *Proxy) setCachedUpstream(typ, model string, up *config.Upstream) {
+func (p *Proxy) setCachedUpstream(typ, model string, up *config.Upstream, usedKey string) {
 	if up == nil {
 		return
 	}
-	key := upstreamCacheKey(typ, model)
 	displayName := displayModelName(model)
 	if displayName == "" || displayName == "*" {
 		displayName = userModelName(model)
 	}
 	entry := &CachedUpstreamEntry{
-		Type:       typ,
-		Model:      displayName,
-		UpstreamID: up.ID,
-		CachedAt:   time.Now(),
-		Identity:   up.HitchanceIdentity(),
+		Type:           typ,
+		Model:          displayName,
+		UpstreamID:     up.ID,
+		KeyFingerprint: config.KeyFingerprint(usedKey),
+		CachedAt:       time.Now(),
+		Identity:       up.HitchanceIdentity(),
 	}
 	p.cachedUpstreamMu.Lock()
 	if p.cachedUpstreams == nil {
 		p.cachedUpstreams = map[string]*CachedUpstreamEntry{}
 	}
-	p.cachedUpstreams[key] = entry
+	p.cachedUpstreams[upstreamCacheKey(typ, model)] = entry
 	p.cachedUpstreamMu.Unlock()
-	if err := p.Cfg.RecordCachedRoute(up, typ, displayName); err != nil {
+	if err := p.Cfg.RecordCachedRoute(up, typ, displayName, entry.KeyFingerprint); err != nil {
 		log.Printf("[aisense] could not save cached route: %v", err)
 	}
 }
@@ -769,7 +876,7 @@ func (p *Proxy) CachedUpstreams() []CachedUpstreamEntry {
 		}
 	}
 	for _, saved := range cfg.CachedRoutes {
-		add(CachedUpstreamEntry{Type: saved.Type, Model: saved.Model, UpstreamID: saved.UpstreamID, CachedAt: saved.CachedAt, Identity: saved.Identity})
+		add(CachedUpstreamEntry{Type: saved.Type, Model: saved.Model, UpstreamID: saved.UpstreamID, KeyFingerprint: saved.KeyFingerprint, CachedAt: saved.CachedAt, Identity: saved.Identity})
 	}
 	p.cachedUpstreamMu.Lock()
 	defer p.cachedUpstreamMu.Unlock()
@@ -893,12 +1000,18 @@ type forwardResult struct {
 	// Nil leaves native responses unchanged; local failures never populate it.
 	upstreamEvidence *hitchance.Input
 	localFailure     bool // validation/conversion output is not upstream evidence
-	hitchance        hitchance.Decision
-	streamFailed     bool
-	status           int
-	header           http.Header
-	body             []byte
-	committed        bool // true when the response was already streamed to the client
+	// protocolUnsupported marks a local failure that is specific to this
+	// upstream (the resolver could not confirm any compatible endpoint for the
+	// operation). Unlike client-request-shape failures, it can be resolved by
+	// trying the next eligible upstream.
+	protocolUnsupported bool
+	hitchance           hitchance.Decision
+	streamFailed        bool
+	status              int
+	header              http.Header
+	body                []byte
+	committed           bool   // true when the response was already streamed to the client
+	usedKey             string // the upstream credential this result was fetched with
 }
 
 func hasLogicalErrorEnvelope(body []byte) bool {
@@ -1411,7 +1524,23 @@ func (p *Proxy) forwardOnce(up *config.Upstream, typ, prefix string, r *http.Req
 		if !p.hitchanceKeyReady(attempt, key, model, ignoreCooldown) {
 			continue
 		}
+		attempt = p.applySchemeHeal(attempt)
 		fr, err := p.forwardOnceWithKey(attempt, typ, prefix, r, body, capture, w, key)
+		if fr != nil {
+			fr.usedKey = key
+		}
+		if err != nil && schemeMismatchError(err) {
+			// The configured URL scheme and the server's protocol disagree.
+			// One retry over the opposite scheme, then remember it.
+			if healed := p.healSchemeAttempt(attempt); healed != nil {
+				p.trace(r, "transport.scheme_heal", map[string]any{"upstream_id": up.ID, "base_url": healed.BaseURL})
+				fr2, err2 := p.forwardOnceWithKey(healed, typ, prefix, r, body, capture, w, key)
+				if err2 == nil {
+					fr, err = fr2, nil
+					attempt = healed
+				}
+			}
+		}
 		if err != nil {
 			if r.Context().Err() == nil {
 				p.observeUpstreamHealth(attempt, r, false)
@@ -1790,6 +1919,13 @@ func (p *Proxy) serve(w http.ResponseWriter, r *http.Request, typ string, errFn 
 			if writer.stream != nil {
 				writer.stream.Close()
 			}
+			if writer.conversationID != "" {
+				status := writer.status
+				if r.Context().Err() != nil {
+					status = 0
+				}
+				p.queueLastResponse(writer.conversationID, writer.conversationSeq, status, writer.Header().Get("Content-Type"), writer.responseBody.Bytes())
+			}
 			p.trace(r, "request.complete", map[string]any{
 				"status": writer.status, "bytes_out": writer.bytes, "bytes_in": len(body),
 				"attempts": trace.attempts, "selected_upstream": trace.selected,
@@ -1809,6 +1945,10 @@ func (p *Proxy) serve(w http.ResponseWriter, r *http.Request, typ string, errFn 
 	if key == nil || !key.Enabled {
 		errFn(w, 401, "authentication_error", "invalid api key")
 		return
+	}
+	if writer, ok := w.(*traceResponseWriter); ok && p.Debug.LastResponseOnly() && p.Debug.Enabled() {
+		writer.conversationID = conversationID(body, key.ID)
+		writer.conversationSeq = p.touchConversation(writer.conversationID)
 	}
 	p.trace(r, "request.authenticated", map[string]any{"key_id": key.ID})
 
@@ -1847,15 +1987,30 @@ func (p *Proxy) serve(w http.ResponseWriter, r *http.Request, typ string, errFn 
 		return
 	}
 	model = userModelName(model)
-	if !allowedModel(key, model) && !anyAllowedModel(key, p.Cfg.Get().ComboModels(model)) {
+	// Placeholder names ("free", "unknown", provider routers, ...) are removed
+	// from the catalog: they never route, so a client asking for one by name
+	// hears that immediately instead of burning the retry cycle budget.
+	if modelalias.IsJunkName(model) {
+		errFn(w, 404, "not_found_error", "model "+model+" is not available")
+		return
+	}
+	tierWalk := p.tierWalk(model, key)
+	if !allowedModel(key, model) && !anyAllowedModel(key, p.Cfg.Get().ComboModels(model)) && len(tierWalk) == 0 {
 		errFn(w, 403, "permission_error", "model "+model+" is not allowed for this api key")
 		return
 	}
-	// A combo is a model name the user made up: walk its models in order and let
-	// the next one take over as soon as no upstream can serve the current one.
-	attempts := p.Cfg.Get().ComboModels(model)
+	// Built-in price tiers ("best" = most premium, "shit" = cheapest) and
+	// combos walk their models in order: the next one takes over as soon as
+	// no upstream can serve the current one.
+	attempts := tierWalk
+	tierExpanded := len(attempts) > 0
+	if len(attempts) == 0 {
+		attempts = p.Cfg.Get().ComboModels(model)
+	}
 	if len(attempts) == 0 {
 		attempts = []string{model}
+	} else if tierExpanded {
+		p.trace(r, "tier.expand", map[string]any{"tier": model, "models": attempts})
 	} else {
 		p.trace(r, "combo.expand", map[string]any{"combo": model, "models": attempts})
 	}
@@ -2111,10 +2266,13 @@ func (p *Proxy) serveModel(w http.ResponseWriter, r *http.Request, typ string, e
 			usedRoute := ""
 			aliasFailure := false
 			usedThinking := false
+			// Thinking-mode providers that require reasoning_content passed
+			// back get the cached reasoning injected before forwarding.
+			attemptBody := p.prepareReasoningBody(model, key, body)
 			for aliasIndex, upstreamModel := range routes {
 				usedRoute = upstreamModel
 				usedThinking = modelalias.IsThinking(upstreamModel)
-				upstreamBody := rewriteModelInBody(body, upstreamModel)
+				upstreamBody := rewriteModelInBody(attemptBody, upstreamModel)
 				upstreamRequest := r
 				if fuzzy && r.URL.Query().Get("model") != "" {
 					upstreamRequest = r.Clone(r.Context())
@@ -2127,6 +2285,19 @@ func (p *Proxy) serveModel(w http.ResponseWriter, r *http.Request, typ string, e
 					"upstream_model": upstreamModel, "alias_index": aliasIndex + 1, "alias_total": len(routes),
 				})
 				fr, err = p.forwardOnce(up, typ, prefix, upstreamRequest, upstreamBody, &capture, w)
+				fixedFr, fixedErr, retried := p.retryWithReasoningBackfill(func(b []byte) (*forwardResult, error) {
+					return p.forwardOnce(up, typ, prefix, upstreamRequest, rewriteModelInBody(b, upstreamModel), &capture, w)
+				}, model, key, attemptBody, fr, err)
+				if retried {
+					fr, err = fixedFr, fixedErr
+					if err == nil && fr != nil && (fr.committed || (fr.status >= 200 && fr.status < 300)) {
+						rc := extractReasoningContent(capture.Bytes())
+						if rc == "" && !fr.committed {
+							rc = extractReasoningContent(fr.body)
+						}
+						p.rememberReasoning(model, key, rc)
+					}
+				}
 				switch {
 				case err != nil:
 					tried = true
@@ -2219,13 +2390,33 @@ func (p *Proxy) serveModel(w http.ResponseWriter, r *http.Request, typ string, e
 				} else {
 					p.Store.Add(key.ID, model, 0, 0, true)
 				}
+				// Thinking-mode answers carry reasoning_content that some
+				// providers require back on the next turn (reasoning.go).
+				rc := extractReasoningContent(capture.Bytes())
+				if rc == "" && !fr.committed {
+					rc = extractReasoningContent(fr.body)
+				}
+				p.rememberReasoning(model, key, rc)
 				// Pin this working upstream for the model and track in used models for admin UI.
 				p.recordUsedModel(model)
-				p.setCachedUpstream(typ, model, up)
+				p.setCachedUpstream(typ, model, up, fr.usedKey)
 				p.touchKey(key)
 				return true, tried
 			}
 			if fr.localFailure && fr.hitchance.Action == "" {
+				// A protocol-resolution failure is specific to this upstream
+				// (e.g. an Anthropic-only base receiving a chat request it
+				// cannot confirm, or a key rejected during capability probing),
+				// not a defect in the client's request. Try the next eligible
+				// upstream before surfacing the error.
+				if fr.protocolUnsupported {
+					p.trace(r, "attempt.protocol_unsupported", map[string]any{
+						"cycle": cycle, "attempt": *totalAttempts, "upstream_id": up.ID, "model": model,
+					})
+					p.Store.Add(key.ID, model, 0, 0, false)
+					capture.Reset()
+					continue
+				}
 				copyHeader(w.Header(), fr.header)
 				w.WriteHeader(fr.status)
 				w.Write(fr.body)

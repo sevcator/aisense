@@ -16,6 +16,7 @@ import (
 	"aisense/internal/admin"
 	"aisense/internal/config"
 	"aisense/internal/debuglog"
+	"aisense/internal/pricing"
 	"aisense/internal/proxy"
 	"aisense/internal/store"
 )
@@ -181,7 +182,7 @@ func main() {
 	}
 	defer st.Close()
 
-	trace := debuglog.NewDynamic(filepath.Dir(*cfgPath), *debugPath, func() bool { return cfg.Get().LoggingEnabled })
+	trace := debuglog.NewLastResponseDynamic(filepath.Dir(*cfgPath), *debugPath, func() bool { return cfg.Get().LoggingEnabled })
 	defer func() {
 		if err := trace.Close(); err != nil {
 			log.Printf("[logging] close: %v", err)
@@ -198,7 +199,19 @@ func main() {
 	cfg.Watch(2 * time.Second)
 	trace.Event("process", "debug.session.start", map[string]any{"pid": os.Getpid(), "config_path": *cfgPath, "log_path": trace.Path()})
 
+	// The best/shit tier router ranks models by live market prices. The
+	// catalog refreshes in the background and survives restarts through a
+	// JSON cache beside the config.
+	prices := pricing.New(filepath.Join(filepath.Dir(*cfgPath), "tier-pricing.json"))
+	prices.Enabled = func() bool { return cfg.Get().TierPricing.Enabled }
+	prices.Interval = func() time.Duration {
+		return time.Duration(cfg.Get().TierPricing.RefreshIntervalMinutes) * time.Minute
+	}
+	prices.IgnoreCerts = func() bool { return cfg.Get().ModelDiscovery.IgnoreCertErrors }
+	prices.Debug = func(event string, fields map[string]any) { trace.Event("", event, fields) }
+
 	p := proxy.New(cfg, st, trace)
+	p.Pricing = prices
 	adm := &admin.Server{
 		Cfg:     cfg,
 		Store:   st,
@@ -220,6 +233,7 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
+	go prices.Run(ctx)
 	adm.StartModelDiscovery(ctx)
 
 	// Hit chances are counted in memory. Save them now and then, and once more on

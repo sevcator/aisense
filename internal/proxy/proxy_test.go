@@ -1636,7 +1636,7 @@ func TestModelsListMergesHidesMetaAndVariants(t *testing.T) {
 	gateway, manager := newTestGateway(t, func(c *config.Config) {
 		c.Upstreams = []*config.Upstream{
 			{ID: "a", Enabled: true, Type: "openai", BaseURL: "http://a.invalid", Models: []string{"gpt5.6-sol"}, AuthMode: "none"},
-			{ID: "b", Enabled: true, Type: "openai", BaseURL: "http://b.invalid", Models: []string{"gpt-5.6-sol", "gpt-5.6-sol-low", "gpt-5.6-sol-medium", "auto", "auto-beta", "flux.2-max", "glm-5.2", "glm-5.2-fast"}, AuthMode: "none"},
+			{ID: "b", Enabled: true, Type: "openai", BaseURL: "http://b.invalid", Models: []string{"gpt-5.6-sol", "gpt-5.6-sol-low", "gpt-5.6-sol-medium", "auto", "auto-beta", "nova.2-max", "glm-5.2", "glm-5.2-fast"}, AuthMode: "none"},
 		}
 	})
 
@@ -1657,7 +1657,7 @@ func TestModelsListMergesHidesMetaAndVariants(t *testing.T) {
 			t.Fatalf("model list should not contain %q: %v", unwanted, ids)
 		}
 	}
-	if !has("flux.2-max") || has("flux.2") {
+	if !has("nova.2-max") || has("nova.2") {
 		t.Fatalf("standalone variant must remain visible without fabricating a base: %v", ids)
 	}
 	if !has("glm-5.2-fast") {

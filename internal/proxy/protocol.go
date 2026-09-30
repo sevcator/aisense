@@ -90,7 +90,15 @@ func (p *Proxy) forwardOnceWithKey(up *config.Upstream, typ, prefix string, r *h
 		if r.Context().Err() != nil {
 			return nil, r.Context().Err()
 		}
-		return conversionFailure(typ, 400, err), nil
+		fr := conversionFailure(typ, 400, err)
+		// Only a chat/messages resolution failure is upstream-specific (the
+		// resolver could not confirm a compatible endpoint for this upstream).
+		// Responses/embeddings "not translated" is a client-request limitation,
+		// not a signal to try a different upstream.
+		if op == protocol.Chat || op == protocol.Messages {
+			fr.protocolUnsupported = true
+		}
+		return fr, nil
 	}
 	if dest == op {
 		if native != nil {
