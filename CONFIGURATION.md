@@ -14,6 +14,10 @@ Starting aisense with an older encrypted or plaintext `config.json` migrates
 it to the two-file layout. A damaged or missing credential store stops startup
 instead of silently dropping keys.
 
+To migrate an existing installation without starting its listeners, run
+`go run ./cmd/migrateconfig -config config.json` while the old aisense process
+is stopped.
+
 To move an installation to another account or machine, run
 `aisense -export-config=transfer.json` under the account that can open the
 vault. The export contains **all credentials in plain text**. Protect it during
