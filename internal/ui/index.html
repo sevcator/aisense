@@ -716,7 +716,7 @@ body.modal-open{overflow:hidden}
 </fieldset>
 </div>
 <p class="buttons">
-<button onclick="closeModal('overlay-up')">Cancel</button> <button id="up-test-btn">Test</button> <button class="primary" id="up-save-btn" onclick="saveUp()">Save</button> <button class="primary" id="up-import-btn" onclick="importUpstream()" hidden>Import</button>
+<button onclick="closeModal('overlay-up')">Cancel</button> <button id="up-test-add-btn" onclick="testAndAddUpstream()">Test &amp; Add</button> <button class="primary" id="up-save-btn" onclick="saveUp()">Save</button> <button class="primary" id="up-import-btn" onclick="importUpstream()" hidden>Import</button>
 </p>
 </div>
 </div>
@@ -1965,6 +1965,7 @@ function upModal(u){
   $('up-add-mode').hidden = !!u;
   $('up-add-select').value = 'single';
   setUpAddMode('single');
+  $('up-test-add-btn').textContent = u ? 'Test & Save' : 'Test & Add';
   $('up-import-text').value = '';
   $('up-import-skipped').innerHTML = '';
   $('u-id').value = u?u.id:'';
@@ -2063,10 +2064,13 @@ function setUpAddMode(mode){
   $('up-single-fields').hidden = batch;
   $('up-batch-fields').hidden = !batch;
   $('up-save-btn').hidden = batch;
-  $('up-test-btn').hidden = batch;
   $('up-import-btn').hidden = !batch;
 }
-async function saveUp(){
+function testAndAddUpstream(){
+  if($('up-add-select').value==='batch' && !editingUpstreamOriginal) importUpstream(true);
+  else saveUp(true);
+}
+async function saveUp(testFirst=false){
   let modelAliases;
   try{ modelAliases = parseModelAliases($('u-model-aliases').value); }
   catch(e){ toast(e.message, true); return; }
@@ -2086,7 +2090,11 @@ async function saveUp(){
   if(!body.base_url){ toast('Base URL is required', true); return; }
   delete body.type;
   try{
-    const r = await api('upstream?mode='+(editingUpstreamOriginal?'edit':'create'), {method:'POST', body:JSON.stringify(body)});
+    const btn = testFirst ? $('up-test-add-btn') : $('up-save-btn');
+    btn.disabled = true;
+    let r;
+    try{ r = await api((testFirst?'upstream/test-and-add':'upstream')+'?mode='+(editingUpstreamOriginal?'edit':'create'), {method:'POST', body:JSON.stringify(body)}); }
+    finally{ btn.disabled = false; }
     if(r.error){ toast(r.error, true); return; }
     closeModal('overlay-up'); toast((r.created?'Upstream created':'Upstream saved')+'; catalog discovery queued');
     editingUpstreamOriginal = null;
@@ -2220,13 +2228,13 @@ async function delUp(id){
     toast('Upstream deleted'); await refreshState();
   }catch(e){ toast(e.message||'Upstream delete failed', true); }
 }
-async function importUpstream(){
+async function importUpstream(testFirst=false){
   const text = $('up-import-text').value.trim();
   if(!text){ toast('Paste at least one URL first', true); return; }
-  const btn = $('up-import-btn');
+  const btn = testFirst ? $('up-test-add-btn') : $('up-import-btn');
   btn.disabled = true;
   try{
-    const r = await api('upstream/import', {method:'POST', body:JSON.stringify({text})});
+    const r = await api('upstream/import', {method:'POST', body:JSON.stringify({text, test_first:testFirst})});
     if(r.error){ toast(r.error, true); return; }
     const n = r.imported || (r.upstreams?r.upstreams.length:0);
     const skipped = r.skipped || 0;
@@ -2240,7 +2248,7 @@ async function importUpstream(){
       toast(`Nothing imported — ${skipped} ${skipped===1?'entry':'entries'} skipped`, true);
     }
     if(skipped>0 && (r.errors||[]).length){
-      renderImportSkipped(r.errors);
+      renderImportSkipped(r.errors, testFirst);
     } else {
       $('up-import-skipped').innerHTML = '';
     }
@@ -2251,9 +2259,9 @@ async function importUpstream(){
     btn.disabled = false;
   }
 }
-function renderImportSkipped(errors){
+function renderImportSkipped(errors, testFirst=false){
   $('up-import-skipped').innerHTML = `<div class="note" style="margin-top:12px">
-    <b>Auto-skipped (${errors.length})</b> — everything else above was imported successfully.
+    <b>Skipped (${errors.length})</b> — ${testFirst?'only confirmed entries were added':'everything else was imported successfully'}.
     <div class="tbl-wrap" style="margin-top:8px"><table>
       <thead><tr><th>Entry / line</th><th>Reason</th></tr></thead>
       <tbody>${errors.map(e=>`<tr><td class="mono">${esc(e.entry||'(unresolved)')}</td><td class="dim">${esc(e.reason)}</td></tr>`).join('')}</tbody>
@@ -2271,7 +2279,6 @@ async function refreshModelsNow(){
   }catch(e){ toast(e.message||'Model refresh failed', true); }
   finally{ if(btn) btn.disabled = false; }
 }
-$('up-test-btn').onclick = () => { const id = $('u-id').value; if(id) testUp(id); else toast('Save the upstream first', true); };
 
 let discoveryPolling = false, discoveryVersion = '';
 function setDiscoveryStatus(settingsText, headerText){

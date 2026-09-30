@@ -212,6 +212,7 @@ func adminHandlerName(r *http.Request) string {
 		http.MethodPost + " settings":                  "admin.saveSettings",
 		http.MethodPost + " upstream":                  "admin.upsertUpstream",
 		http.MethodPost + " upstream/import":           "admin.importUpstream",
+		http.MethodPost + " upstream/test-and-add":     "admin.upsertUpstream",
 		http.MethodPost + " upstreams/mass-edit":       "admin.massEditUpstreams",
 		http.MethodPost + " upstreams/refresh-models":  "admin.refreshModelsNow",
 		http.MethodGet + " upstreams/discovery":        "admin.discoveryStatus",
@@ -354,6 +355,8 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 	case path == "settings" && r.Method == http.MethodPost:
 		s.saveSettings(w, r)
 	case path == "upstream" && r.Method == http.MethodPost:
+		s.upsertUpstream(w, r)
+	case path == "upstream/test-and-add" && r.Method == http.MethodPost:
 		s.upsertUpstream(w, r)
 	case path == "upstream/import" && r.Method == http.MethodPost:
 		s.importUpstream(w, r)
@@ -597,6 +600,13 @@ func (s *Server) upsertUpstream(w http.ResponseWriter, r *http.Request) {
 	}
 	up.BlockedModels = normalizeStringList(up.BlockedModels)
 	up.AllowedModels = normalizeStringList(up.AllowedModels)
+	if r.URL.Path == "/admin/api/upstream/test-and-add" {
+		check := s.testOneUpstream(r.Context(), &up, "")
+		if check["ok"] != true {
+			s.writeJSON(w, http.StatusUnprocessableEntity, map[string]any{"error": "No supported operation confirmed; upstream was not saved", "test": check})
+			return
+		}
+	}
 	changedID := up.ID
 	created, merged, keysAdded := false, false, 0
 	errUpstreamNotFound := errors.New("upstream not found")
@@ -712,7 +722,8 @@ func filterModelAliases(requested []string, aliases map[string][]string) map[str
 // errors. Catalog discovery is queued independently of periodic settings.
 func (s *Server) importUpstream(w http.ResponseWriter, r *http.Request) {
 	var in struct {
-		Text string `json:"text"`
+		Text      string `json:"text"`
+		TestFirst bool   `json:"test_first"`
 	}
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 		s.writeJSON(w, 400, map[string]string{"error": err.Error()})
@@ -722,6 +733,20 @@ func (s *Server) importUpstream(w http.ResponseWriter, r *http.Request) {
 	if len(result.Upstreams) == 0 && len(result.Skipped) == 0 {
 		s.writeJSON(w, 400, map[string]string{"error": "could not find any upstream URL in pasted text"})
 		return
+	}
+	if in.TestFirst {
+		verified := make([]*config.Upstream, 0, len(result.Upstreams))
+		for i, up := range result.Upstreams {
+			if r.Context().Err() != nil {
+				return
+			}
+			if s.testOneUpstream(r.Context(), up, "")["ok"] != true {
+				result.Skipped = append(result.Skipped, ImportSkipped{Entry: i + 1, Reason: "no supported operation confirmed; not imported"})
+				continue
+			}
+			verified = append(verified, up)
+		}
+		result.Upstreams = verified
 	}
 
 	created := 0
