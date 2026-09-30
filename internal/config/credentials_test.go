@@ -241,3 +241,31 @@ func TestExportCanMigrateWithoutTheOriginalVault(t *testing.T) {
 		t.Fatal("the destination lost the exported key")
 	}
 }
+
+func TestMissingSettingsDoNotReplaceExistingCredentials(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	m, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := m.Update(func(c *Config) error {
+		c.APIKeys = []*APIKey{{ID: "client", Key: "preserve-me"}}
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	protected, err := os.ReadFile(credentialsPath(path))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Remove(path); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := Load(path); err == nil {
+		t.Fatal("missing settings silently replaced existing credentials")
+	}
+	after, err := os.ReadFile(credentialsPath(path))
+	if err != nil || !bytes.Equal(protected, after) {
+		t.Fatal("credential store changed when settings were missing")
+	}
+}

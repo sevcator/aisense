@@ -102,6 +102,8 @@ body{font-family:Verdana,Helvetica,Arial,sans-serif;line-height:normal}
 #brdmenu .nav-button{background:transparent;border:0;color:rgb(212,212,211);font:11px Verdana,Helvetica,Arial,sans-serif;margin:0;padding:0;text-decoration:none;cursor:pointer}
 #brdmenu .nav-button:hover{text-decoration:underline;color:rgb(212,212,211)}
 #brdwelcome .logout-link[aria-disabled=true]{opacity:.5;cursor:wait}
+#setup-notice{margin-top:8px;padding:8px 10px;border:1px solid rgb(77,80,54);background:rgb(40,42,32);color:rgb(212,212,211)}
+#setup-config-path{overflow-wrap:anywhere}
 
 /* type scale */
 .pun label{font-weight:700}
@@ -116,10 +118,10 @@ body{font-family:Verdana,Helvetica,Arial,sans-serif;line-height:normal}
 .pun button.danger{color:rgb(231,138,128)!important}
 .pun button + button{margin-left:6px}
 /* actions in table rows and h2 bars are gamesense text links, as on the forum */
-.pun td button,.pun h2 button,.pun .upstream-key-row button{background:none;border:0;padding:0;color:rgb(96,160,220)!important;vertical-align:baseline;text-align:left}
-.pun td button:not(:disabled):hover,.pun h2 button:not(:disabled):hover,.pun .upstream-key-row button:not(:disabled):hover{background:none;color:rgb(128,214,255)!important;text-decoration:underline}
-.pun td button.danger,.pun .upstream-key-row button.danger{color:rgb(231,138,128)!important}
-.pun td button.danger:not(:disabled):hover,.pun .upstream-key-row button.danger:not(:disabled):hover{color:rgb(255,170,160)!important}
+.pun td button,.pun h2 button{background:none;border:0;padding:0;color:rgb(96,160,220)!important;vertical-align:baseline;text-align:left}
+.pun td button:not(:disabled):hover,.pun h2 button:not(:disabled):hover{background:none;color:rgb(128,214,255)!important;text-decoration:underline}
+.pun td button.danger{color:rgb(231,138,128)!important}
+.pun td button.danger:not(:disabled):hover{color:rgb(255,170,160)!important}
 .pun h2 button.primary{font-weight:700}
 .pun td button + button,.pun h2 button + button{margin-left:12px}
 
@@ -355,6 +357,7 @@ body.modal-open{overflow:hidden}
         <p class="conl">You are logged in as <span id="panel-user">admin</span>. <a href="#logout" class="logout-link" onclick="event.preventDefault(); logout(this)">Log out</a></p>
         <p class="conr"><span id="hdr-summary" class="dim">0 added · 0 keys · 0 proxies · 0 records</span></p>
         <div class="clearer"></div>
+        <p id="setup-notice" class="dim" hidden>This installation has no upstreams or client API keys. It uses <span id="setup-config-path" class="mono"></span>. Add them here, or transfer your previous installation with a full config export.</p>
       </div>
     </div>
   </div>
@@ -679,10 +682,9 @@ body.modal-open{overflow:hidden}
 </div>
 <div class="row">
 <div class="field wide">
-<label>API keys (leave empty if the upstream needs none)</label>
-<div id="u-keys">
-</div>
-<p><button type="button" onclick="addUpstreamKey()">Add key</button></p>
+<label for="u-keys">API keys (leave empty if the upstream needs none)</label>
+<textarea id="u-keys" class="mono" rows="8" spellcheck="false" placeholder="sk-first-key # 1&#10;sk-second-key # 2" onblur="renumberUpstreamKeys()"></textarea>
+<p class="dim">One key per line. The # number is a label and is not sent with the key.</p>
 </div>
 </div>
 <label>Model aliases<br />
@@ -1472,6 +1474,8 @@ function renderAll(){
   renderKeys(); renderUps(); renderCombos(); fillSettings(); renderDashboardModels();
   const n = (count, one, many) => `${count} ${count === 1 ? one : many}`;
   $('hdr-summary').textContent = [n((STATE.upstreams||[]).length, 'upstream', 'upstreams'), n((STATE.api_keys||[]).length, 'API key', 'API keys'), n(((STATE.proxies||{}).list||[]).length, 'proxy', 'proxies')].join(' · ');
+  $('setup-notice').hidden = !!((STATE.upstreams||[]).length || (STATE.api_keys||[]).length);
+  $('setup-config-path').textContent = STATE.config_path || 'config.json';
   const jobs = {dashboard:loadStats, usage:loadUsage};
   (jobs[currentView]||(()=>Promise.resolve()))().catch(()=>{});
 }
@@ -2027,18 +2031,16 @@ async function refreshUpstreamHealth(){
   }
 }
 function renderUpstreamKeyInputs(keys){
-  keys = (keys&&keys.length?keys:['']);
-  $('u-keys').innerHTML = keys.map((key,i)=>`<div class="row upstream-key-row" style="margin:3px 0;align-items:center"><span class="dim" style="width:48px">Key ${i+1}</span><input type="password" class="mono upstream-key-input" value="${esc(key)}" placeholder="sk-..." style="flex:1" /><button type="button" class="danger" onclick="removeUpstreamKey(this)">remove</button></div>`).join('');
+  $('u-keys').value = formatUpstreamKeys(keys);
 }
-function addUpstreamKey(){
-  const keys = [...document.querySelectorAll('.upstream-key-input')].map(x=>x.value);
-  keys.push(''); renderUpstreamKeyInputs(keys);
-  const inputs = document.querySelectorAll('.upstream-key-input'); inputs[inputs.length-1].focus();
+function formatUpstreamKeys(keys){
+  return (keys||[]).filter(Boolean).map((key,i)=>`${key} # ${i+1}`).join('\n');
 }
-function removeUpstreamKey(btn){
-  const rows = [...document.querySelectorAll('.upstream-key-row')];
-  const keys = rows.filter(row=>row!==btn.closest('.upstream-key-row')).map(row=>row.querySelector('input').value);
-  renderUpstreamKeyInputs(keys.length?keys:['']);
+function parseUpstreamKeys(text){
+  return String(text||'').split(/\r?\n/).map(line=>line.trim().replace(/\s+#\s+\d+\s*$/,'').trim()).filter(Boolean);
+}
+function renumberUpstreamKeys(){
+  $('u-keys').value = formatUpstreamKeys(parseUpstreamKeys($('u-keys').value));
 }
 function upMassEditModal(){
   const selected = selectedUpstreams.size;
@@ -2072,7 +2074,7 @@ async function saveUp(){
     ...(editingUpstreamOriginal||{}),
     id: $('u-id').value.trim() || undefined,
     base_url: $('u-base').value.trim(),
-    api_keys: [...document.querySelectorAll('.upstream-key-input')].map(x=>x.value.trim()).filter(Boolean),
+    api_keys: parseUpstreamKeys($('u-keys').value),
     models: editingUpstreamOriginal ? (editingUpstreamOriginal.models||[]) : ['*'],
     model_aliases: modelAliases,
     blocked_models: $('u-model-policy').value === 'blacklist' ? $('u-blocked-models').value.split(',').map(s=>s.trim()).filter(Boolean) : [],

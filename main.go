@@ -107,6 +107,18 @@ func runAdminListener(ctx context.Context, cfg *config.Manager, handler http.Han
 	}
 }
 
+func tierPricingEnabled(cfg *config.Config) bool {
+	if !cfg.TierPricing.Enabled {
+		return false
+	}
+	for _, up := range cfg.Upstreams {
+		if up != nil && up.Enabled {
+			return true
+		}
+	}
+	return false
+}
+
 func main() {
 	cfgPath := flag.String("config", "config.json", "path to config file")
 	debugEnabled := flag.Bool("debug", false, "enable and persist full request/response logging with credential redaction")
@@ -132,12 +144,24 @@ func main() {
 	if dir != "" && dir != "." {
 		_ = os.MkdirAll(dir, 0o755)
 	}
+	configLocation, err := filepath.Abs(*cfgPath)
+	if err != nil {
+		log.Fatalf("config path: %v", err)
+	}
+	_, statErr := os.Stat(*cfgPath)
+	newConfig := os.IsNotExist(statErr)
+	if statErr != nil && !newConfig {
+		log.Fatalf("config: %v", statErr)
+	}
 
 	cfg, err := config.Load(*cfgPath)
 	if err != nil {
-		log.Fatalf("config: %v\n"+
-			"The credential store is protected for the account that wrote it. Start aisense as that account, "+
-			"or restore a complete readable config export to migrate it.", err)
+		log.Fatalf("config: %v\nUse a complete readable config export when moving the installation to another account or machine.", err)
+	}
+	if newConfig {
+		log.Printf("[aisense] no config found at %s; created a new empty installation (0 upstreams, 0 client API keys)", configLocation)
+	} else {
+		log.Printf("[aisense] loaded config from %s (%d upstreams, %d client API keys)", configLocation, len(cfg.Get().Upstreams), len(cfg.Get().APIKeys))
 	}
 
 	// Session login uses admin credentials. Existing installations
@@ -203,7 +227,7 @@ func main() {
 	// catalog refreshes in the background and survives restarts through a
 	// JSON cache beside the config.
 	prices := pricing.New(filepath.Join(filepath.Dir(*cfgPath), "tier-pricing.json"))
-	prices.Enabled = func() bool { return cfg.Get().TierPricing.Enabled }
+	prices.Enabled = func() bool { return tierPricingEnabled(cfg.Get()) }
 	prices.Interval = func() time.Duration {
 		return time.Duration(cfg.Get().TierPricing.RefreshIntervalMinutes) * time.Minute
 	}

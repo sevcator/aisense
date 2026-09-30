@@ -63,6 +63,33 @@ test('one Add dialog switches single and batch fields and actions', () => {
   assert.equal((html.match(/onclick="upModal\(\)">Add<\/button>/g) || []).length, 1);
   for (const obsolete of ['ups-test-results', 'ups-test-summary', 'ups-test-live-body', 'overlay-up-import']) assert.equal(html.includes(obsolete), false);
 });
+test('upstream keys use one numbered multiline editor', () => {
+  assert.match(html, /<textarea id="u-keys"[^>]*rows="8"/);
+  assert.doesNotMatch(html, /upstream-key-input|addUpstreamKey\(|removeUpstreamKey\(/);
+  const elements = {'u-keys': {value: ''}};
+  const context = {$: id => elements[id]};
+  for (const name of ['formatUpstreamKeys', 'parseUpstreamKeys', 'renumberUpstreamKeys', 'renderUpstreamKeyInputs']) loadFunction(name, context);
+  context.renderUpstreamKeyInputs(['sk-first', 'sk-second']);
+  assert.equal(elements['u-keys'].value, 'sk-first # 1\nsk-second # 2');
+  elements['u-keys'].value = '  sk-first # 1\r\nsk-second # 2\n\nsk-third#literal\n';
+  assert.deepEqual(Array.from(context.parseUpstreamKeys(elements['u-keys'].value)), ['sk-first', 'sk-second', 'sk-third#literal']);
+  context.renumberUpstreamKeys();
+  assert.equal(elements['u-keys'].value, 'sk-first # 1\nsk-second # 2\nsk-third#literal # 3');
+});
+test('empty installation identifies the active settings file', () => {
+  const elements = {'hdr-summary': {}, 'setup-notice': {}, 'setup-config-path': {}};
+  const context = {
+    $: id => elements[id], STATE: {upstreams: [], api_keys: [], proxies: {list: []}, config_path: 'C:\\sandbox\\config.json'}, currentView: 'dashboard',
+    syncUsageVisibility:()=>{}, renderKeys:()=>{}, renderUps:()=>{}, renderCombos:()=>{}, fillSettings:()=>{}, renderDashboardModels:()=>{}, loadStats:async()=>{}
+  };
+  loadFunction('renderAll', context);
+  context.renderAll();
+  assert.equal(elements['setup-notice'].hidden, false);
+  assert.equal(elements['setup-config-path'].textContent, 'C:\\sandbox\\config.json');
+  context.STATE.upstreams = [{id: 'up'}];
+  context.renderAll();
+  assert.equal(elements['setup-notice'].hidden, true);
+});
 test('the combos tab shows the model chain and refuses unusable combos', () => {
   for (const id of ['v-combos', 'combos-body', 'overlay-combo', 'combo-name', 'combo-models', 'combo-pick']) assert.ok(html.includes(`id="${id}"`), id);
   assert.match(html, /data-v="combos"/, 'combos is reachable from the menu');

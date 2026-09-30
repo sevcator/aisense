@@ -270,6 +270,11 @@ func Load(path string) (*Manager, error) {
 			// Never treat an unreadable file as empty: that could overwrite keys.
 			return nil, fmt.Errorf("read %s: %w", path, err)
 		}
+		if _, vaultErr := os.Stat(credentialsPath(path)); vaultErr == nil {
+			return nil, fmt.Errorf("settings file %s is missing but its credential store exists; restore the settings file before starting", path)
+		} else if !os.IsNotExist(vaultErr) {
+			return nil, fmt.Errorf("check credentials for %s: %w", path, vaultErr)
+		}
 		if err := m.persist(cfg); err != nil {
 			return nil, err
 		}
@@ -307,6 +312,15 @@ func Load(path string) (*Manager, error) {
 }
 
 func (m *Manager) Get() *Config { return m.active.Load() }
+
+// Path is the absolute location of the settings file in use by this process.
+func (m *Manager) Path() string {
+	absolute, err := filepath.Abs(m.path)
+	if err != nil {
+		return m.path
+	}
+	return absolute
+}
 
 // ReadFile returns a complete logical config, including credentials. Tools
 // must treat this result as sensitive and use WriteFile to save it again.

@@ -82,6 +82,12 @@ func TestLoggingSettingsRuntimePersistenceAndWriteFailure(t *testing.T) {
 	if !strings.Contains(state.Body.String(), `"logging_enabled":true`) {
 		t.Fatal("state missing logging setting")
 	}
+	var statePaths struct {
+		ConfigPath string `json:"config_path"`
+	}
+	if err := json.Unmarshal(state.Body.Bytes(), &statePaths); err != nil || statePaths.ConfigPath != cfg.Path() {
+		t.Fatalf("state config path = %q, error = %v", statePaths.ConfigPath, err)
+	}
 	trace.Event("", "enabled-marker", nil)
 	if res := save(`{"logging_enabled":false}`); res.Code != 200 || trace.Enabled() {
 		t.Fatal("disable failed")
@@ -216,7 +222,7 @@ func TestAdminUIUsesUpstreamKeyPools(t *testing.T) {
 		t.Fatal(err)
 	}
 	text := string(raw)
-	for _, required := range []string{"u-keys", "upstream-key-input", "api_keys", "keyCount"} {
+	for _, required := range []string{`<textarea id="u-keys"`, "parseUpstreamKeys", "api_keys", "keyCount"} {
 		if !strings.Contains(text, required) {
 			t.Fatalf("key-pool UI missing %q", required)
 		}
@@ -226,7 +232,7 @@ func TestAdminUIUsesUpstreamKeyPools(t *testing.T) {
 			t.Fatalf("removed setting remains %q", removed)
 		}
 	}
-	for _, removed := range []string{`id="u-key"`, `id="me-key"`} {
+	for _, removed := range []string{`id="u-key"`, `id="me-key"`, "upstream-key-input"} {
 		if strings.Contains(text, removed) {
 			t.Fatalf("legacy single-key UI remains: %q", removed)
 		}

@@ -337,9 +337,10 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 		}
 		s.writeJSON(w, 200, struct {
 			*config.Config
+			ConfigPath         string            `json:"config_path"`
 			PresentationModels []string          `json:"presentation_models"`
 			ResolvedProtocols  map[string]string `json:"resolved_protocols,omitempty"`
-		}{&state, modelalias.PresentationNames(names, state.Models.VariantOptions()), s.resolvedProtocols()})
+		}{&state, s.Cfg.Path(), modelalias.PresentationNames(names, state.Models.VariantOptions()), s.resolvedProtocols()})
 	case path == "cached-routes" && r.Method == http.MethodGet:
 		s.cachedRoutes(w)
 	case path == "debug/event" && r.Method == http.MethodPost:

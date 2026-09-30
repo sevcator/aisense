@@ -90,20 +90,25 @@ func (m *Manager) httpClient() *http.Client {
 	return m.client
 }
 
-// Run refreshes immediately and then on every tick until ctx is done.
+// Run refreshes when enabled and checks periodically for configuration changes.
+// An installation with no enabled upstreams does not need an online catalog;
+// the first refresh begins shortly after an upstream is added.
 func (m *Manager) Run(ctx context.Context) {
-	m.refreshLogged(ctx)
-	interval := m.currentInterval()
+	ticker := time.NewTicker(15 * time.Second)
+	defer ticker.Stop()
+	var lastRefresh time.Time
+	wasEnabled := false
 	for {
-		ticker := time.NewTicker(interval)
+		enabled := m.Enabled == nil || m.Enabled()
+		if enabled && (!wasEnabled || time.Since(lastRefresh) >= m.currentInterval()) {
+			lastRefresh = time.Now()
+			m.refreshLogged(ctx)
+		}
+		wasEnabled = enabled
 		select {
 		case <-ctx.Done():
-			ticker.Stop()
 			return
 		case <-ticker.C:
-			ticker.Stop()
-			m.refreshLogged(ctx)
-			interval = m.currentInterval()
 		}
 	}
 }
@@ -137,7 +142,7 @@ func (m *Manager) refreshLogged(ctx context.Context) {
 		m.lastErr = err.Error()
 	}
 	m.mu.Unlock()
-	log.Printf("[aisense] tier pricing refreshed: %d models from %s in %s", count, strings.Join(sources, "+"), time.Since(started).Round(time.Millisecond))
+	log.Printf("[aisense] public tier price catalog refreshed: %d entries from %s in %s (not configured models)", count, strings.Join(sources, "+"), time.Since(started).Round(time.Millisecond))
 	m.event("pricing.refreshed", map[string]any{"models": count, "sources": sources, "duration_ms": time.Since(started).Milliseconds()})
 }
 
@@ -159,9 +164,9 @@ func (m *Manager) Refresh(ctx context.Context) (int, []string, error) {
 	var results []fetchResult
 	var errs []string
 	for _, source := range []struct {
-		url    string
-		parse  func([]byte) (map[string]Entry, error)
-		label  string
+		url   string
+		parse func([]byte) (map[string]Entry, error)
+		label string
 	}{
 		{"https://models.dev/api.json", parseModelsDev, "models.dev"},
 		{"https://openrouter.ai/api/v1/models", parseOpenRouter, "openrouter"},
