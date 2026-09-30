@@ -33,6 +33,64 @@ func TestLegacySealedConfigMigratesToPlainSettings(t *testing.T) {
 	}
 }
 
+func TestTorConfigStaysInCredentialVault(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	m, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	secret := "Bridge obfs4 bridge.example:443 password=bridge-secret"
+	if err := m.Update(func(c *Config) error {
+		c.Proxies.Tor = TorCfg{Enabled: true, SOCKSPort: 9050, RestartAfter: 25, Config: secret}
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(raw), "bridge-secret") {
+		t.Fatal("Tor config leaked into plain settings")
+	}
+	reloaded, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := reloaded.Get().Proxies.Tor.Config; got != secret {
+		t.Fatalf("Tor config after reload = %q", got)
+	}
+}
+
+func TestPublicProxySourceTokenStaysInCredentialVault(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "config.json")
+	m, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	source := "https://lists.example/proxies.txt?token=subscription-secret"
+	if err := m.Update(func(c *Config) error {
+		c.Proxies.PublicSources = []string{source}
+		return nil
+	}); err != nil {
+		t.Fatal(err)
+	}
+	raw, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if strings.Contains(string(raw), "subscription-secret") {
+		t.Fatal("subscription token leaked into plain settings")
+	}
+	reloaded, err := Load(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := reloaded.Get().Proxies.PublicSources[0]; got != source {
+		t.Fatalf("public source after reload = %q", got)
+	}
+}
+
 func TestCredentialVersionsKeepOldConfigReadableAcrossReplacement(t *testing.T) {
 	path := filepath.Join(t.TempDir(), "config.json")
 	m, err := Load(path)

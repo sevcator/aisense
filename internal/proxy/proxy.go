@@ -32,6 +32,7 @@ import (
 
 type Proxy struct {
 	Cfg    *config.Manager
+	tor    *torController
 	Store  *store.Store
 	Debug  *debuglog.Logger
 	Health *routehealth.Manager
@@ -106,6 +107,7 @@ type window struct {
 func New(cfg *config.Manager, st *store.Store, debug ...*debuglog.Logger) *Proxy {
 	p := &Proxy{
 		Cfg:             cfg,
+		tor:             newTorController(cfg.Path()),
 		Store:           st,
 		Health:          routehealth.New(),
 		rl:              map[string]*window{},

@@ -24,10 +24,12 @@ type credentialStore struct {
 }
 
 type credentialSnapshot struct {
-	Admin      adminCredentials               `json:"admin"`
-	ClientKeys map[string]string              `json:"client_keys"`
-	Upstreams  map[string]upstreamCredentials `json:"upstreams"`
-	Proxies    map[string]string              `json:"proxies"`
+	Admin         adminCredentials               `json:"admin"`
+	ClientKeys    map[string]string              `json:"client_keys"`
+	Upstreams     map[string]upstreamCredentials `json:"upstreams"`
+	Proxies       map[string]string              `json:"proxies"`
+	PublicSources map[string]string              `json:"public_sources,omitempty"`
+	TorConfig     string                         `json:"tor_config,omitempty"`
 }
 
 type adminCredentials struct {
@@ -132,6 +134,20 @@ func splitCredentials(cfg *Config) (*Config, credentialSnapshot, error) {
 		secrets.Upstreams[id] = saved
 	}
 	public.Proxies.List = make([]*ProxyEntry, len(cfg.Proxies.List))
+	secrets.TorConfig = cfg.Proxies.Tor.Config
+	public.Proxies.Tor.Config = ""
+	public.Proxies.PublicSources = make([]string, len(cfg.Proxies.PublicSources))
+	for i, source := range cfg.Proxies.PublicSources {
+		if clean, sensitive := redactCredentialURL(source); sensitive {
+			if secrets.PublicSources == nil {
+				secrets.PublicSources = make(map[string]string)
+			}
+			secrets.PublicSources[strconv.Itoa(i)] = source
+			public.Proxies.PublicSources[i] = clean
+		} else {
+			public.Proxies.PublicSources[i] = source
+		}
+	}
 	for i, proxy := range cfg.Proxies.List {
 		if proxy == nil {
 			continue
@@ -147,6 +163,9 @@ func splitCredentials(cfg *Config) (*Config, credentialSnapshot, error) {
 }
 
 func applyCredentials(cfg *Config, secrets credentialSnapshot) error {
+	if secrets.TorConfig != "" {
+		cfg.Proxies.Tor.Config = secrets.TorConfig
+	}
 	cfg.Server.Admin.Username = secrets.Admin.Username
 	cfg.Server.Admin.Password = secrets.Admin.Password
 	cfg.Server.Admin.Token = secrets.Admin.Token
@@ -200,6 +219,17 @@ func applyCredentials(cfg *Config, secrets credentialSnapshot) error {
 			return fmt.Errorf("proxy %d URL no longer matches its credentials", i)
 		}
 		cfg.Proxies.List[i].URL = fullURL
+	}
+	for index, fullURL := range secrets.PublicSources {
+		i, err := strconv.Atoi(index)
+		if err != nil || i < 0 || i >= len(cfg.Proxies.PublicSources) {
+			return fmt.Errorf("public proxy source credentials refer to missing entry %q", index)
+		}
+		clean, _ := redactCredentialURL(fullURL)
+		if cfg.Proxies.PublicSources[i] != clean {
+			return fmt.Errorf("public proxy source %d no longer matches its credentials", i)
+		}
+		cfg.Proxies.PublicSources[i] = fullURL
 	}
 	return nil
 }

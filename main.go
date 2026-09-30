@@ -36,6 +36,8 @@ type proxyInfoAdapter struct{ p *proxy.Proxy }
 
 func (a proxyInfoAdapter) UsedModels() []string { return a.p.UsedModels() }
 
+func (a proxyInfoAdapter) TorStatus() map[string]any { return a.p.TorStatus() }
+
 // Optional admin capability; ProxyInfo's existing read-only mocks stay valid.
 func (a proxyInfoAdapter) ResetHitchanceKeys(up *config.Upstream) { a.p.ResetHitchanceKeys(up) }
 
@@ -258,6 +260,7 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	go prices.Run(ctx)
+	go p.RunTor(ctx)
 	adm.StartModelDiscovery(ctx)
 
 	// Hit chances are counted in memory. Save them now and then, and once more on

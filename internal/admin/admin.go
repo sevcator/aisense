@@ -230,6 +230,8 @@ func adminHandlerName(r *http.Request) string {
 		http.MethodDelete + " proxies":                 "admin.deleteProxy",
 		http.MethodPost + " proxies/update":            "admin.updateProxy",
 		http.MethodPost + " proxies/check":             "admin.checkProxies",
+		http.MethodPost + " proxies/public/fetch":      "admin.fetchPublicProxies",
+		http.MethodGet + " proxies/tor/status":         "admin.torStatus",
 	}
 	if name := handlers[r.Method+" "+path]; name != "" {
 		return name
@@ -403,6 +405,14 @@ func (s *Server) handle(w http.ResponseWriter, r *http.Request) {
 		s.updateProxy(w, r)
 	case path == "proxies/check" && r.Method == http.MethodPost:
 		s.checkProxies(w, r)
+	case path == "proxies/public/fetch" && r.Method == http.MethodPost:
+		s.fetchPublicProxies(w, r)
+	case path == "proxies/tor/status" && r.Method == http.MethodGet:
+		if tor, ok := s.Proxy.(interface{ TorStatus() map[string]any }); ok {
+			s.writeJSON(w, http.StatusOK, tor.TorStatus())
+		} else {
+			s.writeJSON(w, http.StatusOK, map[string]any{"state": "disabled"})
+		}
 	default:
 		http.NotFound(w, r)
 	}
@@ -459,6 +469,12 @@ func (s *Server) saveSettings(w http.ResponseWriter, r *http.Request) {
 	if in.Server != nil && in.Server.Admin.Path != nil && strings.ContainsAny(*in.Server.Admin.Path, "?#\\") {
 		s.writeJSON(w, 400, map[string]string{"error": "admin path must not contain a query, fragment or backslash"})
 		return
+	}
+	if in.Proxies != nil && in.Proxies.Tor != (config.TorCfg{}) {
+		if err := config.ValidateTorCfg(in.Proxies.Tor); err != nil {
+			s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+			return
+		}
 	}
 	err := s.Cfg.Update(func(c *config.Config) error {
 		if len(in.Hitchance) > 0 {
@@ -527,6 +543,12 @@ func (s *Server) saveSettings(w http.ResponseWriter, r *http.Request) {
 			c.Proxies.Enabled = in.Proxies.Enabled
 			c.Proxies.CheckURL = in.Proxies.CheckURL
 			c.Proxies.ExcludeCountries = in.Proxies.ExcludeCountries
+			if in.Proxies.PublicSources != nil {
+				c.Proxies.PublicSources = in.Proxies.PublicSources
+			}
+			if in.Proxies.Tor != (config.TorCfg{}) {
+				c.Proxies.Tor = in.Proxies.Tor
+			}
 			if in.Proxies.List != nil {
 				c.Proxies.List = in.Proxies.List
 			}
@@ -1121,8 +1143,21 @@ func normalizeAdminProxyURL(raw string) (string, error) {
 	if raw == "" {
 		return "", errors.New("proxy URL is empty")
 	}
+	raw = strings.ReplaceAll(raw, `\`, "/")
+	if !strings.Contains(raw, "://") {
+		if split := strings.IndexByte(raw, ':'); split > 0 {
+			scheme := strings.ToLower(raw[:split])
+			if (scheme == "http" || scheme == "https" || scheme == "socks5") && strings.HasPrefix(raw[split+1:], "/") {
+				raw = scheme + "://" + strings.TrimLeft(raw[split+1:], "/")
+			} else {
+				raw = "http://" + raw
+			}
+		} else {
+			raw = "http://" + raw
+		}
+	}
 	parsed, err := url.Parse(raw)
-	if err != nil || parsed.Host == "" {
+	if err != nil || parsed.Host == "" || parsed.Hostname() == "" || parsed.Port() == "" || parsed.Path != "" || parsed.RawQuery != "" || parsed.Fragment != "" {
 		return "", errors.New("proxy URL must include protocol and host")
 	}
 	switch strings.ToLower(parsed.Scheme) {
@@ -1165,7 +1200,7 @@ func (s *Server) addProxies(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 			seen[u] = true
-			c.Proxies.List = append(c.Proxies.List, &config.ProxyEntry{URL: u})
+			c.Proxies.List = append(c.Proxies.List, &config.ProxyEntry{URL: u, Source: "private"})
 			added = append(added, u)
 		}
 		return nil
@@ -1265,13 +1300,25 @@ func (s *Server) checkProxies(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		Proxies    []string `json:"proxies"`
 		AddWorking bool     `json:"add_working"`
+		Source     string   `json:"source"`
 	}
 	_ = json.NewDecoder(r.Body).Decode(&req)
+	if req.Source != "" && req.Source != "public" && req.Source != "private" {
+		s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid proxy source"})
+		return
+	}
 
 	var targets []string
 	isCandidateCheck := len(req.Proxies) > 0
 	if isCandidateCheck {
-		targets = req.Proxies
+		for _, raw := range req.Proxies {
+			normalized, err := normalizeAdminProxyURL(raw)
+			if err != nil {
+				s.writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+				return
+			}
+			targets = append(targets, normalized)
+		}
 	} else {
 		for _, e := range cfg.Proxies.List {
 			targets = append(targets, e.URL)
@@ -1288,7 +1335,7 @@ func (s *Server) checkProxies(w http.ResponseWriter, r *http.Request) {
 			sem <- struct{}{}
 			defer func() { <-sem }()
 			uStr = strings.TrimSpace(uStr)
-			res := config.ProxyEntry{URL: uStr, LastCheck: time.Now()}
+			res := config.ProxyEntry{URL: uStr, Source: req.Source, LastCheck: time.Now()}
 			res.Working, res.IP, res.Country, res.City, res.Region, res.LatencyMS, res.Error = checkOne(uStr, checkURL, excluded)
 			res.Excluded = res.Working && excluded[strings.ToUpper(res.Country)]
 			if res.Excluded {
@@ -1312,6 +1359,9 @@ func (s *Server) checkProxies(w http.ResponseWriter, r *http.Request) {
 			for _, r := range results {
 				if r.Working && !r.Excluded {
 					if ex, ok := existing[r.URL]; ok {
+						if ex.Source != "" {
+							r.Source = ex.Source
+						}
 						*ex = r
 					} else {
 						copy := r

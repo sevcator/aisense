@@ -137,6 +137,7 @@ type OAuthCfg struct {
 
 type ProxyEntry struct {
 	URL       string    `json:"url"`
+	Source    string    `json:"source,omitempty"`
 	Working   bool      `json:"working"`
 	Excluded  bool      `json:"excluded"`
 	Country   string    `json:"country,omitempty"`
@@ -152,7 +153,16 @@ type ProxyCfg struct {
 	Enabled          bool          `json:"enabled"`
 	CheckURL         string        `json:"check_url"` // exit-IP canary
 	ExcludeCountries []string      `json:"exclude_countries"`
+	PublicSources    []string      `json:"public_sources,omitempty"`
+	Tor              TorCfg        `json:"tor,omitempty"`
 	List             []*ProxyEntry `json:"list"`
+}
+
+type TorCfg struct {
+	Enabled      bool   `json:"enabled"`
+	SOCKSPort    int    `json:"socks_port"`
+	RestartAfter int    `json:"restart_after"`
+	Config       string `json:"config,omitempty"`
 }
 
 type APIKey struct {
@@ -210,6 +220,7 @@ func Default() *Config {
 			Enabled:          false,
 			CheckURL:         "https://api.ipify.org",
 			ExcludeCountries: []string{},
+			Tor:              TorCfg{SOCKSPort: 9050, RestartAfter: 100},
 			List:             []*ProxyEntry{},
 		},
 		Upstreams: []*Upstream{},
@@ -574,6 +585,7 @@ func cloneAPIKeys(in []*APIKey) []*APIKey {
 func cloneProxies(in ProxyCfg) ProxyCfg {
 	out := in
 	out.ExcludeCountries = append([]string(nil), in.ExcludeCountries...)
+	out.PublicSources = append([]string(nil), in.PublicSources...)
 	out.List = make([]*ProxyEntry, len(in.List))
 	for i, proxy := range in.List {
 		if proxy != nil {

@@ -550,11 +550,25 @@ body.modal-open{overflow:hidden}
 
         <div class="inform"><fieldset><legend>Rotation proxies</legend><div class="infldset" style="padding:10px 0 12px">
           <div class="row" style="align-items:center">
-            <div class="field"><label class="check"><input type="checkbox" id="p-enabled" /> Enable proxy rotation</label></div>
-            <div class="field" style="margin-left:12px">
-              <button type="button" onclick="openProxyManagerModal()">Manage proxies</button>
-              <span class="dim" id="p-status" style="margin-left:8px"></span>
+            <div class="field"><label class="check"><input type="checkbox" id="p-enabled" onchange="toggleProxySettings()" /> Enable proxy rotation</label></div>
+            <div class="field"><span class="dim" id="p-status"></span></div>
+          </div>
+          <div id="p-settings" hidden>
+            <p class="h2-tabs" id="p-mode-tabs" role="group" aria-label="Proxy source" style="margin:12px 0">
+              <button type="button" data-mode="public" onclick="setProxyMode('public')">Public</button><span class="sep" aria-hidden="true">|</span><button type="button" data-mode="tor" onclick="setProxyMode('tor')">Tor</button><span class="sep" aria-hidden="true">|</span><button type="button" data-mode="private" onclick="setProxyMode('private')">Private</button>
+            </p>
+            <div id="p-public-panel" hidden>
+              <label>Proxy list URLs (one HTTP(S) URL per line)<br /><textarea id="p-public-sources" class="mono" rows="4" placeholder="https://example.com/proxies.txt"></textarea></label>
+              <p class="dim">Lists can contain ip:port, protocol://ip:port, or protocol:\\ip:port.</p>
+              <p><button type="button" id="p-public-fetch" onclick="fetchPublicProxies()">Fetch and add working</button> <span id="p-public-status" class="dim" role="status"></span></p>
             </div>
+            <div id="p-tor-panel" hidden>
+              <label class="check"><input type="checkbox" id="p-tor-enabled" /> Use Tor in rotation</label>
+              <p><button type="button" onclick="openTorConfigModal()">Edit Tor config</button></p>
+              <label>Restart Tor after <input type="number" id="p-tor-restart" min="1" step="1" value="100" style="width:75px" /> requests</label>
+              <p id="p-tor-status" class="dim" role="status"></p>
+            </div>
+            <div id="p-private-panel" hidden><button type="button" onclick="openProxyManagerModal()">Manage proxies</button></div>
           </div>
         </div></fieldset></div>
 
@@ -984,6 +998,18 @@ body.modal-open{overflow:hidden}
 </div>
 </div>
 
+<div class="modal-backdrop" id="overlay-tor-config">
+<div class="modal wide blockform">
+<h2><span>Edit Tor config</span></h2>
+<div class="box"><div class="inbox">
+<div class="inform"><fieldset><legend>Tor</legend><div class="infldset">
+<label>SOCKS port<br /><input type="number" id="p-tor-port" min="1" max="65535" value="9050" /></label>
+<label>Additional torrc directives<br /><textarea id="p-tor-config" class="mono" rows="8" spellcheck="false" placeholder="ClientOnly 1"></textarea></label>
+<p class="dim">aisense downloads or updates the official Tor Expert Bundle on startup when Tor is enabled.</p>
+</div></fieldset></div>
+<p class="buttons"><button type="button" onclick="closeModal('overlay-tor-config')">Cancel</button> <button type="button" class="primary" onclick="saveTorConfig()">Save Tor config</button></p>
+</div></div></div></div>
+
 <div class="modal-backdrop" id="overlay-proxy-creds">
 <div class="modal blockform">
 <h2>
@@ -1052,6 +1078,8 @@ let currentView = 'dashboard';
 const selectedUpstreams = new Set();
 const selectedKeys = new Set();
 const selectedProxies = new Set();
+let proxyTab = 'private';
+let torEditorSnapshot = null;
 let editingUpstreamModelAliases = null;
 let editingUpstreamOriginal = null;
 let UPSTREAM_HEALTH = {};
@@ -2562,6 +2590,14 @@ function fillSettings(){
   if($('p-enabled')) $('p-enabled').checked = !!p.enabled;
   const workingCount = (p.list||[]).filter(x=>x.working).length;
   if($('p-status')) $('p-status').textContent = (p.list&&p.list.length) ? `${workingCount} working / ${p.list.length} total` : '';
+  $('p-public-sources').value = (p.public_sources||[]).join('\n');
+  $('p-tor-enabled').checked = !!p.tor?.enabled;
+  $('p-tor-restart').value = p.tor?.restart_after || 100;
+  $('p-tor-port').value = p.tor?.socks_port || 9050;
+  $('p-tor-config').value = p.tor?.config || '';
+  toggleProxySettings();
+  setProxyMode(proxyTab);
+  if(p.tor?.enabled) refreshTorStatus();
   renderProxies();
 }
 
@@ -2695,6 +2731,85 @@ function openProxyManagerModal(){
   openModal('overlay-proxy-manager');
 }
 
+function toggleProxySettings(){
+  $('p-settings').hidden = !$('p-enabled').checked;
+}
+
+function setProxyMode(mode){
+  proxyTab = mode;
+  document.querySelectorAll('#p-mode-tabs button').forEach(btn=>{
+    const active = btn.dataset.mode===mode;
+    btn.classList.toggle('active',active);
+    btn.setAttribute('aria-pressed',String(active));
+  });
+  for(const name of ['public','tor','private']) $('p-'+name+'-panel').hidden = name!==mode;
+  if(mode==='tor') refreshTorStatus();
+}
+
+function readProxySettings(){
+  const restartAfter = Number($('p-tor-restart').value);
+  const socksPort = Number($('p-tor-port').value);
+  if(!Number.isInteger(restartAfter)||restartAfter<1||restartAfter>1000000) throw new Error('Tor restart count must be between 1 and 1000000');
+  if(!Number.isInteger(socksPort)||socksPort<1||socksPort>65535) throw new Error('Tor SOCKS port must be between 1 and 65535');
+  return {
+    enabled:$('p-enabled').checked,
+    check_url:(STATE.proxies||{}).check_url||'https://api.ipify.org',
+    exclude_countries:(STATE.proxies||{}).exclude_countries||[],
+    public_sources:$('p-public-sources').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean),
+    tor:{enabled:$('p-tor-enabled').checked,socks_port:socksPort,restart_after:restartAfter,config:$('p-tor-config').value},
+  };
+}
+
+function openTorConfigModal(){
+  torEditorSnapshot = {port:$('p-tor-port').value, config:$('p-tor-config').value};
+  openModal('overlay-tor-config');
+}
+
+async function saveTorConfig(){
+  try{
+    const r = await api('settings',{method:'POST',body:JSON.stringify({proxies:readProxySettings()})});
+    if(r.error) throw new Error(r.error);
+    torEditorSnapshot = null;
+    closeModal('overlay-tor-config');
+    toast('Tor config saved');
+    await refreshState();
+  }catch(e){ toast(e.message||'Tor config save failed',true); }
+}
+
+async function refreshTorStatus(){
+  if(proxyTab!=='tor'||!$('p-enabled').checked) return;
+  try{
+    const status = await api('proxies/tor/status');
+    $('p-tor-status').textContent = `Tor: ${status.state||'unknown'}${status.version?' ('+status.version+')':''}; ${status.requests||0} requests since restart${status.error?'; '+status.error:''}`;
+  }catch(e){ $('p-tor-status').textContent = e.message||'Tor status unavailable'; }
+}
+setInterval(refreshTorStatus,5000);
+
+async function fetchPublicProxies(){
+  const sources = $('p-public-sources').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  if(!sources.length){ toast('Enter at least one proxy list URL',true); return; }
+  const btn = $('p-public-fetch');
+  const status = $('p-public-status');
+  btn.disabled = true;
+  status.textContent = 'Fetching proxy lists...';
+  try{
+    const fetched = await api('proxies/public/fetch',{method:'POST',body:JSON.stringify({sources})});
+    if(fetched.error) throw new Error(fetched.error);
+    const candidates = fetched.proxies||[];
+    let working = 0;
+    for(let i=0;i<candidates.length;i+=50){
+      status.textContent = `Checking ${Math.min(i+50,candidates.length)} / ${candidates.length} proxies...`;
+      const checked = await api('proxies/check',{method:'POST',body:JSON.stringify({proxies:candidates.slice(i,i+50),add_working:true,source:'public'})});
+      if(checked.error) throw new Error(checked.error);
+      working += (checked.proxies||[]).filter(x=>x.working&&!x.excluded).length;
+    }
+    const errors = (fetched.errors||[]).length;
+    status.textContent = `Fetched ${candidates.length}; ${working} working added${errors?`; ${errors} lists failed`:''}.`;
+    await refreshState();
+  }catch(e){ status.textContent = e.message||'Proxy list fetch failed'; }
+  finally{ btn.disabled = false; }
+}
+
 async function addProxies(){
   const urls = $('p-add').value.split(/[\n,]+/).map(s=>s.trim()).filter(Boolean);
   if(!urls.length){ toast('Enter at least one proxy URL', true); return; }
@@ -2735,7 +2850,7 @@ function formatExitGeo(p){
 
 function renderProxies(){
   const p = (STATE&&STATE.proxies)||{};
-  const list = p.list||[];
+  const list = (p.list||[]).filter(x=>!x.source||x.source==='private');
   const query = ($('p-search') ? $('p-search').value.trim().toLowerCase() : '');
   
   const liveURLs = new Set(list.map(x=>x.url));
@@ -2779,12 +2894,12 @@ function renderProxies(){
 
 function toggleProxySelection(url, checked){
   checked ? selectedProxies.add(url) : selectedProxies.delete(url);
-  updateProxySelectionUI((STATE&&STATE.proxies&&STATE.proxies.list)||[]);
+  updateProxySelectionUI(((STATE&&STATE.proxies&&STATE.proxies.list)||[]).filter(x=>!x.source||x.source==='private'));
 }
 
 function toggleAllProxies(checked){
   const p = (STATE&&STATE.proxies)||{};
-  const list = p.list||[];
+  const list = (p.list||[]).filter(x=>!x.source||x.source==='private');
   const query = ($('p-search') ? $('p-search').value.trim().toLowerCase() : '');
   const filtered = list.filter(x=>{
     if(!query) return true;
@@ -2852,7 +2967,7 @@ async function checkAndAddProxies(){
   btn.disabled = true;
   $('p-add-status').textContent = 'Checking proxies and their exit locations…';
   try{
-    const r = await api('proxies/check', {method:'POST', body:JSON.stringify({proxies:lines, add_working:true})});
+    const r = await api('proxies/check', {method:'POST', body:JSON.stringify({proxies:lines, add_working:true, source:'private'})});
     if(r.error) throw new Error(r.error);
     const checked = (r.proxies||[]).length, working = (r.proxies||[]).filter(x=>x.working && !x.excluded).length;
     $('p-add-status').textContent = `Checked ${checked}, added ${working} working.`;
@@ -2956,11 +3071,7 @@ $('save-settings').onclick = async () => {
       reasoning_variants: $('models-reasoning-variants').checked,
       prefer_other_variants: $('models-other-variants').checked,
     };
-    const proxies = {
-      enabled: $('p-enabled').checked,
-      check_url: (STATE.proxies||{}).check_url || 'https://api.ipify.org',
-      exclude_countries: (STATE.proxies||{}).exclude_countries || [],
-    };
+    const proxies = readProxySettings();
     const r = await api('settings', {method:'POST', body:JSON.stringify({server:sVal, usage, hitchance:readHitchancePolicy(), model_discovery, models, proxies, logging_enabled:$('logging-enabled').checked, auto_models_discovery:false})});
     if(r.error){ toast(r.error, true); return; }
     const nextBasePath = normalizeAdminBasePath(sVal.admin.path);
@@ -2985,6 +3096,11 @@ function closeModal(id){
     return;
   }
   if(id === 'overlay-2fa') clearTwoFactor();
+  if(id === 'overlay-tor-config' && torEditorSnapshot){
+    $('p-tor-port').value = torEditorSnapshot.port;
+    $('p-tor-config').value = torEditorSnapshot.config;
+    torEditorSnapshot = null;
+  }
   if(id === 'overlay-admin-creds') $('admin-password').value = '';
   hideModal(id);
 }

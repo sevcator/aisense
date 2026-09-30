@@ -72,6 +72,13 @@ func (p *Proxy) workingProxies() []*config.ProxyEntry {
 			out = append(out, e)
 		}
 	}
+	if cfg.Proxies.Tor.Enabled {
+		port := cfg.Proxies.Tor.SOCKSPort
+		if port == 0 {
+			port = 9050
+		}
+		out = append(out, &config.ProxyEntry{URL: fmt.Sprintf("socks5://127.0.0.1:%d", port), Source: "tor", Working: true})
+	}
 	return out
 }
 
@@ -88,15 +95,18 @@ func (p *Proxy) nextProxyURL() string {
 		return ""
 	}
 	rrMu.Lock()
-	defer rrMu.Unlock()
 	key := fmt.Sprintf("%p", p)
 	if key != rrKey {
 		rrIdx = 0
 		rrKey = key
 	}
-	u := pool[rrIdx%len(pool)].URL
+	selected := pool[rrIdx%len(pool)]
 	rrIdx++
-	return u
+	rrMu.Unlock()
+	if selected.Source == "tor" && p.tor != nil {
+		return p.tor.next(p.Cfg.Get().Proxies.Tor)
+	}
+	return selected.URL
 }
 
 // ---------------------------------------------------------------------------

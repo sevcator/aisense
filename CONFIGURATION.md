@@ -8,7 +8,8 @@ the executable or source code starts a new, empty installation.
 
 Credentials live in `config.credentials.vault` beside it. This encrypted file
 holds the admin username, password, and TOTP state; client and upstream API
-keys; OAuth client credentials; and credentials embedded in URLs. Both files
+keys; OAuth client credentials; Tor directives; and credentials embedded in
+proxy or proxy-list URLs. Both files
 are required for a working backup. The vault is protected for the operating
 system account running aisense, using Windows DPAPI or the configured vault
 key on other systems.
@@ -28,3 +29,20 @@ transfer, then start aisense with `-config transfer.json` at the destination;
 it will create a new protected credential store there.
 An encrypted vault copied from another Windows account, including a Windows
 Sandbox account, cannot be opened there; use the complete export instead.
+
+## Proxy sources and Tor
+
+Enable proxy rotation in Settings to reveal Public, Tor, and Private tabs.
+Public accepts HTTP(S) proxy-list URLs and reads one proxy per line. Supported
+entries are `ip:port`, `protocol://ip:port`, and `protocol:\\ip:port` with
+HTTP, HTTPS, or SOCKS5 protocols. Fetch and add working checks candidates
+before adding them to rotation. Private keeps the manually managed proxies.
+
+On Windows x64, enabling Tor downloads the latest stable Tor Expert Bundle
+from Tor Project into `tor-bundle` beside `config.json`. Each startup checks
+for a newer bundle; if the update check fails, an installed bundle remains
+available. The download is checked against Tor Project's published SHA-256
+list. aisense manages only the Tor process it starts, exposes its local SOCKS
+port to rotation, and restarts it after the configured number of selected
+requests. If Tor is unavailable, Tor-selected requests fail instead of being
+sent directly. Tor's data directory stays beside the bundle.
